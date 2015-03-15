@@ -8,13 +8,13 @@ var gulp = require('gulp'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
     sourcePattern = ['public/scripts/*.js', 'lib/**/*.js', 'locale/**/*.js'],
-    allPattern = sourcePattern.concat([
+    allPatterns = sourcePattern.concat([
         'public/scripts/*.jsx',
         'public/styles/**/*',
         'public/**/*.html',
+        'public/auth/**/*',
         'locale/**/*.js',
-        'locale/**/*.tar.gz',
-        'locale/**/*.json'
+        'locale/**/*.tar.gz'
     ]),
     browserify = require('gulp-browserify'),
     react = require('gulp-react');
@@ -47,6 +47,13 @@ gulp.task('browserify', ['update-dictionaries', 'jsx'], function () {
             debug : true
         }))
         .pipe(gulp.dest('build/scripts'));
+
+    gulp.src('public/auth/**/*.js')
+        .pipe(browserify({
+            insertGlobals : true,
+            debug : true
+        }))
+        .pipe(gulp.dest('build/auth/'));
 });
 
 gulp.task('lint', function () {
@@ -84,7 +91,7 @@ gulp.task('jsx-build', function () {
 gulp.task('register-watchers', [], function (cb) {
     'use strict';
 
-    gulp.watch(allPattern, ['browserify', 'lint']);
+    gulp.watch(allPatterns, ['browserify', 'lint']);
 
     return cb;
 });
@@ -99,7 +106,7 @@ gulp.task('test_cover', shell.task(['npm run test_cover']));
 gulp.task('test_watch', ['test_cover'], function (cb) {
     'use strict';
 
-    gulp.watch(allPattern.concat('test/**/*.js'), ['test_cover']);
+    gulp.watch(allPatterns.concat('test/**/*.js'), ['test_cover']);
 
     return cb;
 });

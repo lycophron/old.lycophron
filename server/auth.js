@@ -46,38 +46,46 @@ function init(app, logger, config) {
 
     app.use(function (req, res, next) {
         if (req.isAuthenticated()) {
+            // set user id, if authenticated
             res.set('X-User-Id', req.session.passport.user);
         }
 
+        // if the request start with auth pass it along
         if (req.path.substr(0, 6) === '/auth/') {
             return next();
         }
 
-        // not authenticated
         if (config.authentication.allowGuests) {
-            //req.set('X-User-Id', config.authentication.guestAccount);
+            // if we allow guests then we are done here
             return next();
         }
 
-        if (req.user) {
+        if (req.isAuthenticated() && req.user) {
+            // iwe have a valid user
+
             if (allowedUsers.length > 0 &&
                 allowedUsers.indexOf(req.user.emails[0].value) === -1) {
                 // emails filed is defined in the config
                 // we have to filter
-                //notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
+                // if current user is not on the list we just redirect him to /auth/failed
                 logger.error('Invalid user ' + req.user.displayName + ' ' + req.user.emails[0].value);
                 req.session.authRedirect = req.path;
                 res.redirect('/auth/failed');
                 return;
             } else {
+                // if user on the list, pass to the next route the request
                 return next();
             }
         }
 
+        // user is not authenticated yet, and requested a path which is not /auth/*
+        // save the requested path (redirect him after a successful login - /auth/login/success
         req.session.authRedirect = req.path;
+        // redirect him to the main login page
         res.redirect('/auth/login');
     });
 
+    // FIXME: put provider specific strategies to separate file
     // GOOGLE SPECIFIC from here
     var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy,
         googleStrategyConfig = {
@@ -101,35 +109,17 @@ function init(app, logger, config) {
                 id: profile.id,
                 displayName: profile.displayName,
                 name: profile.name,
-                emails: profile.emails,
-                gender: profile.gender
+                emails: profile.emails
             };
 
             users.update({id: profile.id}, userOriginal, {upsert: true}, function (err, numReplaced) {
                 users.findOne({id: profile.id}, function (err, user) {
-                    var notAuthorized;
-
                     if (err) {
                         return done(err);
                     }
 
+                    // FIXME: should we check if user is null here?
                     done(null, userOriginal);
-
-                    //if (user) {
-                    //    if (allowedUsers.length > 0 &&
-                    //        allowedUsers.indexOf(user.emails[0].value) === -1) {
-                    //        // emails filed is defined in the config
-                    //        // we have to filter
-                    //        notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
-                    //    }
-                    //} else {
-                    //    notAuthorized = 'User was not found' + userOriginal.displayName + ' ' + userOriginal.emails[0].value;
-                    //}
-                    //if (notAuthorized) {
-                    //
-                    //} else {
-                    //    done(null, userOriginal);
-                    //}
                 });
             });
         }
@@ -203,16 +193,18 @@ function init(app, logger, config) {
                     return;
                 }
                 if (user) {
-                    responseData.id = user.id;
-                    responseData.displayName = user.displayName;
-                    res.status(200).send(JSON.stringify(responseData));
+                    delete user._id;
+                    delete user.__v;
+                    res.setHeader('Content-Type', 'application/json');
+                    res.end(JSON.stringify(user));
                 } else {
                     res.status(404);
                     res.send('Could not find user');
                 }
             });
         } else {
-            res.status(200).send(JSON.stringify(responseData));
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(responseData));
         }
     });
 
