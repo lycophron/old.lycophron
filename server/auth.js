@@ -14,20 +14,26 @@ function init(app, logger, config) {
         fs = require('fs'),
         Datastore = require('nedb'),
         users = new Datastore({filename: 'users.nedb', autoload: true}),
-        allowedUsers = [];
+        allowedUsers = [],
 
-    if (fs.existsSync('users.json') === false) {
+        updateAllowedUsers = function (filename) {
+            try {
+                allowedUsers = JSON.parse(fs.readFileSync(filename));
+                logger.debug('allowed users list was updated. ' + filename);
+            } catch (e) {
+                logger.warn(e);
+            }
+        };
+
+    if (fs.existsSync('users.json')) {
+        updateAllowedUsers('users.json');
+    } else {
         fs.writeFileSync('users.json', JSON.stringify(allowedUsers));
     }
 
     fs.watch('.', function (event, fname) {
         if (fname === 'users.json') {
-            try {
-                allowedUsers = JSON.parse(fs.readFileSync('users.json'));
-                logger.debug('allowed users list was updated. ' + event + ' ' + fname);
-            } catch (e) {
-                logger.warn(e);
-            }
+            updateAllowedUsers(fname);
         }
     });
 
@@ -88,6 +94,11 @@ function init(app, logger, config) {
             users.update({id: profile.id}, userOriginal, {upsert: true}, function (err, numReplaced) {
                 users.findOne({id: profile.id}, function (err, user) {
                     var notAuthorized;
+
+                    if (err) {
+                        return done(err);
+                    }
+
                     if (user) {
                         if (allowedUsers.length > 0 &&
                             allowedUsers.indexOf(user.emails[0].value) === -1) {
@@ -95,8 +106,14 @@ function init(app, logger, config) {
                             // we have to filter
                             notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
                         }
+                    } else {
+                        notAuthorized = 'User was not found' + userOriginal.displayName + ' ' + userOriginal.emails[0].value;
                     }
-                    done(err || notAuthorized, userOriginal);
+                    if (notAuthorized) {
+                        done(notAuthorized, false);
+                    } else {
+                        done(err, userOriginal);
+                    }
                 });
             });
         }
@@ -151,7 +168,12 @@ function init(app, logger, config) {
 
     app.get('/auth/logout', function (req, res) {
         req.logout();
-        res.redirect('/');
+        req.session.destroy(function (err) {
+            if (err) {
+                logger.error(err);
+            }
+            res.redirect('/');
+        });
     });
 
     app.get('/auth/', function (req, res) {
