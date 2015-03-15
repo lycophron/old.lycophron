@@ -40,6 +40,11 @@ function start(config, done) {
         app.use(cookieParser());
         app.use(compression({threshold: 512}));
 
+        app.get('/favicon.ico', function (req, res, next) {
+            res.writeHead(200);
+            res.end();
+        });
+
         logger.debug('Adding authentication to app ...');
         auth.init(app, logger, config);
 

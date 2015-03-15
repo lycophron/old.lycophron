@@ -25,12 +25,6 @@ function init(app, logger) {
     logger.debug('Adding static file rules for build');
     app.use(express.static(__dirname + '/../build'));
 
-
-    app.get('/favicon.ico', function (req, res, next) {
-        res.writeHead(200);
-        res.end();
-    });
-
     logger.debug('Controllers are ready');
 }
 

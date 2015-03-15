@@ -47,7 +47,6 @@ function init(app, logger, config) {
     app.use(function (req, res, next) {
         if (req.isAuthenticated()) {
             res.set('X-User-Id', req.session.passport.user);
-            return next();
         }
 
         if (req.path.substr(0, 6) === '/auth/') {
@@ -58,6 +57,21 @@ function init(app, logger, config) {
         if (config.authentication.allowGuests) {
             //req.set('X-User-Id', config.authentication.guestAccount);
             return next();
+        }
+
+        if (req.user) {
+            if (allowedUsers.length > 0 &&
+                allowedUsers.indexOf(req.user.emails[0].value) === -1) {
+                // emails filed is defined in the config
+                // we have to filter
+                //notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
+                logger.error('Invalid user ' + req.user.displayName + ' ' + req.user.emails[0].value);
+                req.session.authRedirect = req.path;
+                res.redirect('/auth/failed');
+                return;
+            } else {
+                return next();
+            }
         }
 
         req.session.authRedirect = req.path;
@@ -99,21 +113,23 @@ function init(app, logger, config) {
                         return done(err);
                     }
 
-                    if (user) {
-                        if (allowedUsers.length > 0 &&
-                            allowedUsers.indexOf(user.emails[0].value) === -1) {
-                            // emails filed is defined in the config
-                            // we have to filter
-                            notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
-                        }
-                    } else {
-                        notAuthorized = 'User was not found' + userOriginal.displayName + ' ' + userOriginal.emails[0].value;
-                    }
-                    if (notAuthorized) {
-                        done(notAuthorized, false);
-                    } else {
-                        done(err, userOriginal);
-                    }
+                    done(null, userOriginal);
+
+                    //if (user) {
+                    //    if (allowedUsers.length > 0 &&
+                    //        allowedUsers.indexOf(user.emails[0].value) === -1) {
+                    //        // emails filed is defined in the config
+                    //        // we have to filter
+                    //        notAuthorized = 'Invalid user ' + user.displayName + ' ' + user.emails[0].value;
+                    //    }
+                    //} else {
+                    //    notAuthorized = 'User was not found' + userOriginal.displayName + ' ' + userOriginal.emails[0].value;
+                    //}
+                    //if (notAuthorized) {
+                    //
+                    //} else {
+                    //    done(null, userOriginal);
+                    //}
                 });
             });
         }
@@ -136,7 +152,7 @@ function init(app, logger, config) {
     }));
 
     app.get('/auth/google/oauth2callback',
-        passport.authenticate('google', {successRedirect: '/auth/success', failureRedirect: '/auth/login'}));
+        passport.authenticate('google', {successRedirect: '/auth/success', failureRedirect: '/auth/failed'}));
 
     logger.debug('Google OAuth2 is ready');
     // GOOGLE SPECIFIC ends here

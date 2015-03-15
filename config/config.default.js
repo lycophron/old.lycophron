@@ -16,7 +16,7 @@ config.sessionParameters.saveUninitialized = false;
 config.sessionParameters.secret = null; // DO NOT SET THIS!
 
 config.authentication = {};
-config.authentication.allowGuests = true;
+config.authentication.allowGuests = false;
 config.authentication.guestAccount = 'anonymous';
 
 
