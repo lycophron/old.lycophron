@@ -1,0 +1,58 @@
+{
+  "name": "lycophron",
+  "version": "0.1.0",
+  "description": "A stupid anagram solver with a few sample applications.",
+  "bin": {},
+  "main": "./lib/lycophron.js",
+  "scripts": {
+    "start": "node server",
+    "test": "node node_modules/mocha/bin/mocha --recursive test",
+    "test_cover_win": "node_modules\\.bin\\istanbul.cmd --hook-run-in-context cover node_modules\\mocha\\bin\\_mocha -- -R spec --recursive test",
+    "test_cover": "node node_modules/istanbul/lib/cli.js --hook-run-in-context cover node_modules/mocha/bin/_mocha -- -R spec --recursive test",
+    "prepublish": "gulp compile-all"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lycophron/lycophron.git"
+  },
+  "keywords": [
+    "anagram",
+    "words",
+    "game",
+    "multiplayer",
+    "competition"
+  ],
+  "author": "Zsolt Lattmann <zsolt.lattmann@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/lycophron/lycophron/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "commander": "=2.7.1",
+    "compression": "=1.4.3",
+    "cookie-parser": "=1.3.4",
+    "debug": "=2.1.3",
+    "express": "=4.12.2",
+    "express-session": "=1.10.3",
+    "glob": "=5.0.3",
+    "nedb": "=1.1.1",
+    "passport": "=0.2.1",
+    "passport-google-oauth": "=0.2.0",
+    "superagent": "=1.1.0",
+    "winston": "=0.9.0"
+  },
+  "devDependencies": {
+    "chai": "^2.1.0",
+    "chance": "^0.7.3",
+    "gulp": "^3.8.11",
+    "gulp-browserify": "^0.5.1",
+    "gulp-jshint": "^1.9.2",
+    "gulp-react": "^3.0.0",
+    "gulp-shell": "^0.4.0",
+    "istanbul": "^0.3.6",
+    "jscs": "^1.11.3",
+    "jshint-stylish": "^1.0.1",
+    "mocha": "^2.2.1",
+    "run-sequence": "^1.0.2"
+  }
+}

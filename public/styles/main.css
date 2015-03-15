@@ -1,0 +1,66 @@
+/* we will either use styles in jsx, or put this into an scss file */
+body {
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    /*font-weight: lighter;*/
+
+    font-size: 20pt;
+
+    max-width: 980px;
+    height: 100%;
+
+    box-sizing: border-box;
+
+}
+
+.button:hover {
+    color: rgb(219, 177, 101);
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.tile {
+    display: inline-flex;
+    margin: 0.1ex;
+    padding: 0.2ex;
+    width: 5ex;
+    height: 5ex;
+    justify-content: center;
+    background-color: rgb(227, 204, 97);
+    align-items: center;
+}
+
+.tile:hover {
+    background-color: rgb(219, 177, 101);
+    cursor: pointer;
+}
+
+.tile.disabled {
+    background-color: rgb(180, 180, 180);
+    color: #777;
+    cursor: not-allowed;
+
+}
+
+.tile .letter {
+    font-size: 28pt;
+}
+
+.tile .value {
+    display: flex;
+    align-items: flex-end;
+    align-self: flex-end;
+    font-size: 16pt;
+}
+
+.vowels {
+    margin: 0.2ex 0;
+}
+
+.consonants {
+    margin: 0.2ex 0;
+}
+
+.letter-placeholder {
+    height: 10ex;
+    flex: 1;
+}

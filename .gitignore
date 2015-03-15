@@ -1,0 +1,18 @@
+.idea
+
+coverage/
+node_modules/
+build/
+
+# generated files
+locale/**/dict.json
+locale/info.json
+
+lycophron.conf
+
+*.log
+
+salts.json
+
+users.nedb
+users.json
