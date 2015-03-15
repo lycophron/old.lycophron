@@ -177,20 +177,20 @@ var Main = React.createClass({displayName: "Main",
 
         return (
             React.createElement("div", null, 
-                React.createElement("div", null, 
+                React.createElement("div", {className: "header"}, 
                     React.createElement("div", null, " Problem Identifier: ", this.state.solution.problemId, " "), 
                     React.createElement("div", null, " Problem: ", this.state.solution.problem.join(', '), " "), 
-                    React.createElement("div", null, " Solutions: ", this.state.solution.solution.length, " "), 
-                    React.createElement("div", {className: "button", onClick: this.actionNewProblem}, "New problem")
+                    React.createElement("div", null, " Solutions: ", this.state.solution.solution.length, " ", React.createElement("div", {className: "button", onClick: this.actionNewProblem}, "Create a new problem"), " ")
+
                 ), 
                 React.createElement("div", {className: "letters"}, 
                     React.createElement("div", {className: "consonants"}, 
                         tiles
                     ), 
 
-                    React.createElement("div", {className: "button", onClick: this.actionOnClear}, "Clear"), 
+                    React.createElement("div", {className: "button", onClick: this.actionOnClear}, "Clear picked tiles"), 
 
-                    React.createElement("div", null, 
+                    React.createElement("div", {className: "pickedTiles"}, 
                         pickedTiles
                     )
                 ), 

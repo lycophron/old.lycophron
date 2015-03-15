@@ -177,20 +177,20 @@ var Main = React.createClass({
 
         return (
             <div>
-                <div>
+                <div className="header">
                     <div> Problem Identifier: {this.state.solution.problemId} </div>
                     <div> Problem: {this.state.solution.problem.join(', ')} </div>
-                    <div> Solutions: {this.state.solution.solution.length} </div>
-                    <div className="button" onClick={this.actionNewProblem}>New problem</div>
+                    <div> Solutions: {this.state.solution.solution.length} <div className="button" onClick={this.actionNewProblem}>Create a new problem</div> </div>
+
                 </div>
                 <div className="letters">
                     <div className="consonants">
                         {tiles}
                     </div>
 
-                    <div className="button" onClick={this.actionOnClear}>Clear</div>
+                    <div className="button" onClick={this.actionOnClear}>Clear picked tiles</div>
 
-                    <div>
+                    <div className="pickedTiles">
                         {pickedTiles}
                     </div>
                 </div>

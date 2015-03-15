@@ -12,6 +12,14 @@ body {
 
 }
 
+.header {
+    color: #888;
+}
+
+.button {
+    display: inline-block;
+}
+
 .button:hover {
     color: rgb(219, 177, 101);
     cursor: pointer;
@@ -63,4 +71,10 @@ body {
 .letter-placeholder {
     height: 10ex;
     flex: 1;
+}
+
+.pickedTiles {
+    padding: 1ex 0;
+    min-height: 5ex;
+    background-color: #eee;
 }
