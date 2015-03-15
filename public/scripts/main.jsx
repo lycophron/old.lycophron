@@ -208,7 +208,7 @@ var Main = React.createClass({
 
 dict.initialize(function() {
     'use strict';
-
+    React.initializeTouchEvents(true);
     React.render(
         <Main dict={dict}/>,
         document.getElementById('content')

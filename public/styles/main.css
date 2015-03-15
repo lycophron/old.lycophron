@@ -9,6 +9,7 @@ body {
     height: 100%;
 
     box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 
 }
 
@@ -28,13 +29,16 @@ body {
 
 .tile {
     display: inline-flex;
+    display: -webkit-inline-flex;
     margin: 0.1ex;
     padding: 0.2ex;
     width: 5ex;
     height: 5ex;
     justify-content: center;
+    -webkit-justify-content: center;
     background-color: rgb(227, 204, 97);
     align-items: center;
+    -webkit-align-items: center;
 }
 
 .tile:hover {
@@ -55,8 +59,11 @@ body {
 
 .tile .value {
     display: flex;
+    display: -webkit-flex;
     align-items: flex-end;
+    -webkit-align-items: flex-end;
     align-self: flex-end;
+    -webkit-align-self: flex-end;
     font-size: 16pt;
 }
 
@@ -71,6 +78,7 @@ body {
 .letter-placeholder {
     height: 10ex;
     flex: 1;
+    -webkit-flex: 1;
 }
 
 .pickedTiles {
