@@ -31,7 +31,7 @@ gulp.task('jsx', function () {
 });
 
 // Basic usage
-gulp.task('browserify', ['jsx'], function () {
+gulp.task('browserify', ['update-dictionaries', 'jsx'], function () {
     'use strict';
 
     // copy over all required files
@@ -104,7 +104,7 @@ gulp.task('test_watch', ['test_cover'], function (cb) {
     return cb;
 });
 
-gulp.task('compile-all', ['update-dictionaries', 'browserify'], function () {
+gulp.task('compile-all', ['browserify'], function () {
     'use strict';
 
 });
