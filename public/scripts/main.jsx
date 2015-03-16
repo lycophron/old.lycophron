@@ -12,18 +12,6 @@
 var L = require('../../lib/lycophron'),
     dict = new L.Dictionary('hu-HU', true);
 
-
-var Word = React.createClass({
-    render: function () {
-        'use strict';
-        return (
-            <div>
-                {this.props.word}
-            </div>
-        );
-    }
-});
-
 var Tile = React.createClass({
     getInitialState: function () {
         'use strict';
@@ -57,7 +45,7 @@ var Main = React.createClass({
     getSolution: function () {
         'use strict';
 
-        return this.props.dict.getSolutionForProblem(this.props.dict.encodeArray(this.props.letters).join(''));
+        return this.props.dict.getSolutionForProblem(this.props.dict.encodeArray(this.state.letters).join(''));
     },
 
     getInitialState: function () {
@@ -71,7 +59,10 @@ var Main = React.createClass({
                 problem: [],
                 solution: []
             },
-            foundWords: []
+            foundWords: [],
+            words: [],
+            lastWord: '',
+            showSolutions: false
         };
     },
 
@@ -79,24 +70,102 @@ var Main = React.createClass({
         'use strict';
 
         var newState,
-            i;
+            i,
+            len;
 
-        this.props.letters = this.props.dict.drawLetters(10, 9, 0);
+        this.state.letters = this.props.dict.drawLetters(10, 9, 0);
 
         newState = {
             picked: [],
             enabledLetters: [],
             solution: this.getSolution(),
             foundWords: [],
-            percentage: 0
+            words: [],
+            lastWord: '',
+            percentage: 0,
+            showSolutions: false
         };
 
-        console.log(newState.solution);
+        //console.log(newState.solution);
 
-        for (i = 0; i < this.props.letters.length; i += 1) {
+        for (len in newState.solution.byLength) {
+            newState.words[len] = newState.words[len] || {found:[], solutions: []};
+            for (i = 0; i < newState.solution.byLength[len].length; i += 1) {
+                // get all decoded solutions
+                newState.words[len].solutions.push(newState.solution.byLength[len][i].d);
+            }
+            newState.words[len].allSolutions = newState.words[len].solutions.length;
+        }
+
+        newState.words.reverse();
+
+        for (i = 0; i < this.state.letters.length; i += 1) {
             newState.enabledLetters.push(true);
         }
 
+        this.setState(newState);
+    },
+
+    onKeyUp: function (event) {
+        'use strict';
+        var i,
+            lastLetter = this.state.picked.length > 0 ? this.state.picked[this.state.picked.length - 1] : '';
+
+        if (lastLetter) {
+            if (event.which === 8 /* backspace */) {
+                // put the last letter back
+                for (i = 0; i < this.state.letters.length; i += 1) {
+                    if (this.state.letters[i] === lastLetter &&
+                        this.state.enabledLetters[i] === false) {
+
+                        this.state.picked.splice(this.state.picked.length - 1, 1);
+                        this.state.enabledLetters[i] = true;
+                        this.setState(this.state);
+                        break;
+                    }
+                }
+            }
+        }
+    },
+
+    onKeyPress: function (event) {
+        'use strict';
+
+        var i;
+
+        this.state.showSolutions = false;
+        this.setState(this.state);
+
+        if (event.which === 13 /* enter */ ||
+            event.which === 32 /* space */) {
+
+            // clear
+            this.actionOnClear();
+
+        } else if (event.which === 63 /* ? */) {
+            // show solutions
+            this.state.showSolutions = true;
+            this.setState(this.state);
+        } else {
+            // try to pick a letter
+
+            for (i = 0; i < this.state.letters.length; i += 1) {
+                if ((this.state.letters[i] === String.fromCharCode(event.which) ||
+                    this.state.letters[i] === this.props.dict.decodeLetter(String.fromCharCode(event.which))) &&
+                    this.state.enabledLetters[i]) {
+
+                    this.actionOnClick(i);
+                    break;
+                }
+            }
+        }
+    },
+
+    actionShowSolutions: function () {
+        'use strict';
+
+        var newState = this.state;
+        newState.showSolutions = true;
         this.setState(newState);
     },
 
@@ -109,7 +178,7 @@ var Main = React.createClass({
         newState.picked = [];
         newState.enabledLetters = [];
 
-        for (i = 0; i < this.props.letters.length; i += 1) {
+        for (i = 0; i < this.state.letters.length; i += 1) {
             newState.enabledLetters.push(true);
         }
 
@@ -120,11 +189,14 @@ var Main = React.createClass({
         'use strict';
 
         var word,
-            newState = this.state;
+            newState = this.state,
+            w,
+            idx;
 
         if (this.state.enabledLetters[index]) {
-            newState.picked.push(this.props.letters[index]);
+            newState.picked.push(this.state.letters[index]);
             newState.enabledLetters[index] = false;
+            newState.showSolutions = false;
 
             word = newState.picked.join('');
 
@@ -134,6 +206,17 @@ var Main = React.createClass({
                 newState.foundWords = newState.foundWords.LUnique();
                 newState.foundWords.LSortByLength();
 
+                newState.lastWord = word;
+
+                w = newState.words[newState.words.length - 1 - newState.picked.length];
+                if (w.solutions.indexOf(word) > -1 &&
+                    w.found.indexOf(word) === -1) {
+
+                    w.found.push(word);
+
+                    idx = w.solutions.indexOf(word);
+                    w.solutions.splice(idx, 1);
+                }
 
                 if (newState.solution.solution.length > 0) {
                     newState.percentage = Math.floor(newState.foundWords.length / newState.solution.solution.length * 100);
@@ -150,15 +233,23 @@ var Main = React.createClass({
         'use strict';
 
         this.actionNewProblem();
+    },
 
-        //console.log(this.props.dict.getSolutionForProblem(this.props.dict.encodeArray(this.props.letters).join('')));
+    componentDidMount: function () {
+        'use strict';
+        React.findDOMNode(this.refs.myTextInput).focus();
+    },
+
+    actionMainOnClick: function () {
+        'use strict';
+        React.findDOMNode(this.refs.myTextInput).focus();
     },
 
     render: function () {
         'use strict';
 
         var self = this,
-            tiles = this.props.letters.map(function (letter, index) {
+            tiles = this.state.letters.map(function (letter, index) {
                 return (
                     <Tile actionOnClick={self.actionOnClick.bind(self, index)} ldisabled={!self.state.enabledLetters[index]} lvalue={self.props.dict.getLetterValue(letter)} letter={letter} key={index}/>
                 );
@@ -168,18 +259,28 @@ var Main = React.createClass({
                     <Tile lvalue={self.props.dict.getLetterValue(letter)} letter={letter} key={index}/>
                 );
             }),
-            words = this.state.foundWords.map(function (word, index) {
+            wordsByLength = this.state.words.map(function (elem, index) {
                 return (
-                    <Word word={word} key={index}/>
+                    <div key={index}>
+                        <div className="groupHeader">
+                            <span className="wordLength">{self.state.words.length - 1 - index}</span>
+                            <span className="solutions">{elem.found.length}/{elem.allSolutions}</span>
+                            <span className="percentage">{Math.floor(elem.found.length/elem.allSolutions * 100)}%</span>
+                        </div>
+                        <div>{elem.found.join(', ')}</div>
+                        <div className="remainingSolutions" style={self.state.showSolutions ? {} : {display: 'none'}}>{elem.solutions.join(', ')}</div>
+                    </div>
                 );
-            });
+            }),
+            inputStyle = {top: -100, left: -100, position: 'fixed'};
 
 
         return (
-            <div>
+            <div onClick={this.actionMainOnClick}>
+                <input onKeyUp={this.onKeyUp} onKeyPress={this.onKeyPress} type="text" ref="myTextInput" style={inputStyle}></input>
                 <div className="header">
                     <div> Problem Identifier: {this.state.solution.problemId} </div>
-                    <div> Problem: {this.state.solution.problem.join(', ')} </div>
+                    <div> Problem: {this.state.solution.problem.map(function (e) { return e + ' (' + self.props.dict.encodeLetter(e) + ')'; }).join(', ')} </div>
                     <div> Solutions: {this.state.solution.solution.length} <div className="button" onClick={this.actionNewProblem}>Create a new problem</div> </div>
 
                 </div>
@@ -196,8 +297,15 @@ var Main = React.createClass({
                 </div>
 
                 <div>
-                    <div>Found words: {this.state.foundWords.length} {this.state.percentage}% </div>
-                    <div>{words}</div>
+                    <div>
+                        Found words: {this.state.foundWords.length} {this.state.percentage}%
+                        Last word: {this.state.lastWord}
+                    </div>
+                    <div className="button" onClick={this.actionShowSolutions}>Show solutions</div>
+                    <div>{wordsByLength}</div>
+                    <div>All words:
+                        <div>{this.state.foundWords.join(', ')}</div>
+                    </div>
                 </div>
 
             </div>

@@ -147,6 +147,15 @@ describe('Lycophron module', function () {
                 expect(dict.decodeLetter('T')).to.equal('ty');
             });
 
+            it('encodes letters', function () {
+                expect(dict).to.have.property('decodeLetter');
+
+                expect(dict.encodeLetter('a')).to.equal('a');
+                expect(dict.encodeLetter('sz')).to.equal('S');
+                expect(dict.encodeLetter('dzs')).to.equal('P');
+                expect(dict.encodeLetter('ty')).to.equal('T');
+            });
+
             it('gets all letters', function () {
                 var allLetters;
 

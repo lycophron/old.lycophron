@@ -10,6 +10,7 @@ var gulp = require('gulp'),
     sourcePattern = ['public/scripts/*.js', 'lib/**/*.js', 'locale/**/*.js'],
     allPatterns = sourcePattern.concat([
         'public/scripts/*.jsx',
+        'public/libs/*.jsx',
         'public/styles/**/*',
         'public/**/*.html',
         'public/auth/**/*',
@@ -36,6 +37,7 @@ gulp.task('browserify', ['update-dictionaries', 'jsx'], function () {
 
     // copy over all required files
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
+    gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
     gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
     gulp.src(['public/*.html']).pipe(gulp.dest('build'));
     gulp.src(['locale/**/*.js*']).pipe(gulp.dest('build/locale'));
