@@ -6,6 +6,8 @@
 
 var config = {};
 
+config.production = false;
+
 config.server = {};
 config.server.hostname = 'localhost';
 config.server.port = 8100;

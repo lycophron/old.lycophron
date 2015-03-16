@@ -14,7 +14,7 @@ function start(config, done) {
         logger = new (winston.Logger)({
             // TODO: add transport options to configuration
             transports: [
-                new (winston.transports.Console)({ level: 'silly' }),
+                new (winston.transports.Console)({ level: 'silly', colorize: config.production === false, timestamp: true }),
                 new (winston.transports.File)({filename: 'server.log'})
             ]
         });
