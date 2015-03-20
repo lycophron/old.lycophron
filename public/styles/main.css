@@ -5,8 +5,11 @@ body {
 
     font-size: 20pt;
 
-    max-width: 980px;
+    max-width: 56ex;
     height: 100%;
+
+    margin-left: auto;
+    margin-right: auto;
 
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -87,25 +90,30 @@ body {
     background-color: #eee;
 }
 
+.group {
+    margin: 1ex 0;
+    background-color: #eee;
+}
 
-.groupHeader {
+.group .header {
+    color: #222;
     font-weight: bold;
 }
 
-.groupHeader .wordLength {
+.group .header .wordLength {
     width: 2ex;
     display: inline-block;
     text-align: right;
     padding: 0 1ex;
 }
 
-.groupHeader .solutions {
+.group .header .solutions {
     display: inline-block;
     width: 15ex;
     text-align: center;
 }
 
-.groupHeader .percentage {
+.group .header .percentage {
     width: 5ex;
     display: inline-block;
     text-align: right;
@@ -117,7 +125,11 @@ body {
     font-weight: bold;
 }
 
+.joker-selection.disabled {
+    display: none;
+}
 
+/* loading spinner */
 .loader {
     font-size: 10px;
     margin: 5em auto;

@@ -1,3 +1,4 @@
+/*globals require*/
 /**
  * @author lattmann / https://github.com/lattmann
  */
