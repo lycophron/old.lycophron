@@ -54,16 +54,18 @@ module.exports = {
         'ö': {value: 4, distribution: 2},
         'ő': {value: 7, distribution: 1},
         p: {value: 4, distribution: 2},
+        q: {value: 8, distribution: 0},
         r: {value: 1, distribution: 4},
         s: {value: 1, distribution: 3},
         sz: {value: 3, distribution: 2},
         t: {value: 1, distribution: 5},
         ty: {value: 10, distribution: 1},
-        v: {value: 3, distribution: 2},
         u: {value: 4, distribution: 2},
         'ú': {value: 7, distribution: 1},
         'ü': {value: 4, distribution: 2},
         'ű': {value: 7, distribution: 1},
+        v: {value: 3, distribution: 2},
+        w: {value: 10, distribution: 0},
         x: {value: 6, distribution: 0},
         y: {value: 2, distribution: 0},
         z: {value: 4, distribution: 2},
@@ -92,12 +94,14 @@ module.exports = {
             (letter === 'n') ||
             (letter === 'ny') ||
             (letter === 'p') ||
+            (letter === 'q') ||
             (letter === 'r') ||
             (letter === 's') ||
             (letter === 'sz') ||
             (letter === 't') ||
             (letter === 'ty') ||
             (letter === 'v') ||
+            (letter === 'w') ||
             (letter === 'x') ||
             (letter === 'y') ||
             (letter === 'z') ||
