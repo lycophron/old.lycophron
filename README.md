@@ -2,6 +2,12 @@
 # lycophron
 A stupid anagram solver supporting multiple languages with a few sample applications.
 
+## Important notes
+
+1. All languages contain a sample dictionary `locale/{lang}/default`, which is not an __official__ dictionary.
+2. You can add dictionaries that serve your needs.
+
+
 ## Getting started
 
 ### Development

@@ -128,91 +128,9 @@ module.exports = {
             (letter === 'ű');
     },
 
-
-    encodeAll: function (word) {
+    normalize: function (word) {
         'use strict';
 
-        var i,
-            j,
-            k,
-            currentLetter,
-            currentEncodedLetter,
-            doubleLetter,
-            tripleLetter,
-            currentEncodedDoubleLetter,
-            currentEncodedTripleLetter,
-            encodedWords = [],
-            doubleLetterWords = [],
-            tripleLetterWords = [];
-
-        encodedWords.push('');
-
-        for (i = 0; i < word.length; i += 1) {
-            currentLetter = word[i];
-
-            if (module.exports.encodeMap.hasOwnProperty(currentLetter)) {
-                currentEncodedLetter = module.exports.encodeMap[currentLetter];
-            } else {
-                currentEncodedLetter = currentLetter;
-            }
-
-            if (i < word.length - 1) {
-                doubleLetter = currentLetter + word[i + 1];
-                if (module.exports.encodeMap.hasOwnProperty(doubleLetter)) {
-                    currentEncodedDoubleLetter = module.exports.encodeMap[doubleLetter];
-                } else {
-                    currentEncodedDoubleLetter = '';
-                }
-            }
-
-            if (i < word.length - 2) {
-                tripleLetter = currentLetter + word[i + 1] + word[i + 2];
-                if (module.exports.encodeMap.hasOwnProperty(tripleLetter)) {
-                    currentEncodedTripleLetter = module.exports.encodeMap[tripleLetter];
-                } else {
-                    currentEncodedTripleLetter = '';
-                }
-            }
-
-
-            for (j = 0; j < encodedWords.length; j += 1) {
-                if (currentEncodedTripleLetter) {
-                    if (!tripleLetterWords[i + 3]) {
-                        tripleLetterWords[i + 3] = [];
-                    }
-                    tripleLetterWords[i + 3].push(encodedWords[j] + currentEncodedTripleLetter);
-                }
-                if (currentEncodedDoubleLetter) {
-                    if (!doubleLetterWords[i + 2]) {
-                        doubleLetterWords[i + 2] = [];
-                    }
-                    doubleLetterWords[i + 2].push(encodedWords[j] + currentEncodedDoubleLetter);
-                }
-                encodedWords[j] = encodedWords[j] + currentEncodedLetter;
-            }
-
-            for (j = 0; j < doubleLetterWords.length; j += 1) {
-
-                if (j === i + 1) {
-                    if (doubleLetterWords[j]) {
-                        for (k = 0; k < doubleLetterWords[j].length; k += 1) {
-                            encodedWords.push(doubleLetterWords[j][k]);
-                        }
-                    }
-                }
-            }
-
-            for (j = 0; j < tripleLetterWords.length; j += 1) {
-                if (j === i + 1) {
-                    if (tripleLetterWords[j]) {
-                        for (k = 0; k < tripleLetterWords[j].length; k += 1) {
-                            encodedWords.push(tripleLetterWords[j][k]);
-                        }
-                    }
-                }
-            }
-        }
-
-        return encodedWords;
+        return word.toLocaleLowerCase();
     }
 };
