@@ -163,7 +163,7 @@ describe('Lycophron module', function () {
 
                 allLetters = dict.getAllLetters();
                 expect(allLetters).to.be.instanceOf(Array);
-                expect(allLetters.length).to.equal(43);
+                expect(allLetters.length).to.equal(45);
             });
 
             it('gets letter values', function () {
