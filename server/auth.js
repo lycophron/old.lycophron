@@ -74,6 +74,7 @@ function init(app, logger, config) {
                 return;
             } else {
                 // if user on the list, pass to the next route the request
+                logger.info('Successful login ' + req.user.displayName + ' ' + req.user.emails[0].value);
                 return next();
             }
         }
