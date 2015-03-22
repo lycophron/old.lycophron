@@ -12,8 +12,12 @@
             {{solutions.lang}}
             {{solutions.typeName}}
             {{solutions.solution.length}}
-
         </div>
+
+        <tile-group tiles="problemTiles"></tile-group>
+
+
+        <tile-group ng-if="showJoker" tiles="testTiles" joker="true"></tile-group>
     </div>
 
 </div>

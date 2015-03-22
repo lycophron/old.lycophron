@@ -7,12 +7,13 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
-    sourcePattern = ['public/scripts/*.js', 'public/app/**/*', 'lib/**/*.js', 'locales/**/*.js'],
+    sourcePattern = ['public/scripts/*.js', 'public/app/**/*.js', '!public/app/**/templates.js', 'lib/**/*.js', 'locales/**/*.js'],
     websitePattern = sourcePattern.concat([
         'locales/**/translation.json',
         'public/scripts/*.jsx',
         'public/libs/*.jsx',
         'public/styles/**/*',
+        'public/app/**/*.css',
         'public/**/*.html',
         'public/auth/**/*'
     ]),
@@ -22,7 +23,10 @@ var gulp = require('gulp'),
     ]),
     browserify = require('gulp-browserify'),
     react = require('gulp-react'),
-    rimraf = require('rimraf');
+    rimraf = require('rimraf'),
+
+    templateCache = require('gulp-angular-templatecache');
+
 
 gulp.task('delete-build', function (cb) {
     'use strict';
@@ -41,13 +45,19 @@ gulp.task('jsx', function () {
 });
 
 // Basic usage
-gulp.task('browserify-website', ['jsx'], function () {
+
+gulp.task('templates', function () {
+    gulp.src('public/app/**/*.html')
+        .pipe(templateCache())
+        .pipe(gulp.dest('public/app/'));
+});
+
+gulp.task('browserify-website', ['jsx', 'templates'], function () {
     'use strict';
 
     // copy over all required files
     gulp.src(['locales/**/*.js*']).pipe(gulp.dest('build/locales'));
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
-    gulp.src(['public/app/**/*.html']).pipe(gulp.dest('build/app'));
     gulp.src(['public/app/**/*.css']).pipe(gulp.dest('build/app'));
     gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
     gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
@@ -68,6 +78,7 @@ gulp.task('browserify-website', ['jsx'], function () {
         }))
         .pipe(gulp.dest('build/auth/'));
 
+    // angular app
     gulp.src('public/app/app.js')
         .pipe(browserify({
             insertGlobals: true,

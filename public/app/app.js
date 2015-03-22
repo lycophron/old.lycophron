@@ -1,9 +1,16 @@
-/*globals angular, console*/
+/*globals angular, console, require*/
 /**
  * @author lattmann / https://github.com/lattmann
  */
 
+// TODO: this file has to be split and refactored!!!
+
+// application library
 var L = require('../../lib/lycophron');
+
+// html templates
+angular.module('templates', []);
+require('./templates');
 
 angular.module('jm.i18next').config(function ($i18nextProvider) {
     'use strict';
@@ -19,7 +26,7 @@ angular.module('jm.i18next').config(function ($i18nextProvider) {
 
 });
 
-angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
+angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'templates'])
 
     .config(function ($mdThemingProvider) {
         'use strict';
@@ -102,7 +109,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
     .controller('HomeController', function ($scope, $routeParams) {
         'use strict';
 
-        $scope.name = "HomeController";
+        $scope.name = 'HomeController';
         $scope.params = $routeParams;
 
         console.log($scope.name);
@@ -111,7 +118,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
     .controller('StatsController', function ($scope, $routeParams) {
         'use strict';
 
-        $scope.name = "StatsController";
+        $scope.name = 'StatsController';
         $scope.params = $routeParams;
 
         console.log($scope.name);
@@ -120,10 +127,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
     .controller('GameSinglePlayerController', function ($scope, $routeParams, $timeout) {
         'use strict';
 
-        $scope.name = "GameSinglePlayerController";
+        $scope.name = 'GameSinglePlayerController';
         $scope.params = $routeParams;
 
-        // TODO: check route params!
+        // TODO: validate route params!
 
         console.log($scope.name);
         console.log($scope.params);
@@ -133,6 +140,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
         $scope.longProcess = false;
 
         $scope.state = 'game.loading';
+
+        // ui related
+        $scope.showJoker = true;
 
         // game related
         $scope.solutions = {};
@@ -149,6 +159,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
             $scope.longProcess = true;
 
             dict.initialize(function () {
+                $scope.testTiles = dict.getAllLetters().map(function (letter, index) {
+                    return {letter: letter, value: dict.getLetterValue(letter)};
+                });
+
                 $timeout(function () {
                     $scope.state = 'game.drawingLetters';
                     $scope.longProcess = false;
@@ -166,6 +180,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
                             $timeout(function () {
                                 $scope.gameIsReady = true;
 
+                                $scope.problemTiles = $scope.letters.map(function (letter, index) {
+                                    return {letter: letter, value: 1};
+                                });
+
                                 //console.log($scope.solutions);
                             }, timeoutValue);
                         }, timeoutValue);
@@ -178,7 +196,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
     .controller('SingleWizardController', function ($scope, $routeParams, $http) {
         'use strict';
 
-        $scope.name = "SingleWizardController";
+        $scope.name = 'SingleWizardController';
         $scope.params = $routeParams;
 
         // TODO: extract business logic min/max/default num of consonants, vowels, jokers
@@ -227,13 +245,39 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
         };
     })
 
+    .directive('tile', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            scope: {
+                tile: '=tile',
+                joker: '=joker'
+            },
+            templateUrl: 'tile.html'
+        };
+    })
+
+    .directive('tileGroup', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            scope: {
+                tiles: '=tiles',
+                joker: '=joker'
+            },
+            templateUrl: 'tileGroup.html'
+        };
+    })
+
 
     .config(function ($routeProvider, $locationProvider) {
         'use strict';
 
         $routeProvider
             .when('/game/:gameType/single/:lang/:type/', {
-                templateUrl: '/app/game.html',
+                templateUrl: 'game.html',
                 controller: 'GameSinglePlayerController',
                 resolve: {
                     // I will cause a 1 second delay
@@ -245,15 +289,15 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
                 }
             })
             .when('/game/single/wizard', {
-                templateUrl: '/app/singleWizard.html',
+                templateUrl: 'singleWizard.html',
                 controller: 'SingleWizardController'
             })
             .when('/home/', {
-                templateUrl: '/app/home.html',
+                templateUrl: 'home.html',
                 controller: 'HomeController'
             })
             .when('/stats/', {
-                templateUrl: '/app/stats.html',
+                templateUrl: 'stats.html',
                 controller: 'StatsController'
             })
             .when('/auth/logout', {

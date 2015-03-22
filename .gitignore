@@ -4,6 +4,9 @@ coverage/
 node_modules/
 build/
 
+# compiled angular templates
+public/app/templates.js
+
 # generated files
 locales/**/dict.json
 locales/info.json
