@@ -7,7 +7,7 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
-    sourcePattern = ['public/scripts/*.js', 'lib/**/*.js', 'locales/**/*.js'],
+    sourcePattern = ['public/scripts/*.js', 'public/app/**/*', 'lib/**/*.js', 'locales/**/*.js'],
     websitePattern = sourcePattern.concat([
         'locales/**/translation.json',
         'public/scripts/*.jsx',
@@ -41,6 +41,7 @@ gulp.task('browserify-website', ['jsx'], function () {
     // copy over all required files
     gulp.src(['locales/**/translation.json']).pipe(gulp.dest('build/locales'));
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
+    gulp.src(['public/app/**/*']).pipe(gulp.dest('build/app'));
     gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
     gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
     gulp.src(['public/*.html']).pipe(gulp.dest('build'));

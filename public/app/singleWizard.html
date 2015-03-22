@@ -1,0 +1,72 @@
+<div>
+    <p ng-i18next="singlePlayer.info"></p>
+
+    <div layout="column" layout-align="center center">
+
+        <md-select ng-disabled="true" ng-model="gameType" md-on-open="loadLanguages()">
+            <md-select-label>{{ gameType ? gameType : 'Choose a game type' }}</md-select-label>
+            <md-option ng-value="gameType" ng-repeat="gameType in gameTypes">
+                <div md-no-ink class="md-primary">{{gameType}}</div>
+                <md-divider ng-if="!$last"></md-divider>
+            </md-option>
+        </md-select>
+
+        <md-select ng-model="language" md-on-open="loadLanguages()">
+            <md-select-label>{{ language ? language.fullName : 'Choose a language' }}</md-select-label>
+            <md-option ng-value="language" ng-repeat="language in languages">
+                <div md-no-ink class="md-primary">{{language.fullName}}</div>
+                <label ng-disabled="true">Number of words: {{language.numWords}}</label>
+
+                <md-divider ng-if="!$last"></md-divider>
+            </md-option>
+        </md-select>
+
+        <p ng-show="!language" class="result">Select a language</p>
+
+    </div>
+
+    <div ng-show="language">
+        <div layout>
+            <div flex layout layout-align="center center">
+                <span ng-i18next="consonantsText"></span>
+            </div>
+
+            <div flex layout layout-align="center center">
+                <span>{{numConsonants}}</span>
+            </div>
+
+            <md-slider flex class="md-primary" md-discrete ng-model="numConsonants" step="1" min="3" max="10"
+                       aria-label="Consonants"></md-slider>
+        </div>
+        <div layout>
+            <div flex layout layout-align="center center">
+                <span ng-i18next="vowelsText"></span>
+            </div>
+
+            <div flex layout layout-align="center center">
+                <span>{{numVowels}}</span>
+            </div>
+
+            <md-slider flex class="md-primary" md-discrete ng-model="numVowels" step="1" min="2" max="9"
+                       aria-label="Vowels"></md-slider>
+        </div>
+        <div layout>
+            <div flex layout layout-align="center center">
+                <span ng-i18next="jokersText"></span>
+            </div>
+
+            <div flex layout layout-align="center center">
+                <span>{{numJokers}}</span>
+            </div>
+
+            <md-slider flex class="md-primary" md-discrete ng-model="numJokers" step="1" min="0" max="1"
+                       aria-label="Jokers"></md-slider>
+        </div>
+
+        <div layout>
+            <md-button flex layout layout-align="center center" aria-label="CreateNewGame"
+                       href="/game/{{gameType}}/single/{{language.name}}/{{language.type}}/?consonants={{numConsonants}}&vowels={{numVowels}}&jokers={{numJokers}}"
+                       ng-i18next="createNewGame"></md-button>
+        </div>
+    </div>
+</div>

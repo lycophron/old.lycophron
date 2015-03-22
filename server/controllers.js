@@ -22,8 +22,22 @@ function init(app, logger) {
     //    next();
     //});
 
+    logger.debug('Adding REST API rules');
+    app.use(/api\/*/, function (req, res, next) {
+        res.send(501);
+    });
+
+
     logger.debug('Adding static file rules for build');
     app.use(express.static(__dirname + '/../build'));
+
+
+    logger.debug('Adding angular specific rules to support HTML5 routing');
+    app.use(function (req, res) {
+        return res.redirect(req.protocol + '://' + req.get('Host') + '/#' + req.url);
+    });
+
+
 
     logger.debug('Controllers are ready');
 }
