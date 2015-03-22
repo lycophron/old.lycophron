@@ -74,7 +74,6 @@ function init(app, logger, config) {
                 return;
             } else {
                 // if user on the list, pass to the next route the request
-                logger.info('Successful login ' + req.user.displayName + ' ' + req.user.emails[0].value);
                 return next();
             }
         }
@@ -170,6 +169,7 @@ function init(app, logger, config) {
 
     logger.debug('Adding generic /auth/ rules');
     app.get('/auth/success', function (req, res) {
+        logger.info('Successful login ' + req.user.displayName + ' ' + req.user.emails[0].value);
         res.redirect(req.session.authRedirect || '/');
     });
 
