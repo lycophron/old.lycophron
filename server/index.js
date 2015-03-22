@@ -7,6 +7,7 @@ function start(config, done) {
     'use strict';
 
     var fs = require('fs'),
+        path = require('path'),
 
         salts,
 
@@ -40,10 +41,25 @@ function start(config, done) {
         app.use(cookieParser());
         app.use(compression({threshold: 512}));
 
+        //app.use(function (req, res, next) {
+        //    logger.debug(req.url);
+        //    next();
+        //});
+
         app.get('/favicon.ico', function (req, res, next) {
             res.writeHead(200);
             res.end();
         });
+
+        logger.debug('Adding static file rules for build/libs/ no auth is required');
+        app.use('/libs/', express.static(__dirname + '/../build/libs/'));
+
+        logger.debug('Adding static file rules for /locales\/.+\/translation.json/ no auth is required');
+        app.use(/^\/locales\/.+\/translation.json$/, function (req, res, next) {
+            res.sendFile(path.normalize(path.join(__dirname, '..', 'build', req.baseUrl)));
+        });
+
+        logger.debug('No auth rules added');
 
         logger.debug('Adding authentication to app ...');
         auth.init(app, logger, config);

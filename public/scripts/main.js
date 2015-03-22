@@ -29,7 +29,7 @@ var Tile = React.createClass({displayName: "Tile",
         'use strict';
 
         var className = 'tile ' + (this.props.ldisabled ? 'disabled' : '');
-        /*jshint ignore:saltsReady */
+        /*jshint ignore:start */
         return (
             React.createElement("div", {className: className, onClick: this.handleClick}, 
                 React.createElement("div", {className: "letter"}, this.props.letter), 
@@ -65,7 +65,7 @@ var JokerSelection = React.createClass({displayName: "JokerSelection",
             });
 
 
-        /*jshint ignore:saltsReady */
+        /*jshint ignore:start */
         return (
             React.createElement("div", {className: className}, 
                 allLetters
@@ -244,6 +244,8 @@ var Main = React.createClass({displayName: "Main",
     },
 
     checkWord: function () {
+        'use strict';
+
         var word,
             newState = this.state,
             w,

@@ -1,0 +1,17 @@
+{
+  "login": {
+    "header": "Bejelentkezés Lycophron.org weboldalra",
+    "info": "Jelenleg ez az alkalmazás 'alpha' tesztelés alatt áll, csak pár teszterek férhetnek hozzá. Ha nem sikerül belépned, akkor Te nem vagy a teszterek között. Kérlek látogass vissza később.",
+    "google": "Google fiókom használata",
+
+
+    "failedHeader": "Sikertelen bejelentkezés",
+
+    "failedInfo": "Kedves {{username}}. Sajnáljuk, de az oldal tartalmához nem férhetsz hozzá.",
+
+    "mainPageText": "Vissza a főoldalra",
+    "loginText": "Vissza a bejelentkezéshez",
+    "logoutText": "Kilépés"
+  }
+
+}

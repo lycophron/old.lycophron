@@ -1,0 +1,17 @@
+{
+  "login": {
+    "header": "Login to Lycophron.org",
+    "info": "Currently this application is under alpha testing and it is open to a limited number of people. If you cannot login that means you are not an alpha tester. Please come back later.",
+    "google": "Use a Google Account",
+
+
+    "failedHeader": "Login failed",
+
+    "failedInfo": "Dear {{username}} Sorry, but you cannot access to this site.",
+
+    "mainPageText": "Back to main page",
+    "loginText": "Back to login page",
+    "logoutText": "Logout"
+
+  }
+}

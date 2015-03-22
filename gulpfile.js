@@ -7,15 +7,18 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
-    sourcePattern = ['public/scripts/*.js', 'lib/**/*.js', 'locale/**/*.js'],
-    allPatterns = sourcePattern.concat([
+    sourcePattern = ['public/scripts/*.js', 'lib/**/*.js', 'locales/**/*.js'],
+    websitePattern = sourcePattern.concat([
+        'locales/**/translation.json',
         'public/scripts/*.jsx',
         'public/libs/*.jsx',
         'public/styles/**/*',
         'public/**/*.html',
-        'public/auth/**/*',
-        'locale/**/*.js',
-        'locale/**/*.tar.gz'
+        'public/auth/**/*'
+    ]),
+    allPatterns = websitePattern.concat([
+        'locales/**/*.js',
+        'locales/**/*.tar.gz'
     ]),
     browserify = require('gulp-browserify'),
     react = require('gulp-react');
@@ -32,15 +35,15 @@ gulp.task('jsx', function () {
 });
 
 // Basic usage
-gulp.task('browserify', ['update-dictionaries', 'jsx'], function () {
+gulp.task('browserify-website', ['jsx'], function () {
     'use strict';
 
     // copy over all required files
+    gulp.src(['locales/**/translation.json']).pipe(gulp.dest('build/locales'));
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
     gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
     gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
     gulp.src(['public/*.html']).pipe(gulp.dest('build'));
-    gulp.src(['locale/**/*.js*']).pipe(gulp.dest('build/locale'));
 
     // Single entry point to browserify
     gulp.src('public/scripts/app.js')
@@ -56,6 +59,15 @@ gulp.task('browserify', ['update-dictionaries', 'jsx'], function () {
             debug : true
         }))
         .pipe(gulp.dest('build/auth/'));
+});
+
+gulp.task('browserify-dicts', ['update-dictionaries', 'jsx'], function () {
+    'use strict';
+    gulp.src(['locales/**/*.js*']).pipe(gulp.dest('build/locales'));
+});
+
+gulp.task('browserify', ['browserify-dicts', 'browserify-website'], function () {
+    'use strict';
 });
 
 gulp.task('lint', function () {
@@ -88,6 +100,20 @@ gulp.task('jsx-build', function () {
     return gulp.src('./public/scripts/main.jsx')
         .pipe(react({harmony: true}))
         .pipe(gulp.dest('./public/scripts/'));
+});
+
+gulp.task('register-watchers-website', [], function (cb) {
+    'use strict';
+
+    gulp.watch(websitePattern, ['browserify-website', 'lint']);
+
+    return cb;
+});
+
+gulp.task('dev-website', function (cb) {
+    'use strict';
+
+    runSequence('browserify-website', 'register-watchers-website', cb);
 });
 
 gulp.task('register-watchers', [], function (cb) {

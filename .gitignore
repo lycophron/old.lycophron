@@ -5,8 +5,8 @@ node_modules/
 build/
 
 # generated files
-locale/**/dict.json
-locale/info.json
+locales/**/dict.json
+locales/info.json
 
 lycophron.conf
 
