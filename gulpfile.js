@@ -21,8 +21,14 @@ var gulp = require('gulp'),
         'locales/**/*.tar.gz'
     ]),
     browserify = require('gulp-browserify'),
-    react = require('gulp-react');
+    react = require('gulp-react'),
+    rimraf = require('rimraf');
 
+gulp.task('delete-build', function (cb) {
+    'use strict';
+
+    rimraf('build/', cb);
+});
 gulp.task('update-dictionaries', shell.task(['node lib/update_dictionaries.js']));
 
 
@@ -39,9 +45,10 @@ gulp.task('browserify-website', ['jsx'], function () {
     'use strict';
 
     // copy over all required files
-    gulp.src(['locales/**/translation.json']).pipe(gulp.dest('build/locales'));
+    gulp.src(['locales/**/*.js*']).pipe(gulp.dest('build/locales'));
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
-    gulp.src(['public/app/**/*']).pipe(gulp.dest('build/app'));
+    gulp.src(['public/app/**/*.html']).pipe(gulp.dest('build/app'));
+    gulp.src(['public/app/**/*.css']).pipe(gulp.dest('build/app'));
     gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
     gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
     gulp.src(['public/*.html']).pipe(gulp.dest('build'));
@@ -49,17 +56,24 @@ gulp.task('browserify-website', ['jsx'], function () {
     // Single entry point to browserify
     gulp.src('public/scripts/app.js')
         .pipe(browserify({
-            insertGlobals : true,
-            debug : true
+            insertGlobals: true,
+            debug: true
         }))
         .pipe(gulp.dest('build/scripts'));
 
     gulp.src('public/auth/**/*.js')
         .pipe(browserify({
-            insertGlobals : true,
-            debug : true
+            insertGlobals: true,
+            debug: true
         }))
         .pipe(gulp.dest('build/auth/'));
+
+    gulp.src('public/app/app.js')
+        .pipe(browserify({
+            insertGlobals: true,
+            debug: true
+        }))
+        .pipe(gulp.dest('build/app/'));
 });
 
 gulp.task('browserify-dicts', ['update-dictionaries', 'jsx'], function () {
@@ -114,7 +128,7 @@ gulp.task('register-watchers-website', [], function (cb) {
 gulp.task('dev-website', function (cb) {
     'use strict';
 
-    runSequence('browserify-website', 'register-watchers-website', cb);
+    runSequence('delete-build', 'browserify-website', 'register-watchers-website', cb);
 });
 
 gulp.task('register-watchers', [], function (cb) {
@@ -128,7 +142,7 @@ gulp.task('register-watchers', [], function (cb) {
 gulp.task('dev', function (cb) {
     'use strict';
 
-    runSequence('browserify', 'register-watchers', cb);
+    runSequence('delete-build', 'browserify', 'register-watchers', cb);
 });
 
 gulp.task('test_cover', shell.task(['npm run test_cover']));
@@ -140,9 +154,10 @@ gulp.task('test_watch', ['test_cover'], function (cb) {
     return cb;
 });
 
-gulp.task('compile-all', ['browserify'], function () {
+gulp.task('compile-all', function (cb) {
     'use strict';
 
+    runSequence('delete-build', 'browserify', cb);
 });
 
 gulp.task('default', [/*'js',*/ 'lint'], build);

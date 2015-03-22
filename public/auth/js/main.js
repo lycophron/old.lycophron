@@ -9,8 +9,9 @@ angular.module('jm.i18next').config(function ($i18nextProvider) {
     $i18nextProvider.options = {
         //lng: 'de', // If not given, i18n will detect the browser language.
         fallbackLng: 'en', // Default is dev
-        useCookie: false,
+        useCookie: true,
         useLocalStorage: false,
+        localStorageExpirationTime: 86400000, // in ms, default 1 week
         resGetPath: '../../locales/__lng__/__ns__.json'
     };
 

@@ -1,3 +1,19 @@
 <div>
- TODO: {{name}}
+    <div ng-hide="gameIsReady" layout="column" layout-fill layout-align="space-around center">
+        <md-progress-circular class="md-hue-2" md-mode="indeterminate"></md-progress-circular>
+        <md-label ng-i18next="{{state}}"></md-label>
+        <md-label ng-show="longProcess" ng-i18next="mayTakeAFewSeconds"></md-label>
+    </div>
+    <div ng-show="gameIsReady" layout="column" layout-align="space-around center">
+        <div>
+            TODO: show the game info nicer
+            {{letters}}
+            {{solutions.problemId}}
+            {{solutions.lang}}
+            {{solutions.typeName}}
+            {{solutions.solution.length}}
+
+        </div>
+    </div>
+
 </div>

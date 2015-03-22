@@ -3,20 +3,39 @@
  * @author lattmann / https://github.com/lattmann
  */
 
+var L = require('../../lib/lycophron');
+
 angular.module('jm.i18next').config(function ($i18nextProvider) {
     'use strict';
 
     $i18nextProvider.options = {
         //lng: 'de', // If not given, i18n will detect the browser language.
         fallbackLng: 'en', // Default is dev
-        useCookie: false,
+        useCookie: true,
         useLocalStorage: false,
+        localStorageExpirationTime: 86400000, // in ms, default 1 week
         resGetPath: '../../locales/__lng__/__ns__.json'
     };
 
 });
 
 angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
+
+    .config(function ($mdThemingProvider) {
+        'use strict';
+        //$mdThemingProvider.theme('default')
+        //    .primaryPalette('brown', {
+        //        //'default': '400', // by default use shade 400 from the amber palette for primary intentions
+        //        //'hue-1': '100', // use shade 100 for the <code>md-hue-1</code> class
+        //        //'hue-2': '600', // use shade 600 for the <code>md-hue-2</code> class
+        //        //'hue-3': 'A100' // use shade A100 for the <code>md-hue-3</code> class
+        //    })
+        //    // If you specify less than all of the keys, it will inherit from the
+        //    // default shades
+        //    .accentPalette('orange', {
+        //        'default': '200' // use shade 200 for default, and keep all other shades the same
+        //    });
+    })
 
     .controller('MainController', function ($scope, $route, $routeParams, $location, $mdSidenav, $i18next, $timeout) {
         'use strict';
@@ -26,8 +45,38 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
 
+        $scope.menuItems = [
+            {
+                url: '/home/',
+                text: 'menu.home'
+            },
+            {
+                url: '/game/single/wizard/',
+                text: 'menu.singlePlayer'
+            },
+            //{
+            //    url: '/game/multiplayer/wizard/',
+            //    text: 'menu.multiplayer'
+            //},
+            {
+                url: '/stats/',
+                text: 'menu.statistics'
+            },
+            {
+                url: '/auth/logout/',
+                text: 'login.logoutText'
+            }
+        ];
+
+        $scope.selected = $scope.menuItems[0];
+
         $scope.toggleSidenav = function (menuId) {
             $mdSidenav(menuId).toggle();
+        };
+
+        $scope.selectMenuItem = function (menuItem) {
+            $scope.selected = angular.isNumber(menuItem) ? $scope.menuItems[menuItem] : menuItem;
+            $mdSidenav('left').close();
         };
 
         $scope.i18nextReady = false;
@@ -45,6 +94,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
             $i18next.options.lng = lng;
             //console.log($i18next.debugMsg[$i18next.debugMsg.length - 1]);
         };
+
+        // TODO: get user
+        //$scope.username = 'anonymous';
     })
 
     .controller('HomeController', function ($scope, $routeParams) {
@@ -65,14 +117,62 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
         console.log($scope.name);
     })
 
-    .controller('GameSinglePlayerController', function ($scope, $routeParams) {
+    .controller('GameSinglePlayerController', function ($scope, $routeParams, $timeout) {
         'use strict';
 
         $scope.name = "GameSinglePlayerController";
         $scope.params = $routeParams;
 
+        // TODO: check route params!
+
         console.log($scope.name);
         console.log($scope.params);
+
+
+        $scope.gameIsReady = false;
+        $scope.longProcess = false;
+
+        $scope.state = 'game.loading';
+
+        // game related
+        $scope.solutions = {};
+        $scope.letters = [];
+
+
+        // FIXME: turn timeouts into promises
+        // FIXME: add failure states
+        // 50ms, let the browser draw our updated state
+        var timeoutValue = 20;
+        $timeout(function () {
+            var dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);
+            $scope.state = 'game.downloading';
+            $scope.longProcess = true;
+
+            dict.initialize(function () {
+                $timeout(function () {
+                    $scope.state = 'game.drawingLetters';
+                    $scope.longProcess = false;
+
+                    $timeout(function () {
+                        $scope.letters = dict.drawLetters($scope.params.consonants, $scope.params.vowels, $scope.params.jokers);
+                        $scope.state = 'game.solvingProblem';
+                        $scope.longProcess = true;
+
+                        $timeout(function () {
+                            $scope.solutions = dict.getSolutionForProblem(dict.encodeArray($scope.letters).join(''));
+                            $scope.state = 'game.ready';
+                            $scope.longProcess = false;
+
+                            $timeout(function () {
+                                $scope.gameIsReady = true;
+
+                                //console.log($scope.solutions);
+                            }, timeoutValue);
+                        }, timeoutValue);
+                    }, timeoutValue);
+                }, timeoutValue);
+            });
+        }, timeoutValue);
     })
 
     .controller('SingleWizardController', function ($scope, $routeParams, $http) {
@@ -169,7 +269,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next'])
                 }
             })
             //.otherwise({ redirectTo: '/game/single/wizard/' });
-            .otherwise({ redirectTo: '/home/' });
+            .otherwise({redirectTo: '/home/'});
 
         $locationProvider.html5Mode({
             enabled: true,

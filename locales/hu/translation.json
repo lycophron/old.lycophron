@@ -1,4 +1,18 @@
 {
+  "oldGame": "Régi játék megnyitása",
+
+  "chooseLanguage": "Válassz nyelvet",
+
+  "numWordsText": "Szavak száma:",
+
+  "consonantsText": "Mássalhangzók",
+  "vowelsText": "Magánhangzók",
+  "jokersText": "Jokerek",
+
+  "createNewGame": "Új játék kezdése",
+
+  "mayTakeAFewSeconds": "Ez eltarthat néhány másodpercig.",
+
   "login": {
     "header": "Bejelentkezés Lycophron.org weboldalra",
     "info": "Jelenleg ez az alkalmazás 'alpha' tesztelés alatt áll, csak pár teszterek férhetnek hozzá. Ha nem sikerül belépned, akkor Te nem vagy a teszterek között. Kérlek látogass vissza később.",
@@ -12,6 +26,29 @@
     "mainPageText": "Vissza a főoldalra",
     "loginText": "Vissza a bejelentkezéshez",
     "logoutText": "Kilépés"
-  }
+  },
 
+  "menu": {
+    "home": "Kezdőlap",
+    "singlePlayer": "Egyjátékos",
+    "multiplayer": "Több játékos",
+    "statistics": "Statisztikák"
+
+  },
+
+  "home": {
+    "welcomeMessage": "Ez a weboldal még fejlesztés alatt áll. Navigálj a régi weboldalra új játék kezdéséhez."
+  },
+
+  "game": {
+    "loading": "Betöltés ...",
+    "downloading": "Letöltés ...",
+    "drawingLetters": "Betűk húzása a zsákból ...",
+    "solvingProblem": "Probléma megoldása ...",
+    "ready": "Kész"
+  },
+
+  "singlePlayer": {
+    "info": "Varázsló egyjátékos játék létrehozásához. Válassz beállitásokat majd kattints a gombra."
+  }
 }

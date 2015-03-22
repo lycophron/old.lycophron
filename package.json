@@ -53,6 +53,7 @@
     "jscs": "^1.11.3",
     "jshint-stylish": "^1.0.1",
     "mocha": "^2.2.1",
+    "rimraf": "^2.3.2",
     "run-sequence": "^1.0.2"
   }
 }

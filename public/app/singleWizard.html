@@ -12,16 +12,17 @@
         </md-select>
 
         <md-select ng-model="language" md-on-open="loadLanguages()">
-            <md-select-label>{{ language ? language.fullName : 'Choose a language' }}</md-select-label>
+            <md-select-label>
+                <span ng-if="language">{{language.fullName}}</span>
+                <span ng-if="!language" ng-i18next="chooseLanguage"></span>
+            </md-select-label>
             <md-option ng-value="language" ng-repeat="language in languages">
                 <div md-no-ink class="md-primary">{{language.fullName}}</div>
-                <label ng-disabled="true">Number of words: {{language.numWords}}</label>
+                <label ng-disabled="true"><span ng-i18next="numWordsText"></span> {{language.numWords}}</label>
 
                 <md-divider ng-if="!$last"></md-divider>
             </md-option>
         </md-select>
-
-        <p ng-show="!language" class="result">Select a language</p>
 
     </div>
 
@@ -65,6 +66,7 @@
 
         <div layout>
             <md-button flex layout layout-align="center center" aria-label="CreateNewGame"
+                       class="md-raised md-primary"
                        href="/game/{{gameType}}/single/{{language.name}}/{{language.type}}/?consonants={{numConsonants}}&vowels={{numVowels}}&jokers={{numJokers}}"
                        ng-i18next="createNewGame"></md-button>
         </div>

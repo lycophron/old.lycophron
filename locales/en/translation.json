@@ -1,4 +1,18 @@
 {
+  "oldGame": "Open the old game",
+
+  "chooseLanguage": "Choose a language",
+
+  "numWordsText": "Number of words:",
+
+  "consonantsText": "Consonants",
+  "vowelsText": "Vowels",
+  "jokersText": "Jokers",
+
+  "createNewGame": "Create a new game",
+
+  "mayTakeAFewSeconds": "This may take a few seconds.",
+
   "login": {
     "header": "Login to Lycophron.org",
     "info": "Currently this application is under alpha testing and it is open to a limited number of people. If you cannot login that means you are not an alpha tester. Please come back later.",
@@ -13,5 +27,29 @@
     "loginText": "Back to login page",
     "logoutText": "Logout"
 
+  },
+
+  "menu": {
+    "home": "Home",
+    "singlePlayer": "Single Player",
+    "multiplayer": "Multiplayer",
+    "statistics": "Statistics"
+
+  },
+
+  "home": {
+    "welcomeMessage": "This website is still under construction. Please navigate to the old website if you like to play."
+  },
+
+  "game": {
+    "loading": "Loading ...",
+    "downloading": "Downloading ...",
+    "drawingLetters": "Drawing letters from bag ...",
+    "solvingProblem": "Solving problem ...",
+    "ready": "Done"
+  },
+
+  "singlePlayer": {
+    "info": "Wizard to create a new single player game. Select the options and click on the button below."
   }
 }
