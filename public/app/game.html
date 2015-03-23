@@ -14,10 +14,25 @@
             {{solutions.solution.length}}
         </div>
 
-        <tile-group tiles="problemTiles"></tile-group>
+        <tile-group tiles="problemTiles" on-selected="letterSelected"></tile-group>
 
+        <form name="problem" layout-fill>
+            <md-input-container>
+                <label ng-i18next="game.typeWordHere"></label>
+                <input autofocus="on" name="typedLetters" ng-model="typedLetters" ng-change="inputChanged()">
+                <!--<div ng-messages="projectForm.clientName.$error">-->
+                <!--<div ng-message="required">This is required.</div>-->
+                <!--</div>-->
+            </md-input-container>
+            <md-button aria-label="game.clearTiles"
+                       ng-disabled="typedLetters.length === 0"
+                       ng-i18next="game.clearTiles"
+                       ng-click="removeAllLetters()"></md-button>
+        </form>
 
-        <tile-group ng-if="showJoker" tiles="testTiles" joker="true"></tile-group>
+        <tile-group tiles="selectedTiles" on-selected="removeAllLetters"></tile-group>
+
+        <tile-group ng-if="showJoker" tiles="jokerTiles" joker="true" on-selected="jokerSelected"></tile-group>
     </div>
 
 </div>

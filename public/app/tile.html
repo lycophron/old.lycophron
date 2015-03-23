@@ -1,4 +1,4 @@
-<md-button class="tile md-hue-1 md-raised md-padding">
+<md-button class="tile md-hue-1 md-raised md-padding" ng-disabled="tile.disabled === true">
     <div class="letter" layout="row" layout-align="center end">{{tile.letter}}</div>
     <div class="value" layout="row" layout-align="end end">{{joker ? '' : (tile.value || '')}}</div>
 </md-button>

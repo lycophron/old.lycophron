@@ -34,12 +34,16 @@ body {
     font-size: 14pt;
 }
 
+input {
+    font-size: 20pt;
+}
+
 /* TILES */
 .tile {
-    height: 7ex;
-    width: 7ex;
+    height: 6.8ex;
+    width: 6.8ex;
     margin: 0.3ex;
-    padding: 1.6ex;
+    padding: 1.3ex;
     text-transform: lowercase;
 }
 

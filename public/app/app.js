@@ -142,25 +142,162 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.state = 'game.loading';
 
         // ui related
-        $scope.showJoker = true;
+        $scope.showJoker = false;
+        $scope.typedLetters = '';
+        $scope.typedLettersPrev = '';
 
         // game related
         $scope.solutions = {};
-        $scope.letters = [];
+        $scope.problemTiles = [];
+        $scope.selectedTiles = [];
 
+        $scope.jokerSelected = function (idx, tile) {
+
+            $scope.typedLetters += dict.encodeLetter(tile.letter);
+            $scope.typedLettersPrev = $scope.typedLetters;
+            $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
+            $scope.showJoker = false;
+        };
+
+        $scope.letterSelected = function (idx, tile) {
+            //console.log(idx, tile);
+
+            // disable letter
+            tile.disabled = true;
+
+            // add it
+            addToSelection(tile.letter, tile.value);
+
+            if (tile.letter === '*') {
+                $scope.showJoker = true;
+            } else {
+                $scope.showJoker = false;
+            }
+        };
+
+        $scope.inputChanged = function () {
+            var newLetter,
+                decodedLetter,
+                i;
+            // we do not get any input arguments
+
+            // figure out the new letter
+            if ($scope.typedLettersPrev.length > $scope.typedLetters.length) {
+                // last letter was deleted
+                $scope.typedLetters = $scope.typedLettersPrev;
+                removeLastLetter();
+                return;
+            }
+
+            if ($scope.typedLettersPrev.length + 1 !== $scope.typedLetters.length) {
+                // FIXME: we accept exactly one new character
+                $scope.typedLetters = $scope.typedLettersPrev;
+                return;
+            }
+
+            newLetter = $scope.typedLetters[$scope.typedLetters.length - 1];
+            decodedLetter = dict.decodeLetter(newLetter);
+
+            $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+            $scope.typedLettersPrev = $scope.typedLetters;
+
+            if ($scope.showJoker) {
+                // see if it is a valid letter or not
+                // FIXME [OPT]: there is probably a faster way to do this.
+                for (i = 0; i < $scope.jokerTiles.length; i += 1) {
+                    if ($scope.jokerTiles[i].letter === decodedLetter) {
+                        $scope.jokerSelected(i, $scope.jokerTiles[i]);
+                        break;
+                    }
+                }
+            } else {
+                // see if it is a valid letter or not
+                for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                    if ($scope.problemTiles[i].disabled === false &&
+                        $scope.problemTiles[i].letter === decodedLetter) {
+                        $scope.letterSelected(i, $scope.problemTiles[i]);
+                        break;
+                    }
+                }
+            }
+        };
+
+        function addToSelection(letter, value) {
+            $scope.typedLetters += dict.encodeLetter(letter);
+            $scope.typedLettersPrev = $scope.typedLetters;
+            $scope.selectedTiles.push({letter: letter, value: value});
+            // check new word
+        }
+
+        function removeLastLetter() {
+            var i,
+                letterToPutBack;
+
+            if ($scope.typedLetters.length > 0 &&
+                $scope.selectedTiles.length > 0) {
+                if ($scope.selectedTiles[$scope.selectedTiles.length - 1].value === 0 && /* joker */
+                    $scope.typedLetters[$scope.typedLetters.length - 1] !== '*') {
+
+                    $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
+                    $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+                    $scope.typedLettersPrev = $scope.typedLetters;
+
+                    $scope.showJoker = true;
+                } else {
+                    letterToPutBack = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter;
+                    // delete last letter
+
+                    $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+                    $scope.typedLettersPrev = $scope.typedLetters;
+                    $scope.selectedTiles.pop();
+
+                    $scope.showJoker = false;
+
+                    // enable letter that we put back
+                    for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                        if ($scope.problemTiles[i].disabled &&
+                            $scope.problemTiles[i].letter === letterToPutBack) {
+
+                            $scope.problemTiles[i].disabled = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        $scope.removeAllLetters = function () {
+            var i;
+
+            $scope.showJoker = false;
+            $scope.typedLetters = '';
+            $scope.typedLettersPrev = $scope.typedLetters;
+            // clear array
+            $scope.selectedTiles = void 0;
+            $scope.selectedTiles = [];
+
+            for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                $scope.problemTiles[i].disabled = false;
+            }
+        };
+
+        $scope.removeAllLetters();
 
         // FIXME: turn timeouts into promises
         // FIXME: add failure states
         // 50ms, let the browser draw our updated state
         var timeoutValue = 20;
+        var dict;
         $timeout(function () {
-            var dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);
+            dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);
             $scope.state = 'game.downloading';
             $scope.longProcess = true;
 
             dict.initialize(function () {
-                $scope.testTiles = dict.getAllLetters().map(function (letter, index) {
-                    return {letter: letter, value: dict.getLetterValue(letter)};
+                $scope.jokerTiles = dict.getAllLetters().map(function (letter, index) {
+                    if (letter !== '*') {
+                        return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
+                    }
                 });
 
                 $timeout(function () {
@@ -181,7 +318,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 $scope.gameIsReady = true;
 
                                 $scope.problemTiles = $scope.letters.map(function (letter, index) {
-                                    return {letter: letter, value: 1};
+                                    return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
                                 });
 
                                 //console.log($scope.solutions);
@@ -249,6 +386,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         'use strict';
 
         return {
+            require: '^tileGroup',
             restrict: 'E',
             scope: {
                 tile: '=tile',
@@ -265,9 +403,16 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             restrict: 'E',
             scope: {
                 tiles: '=tiles',
-                joker: '=joker'
+                joker: '=joker',
+                onSelected: '&onSelected'
             },
-            templateUrl: 'tileGroup.html'
+            templateUrl: 'tileGroup.html',
+            controller: function ($scope) {
+                $scope.onClick = function (idx) {
+                    // propagate selected tile
+                    $scope.onSelected()(idx, $scope.tiles[idx]);
+                };
+            }
         };
     })
 
