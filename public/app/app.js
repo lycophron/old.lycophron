@@ -143,11 +143,15 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         // ui related
         $scope.showJoker = false;
+        $scope.visibleSolutions = false;
         $scope.typedLetters = '';
         $scope.typedLettersPrev = '';
 
         $scope.problemText = '';
         $scope.word = '';
+        $scope.words = [];
+        $scope.foundWords = [];
+        $scope.percentage = 0;
         $scope.lastWord = '';
         $scope.message = '';
 
@@ -218,6 +222,14 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 return;
             }
 
+            if (newLetter === '?') {
+                $scope.typedLetters = $scope.typedLettersPrev;
+                $scope.showSolutions();
+                return;
+            }
+
+
+
             if ($scope.showJoker) {
                 // see if it is a valid letter or not
                 // FIXME [OPT]: there is probably a faster way to do this.
@@ -249,6 +261,11 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         }
 
         function checkWord() {
+            var w,
+                idx;
+
+            $scope.visibleSolutions = false;
+
             $scope.word = $scope.selectedTiles.map(function (tile, index) {
                 return tile.letter;
             }).join('');
@@ -256,8 +273,34 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             if ($scope.word) {
                 if (dict.checkWord($scope.word)) {
                     $scope.lastWord = $scope.word;
-
                     $scope.message = '';
+
+
+                    $scope.foundWords.push($scope.word);
+
+                    $scope.foundWords = $scope.foundWords.LUnique();
+                    $scope.foundWords.LSortAlphabetically();
+
+
+                    w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
+                    if (w.solutions.indexOf($scope.word) > -1 &&
+                        w.found.indexOf($scope.word) === -1) {
+
+                        w.found.push($scope.word);
+                        w.found.LSortAlphabetically();
+
+                        idx = w.solutions.indexOf($scope.word);
+                        w.solutions.splice(idx, 1);
+
+                        w.percentage = Math.floor(w.found.length / w.allSolutions * 10000) / 100;
+                    }
+
+                    if ($scope.solutions.solution.length > 0) {
+                        $scope.percentage = Math.floor($scope.foundWords.length / $scope.solutions.solution.length * 10000) / 100;
+                    } else {
+                        $scope.percentage = 0;
+                    }
+
 
                 } else {
                     $scope.message = 'game.wordDoesNotExist';
@@ -332,6 +375,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $route.reload();
         };
 
+        $scope.showSolutions = function () {
+            $scope.visibleSolutions = true;
+        };
+
         // FIXME: turn timeouts into promises
         // FIXME: add failure states
         // 50ms, let the browser draw our updated state
@@ -359,7 +406,25 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                         $scope.longProcess = true;
 
                         $timeout(function () {
+                            var len,
+                                i;
+
                             $scope.solutions = dict.getSolutionForProblem(dict.encodeArray($scope.letters).join(''));
+
+
+                            for (len in $scope.solutions.byLength) {
+                                $scope.words[len] = $scope.words[len] || {found: [], solutions: [], percentage: 0};
+                                for (i = 0; i < $scope.solutions.byLength[len].length; i += 1) {
+                                    // get all decoded solutions
+                                    $scope.words[len].solutions.push($scope.solutions.byLength[len][i].d);
+                                }
+                                $scope.words[len].solutions = $scope.words[len].solutions.LUnique();
+                                $scope.words[len].solutions.LSortAlphabetically();
+                                $scope.words[len].allSolutions = $scope.words[len].solutions.length;
+                            }
+
+                            $scope.words.reverse();
+
                             $scope.state = 'game.ready';
                             $scope.longProcess = false;
 

@@ -54,3 +54,25 @@ input {
 .tile .value {
     font-size: 11pt;
 }
+
+.solution {
+    min-width: 24.4ex;
+    margin: 0 0.2ex;
+}
+
+.selected-word {
+    min-height: 3.1ex;
+}
+
+.selected-tiles {
+    min-height: 7.4ex;
+}
+
+.word-not-found {
+    /* md-accent */
+    color: #FF4081;
+}
+
+.word-content {
+    padding: 0.5ex;
+}
