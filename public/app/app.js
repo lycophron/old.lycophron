@@ -382,7 +382,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         // FIXME: turn timeouts into promises
         // FIXME: add failure states
         // 50ms, let the browser draw our updated state
-        var timeoutValue = 20;
+        var timeoutValue = 50;
         var dict;
         $timeout(function () {
             dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);

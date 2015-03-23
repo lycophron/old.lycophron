@@ -15,6 +15,10 @@
 
   "mayTakeAFewSeconds": "Ez eltarthat néhány másodpercig.",
 
+  "dictType": {
+    "default": "alapszótár"
+  },
+
   "login": {
     "header": "Bejelentkezés Lycophron.org weboldalra",
     "info": "Jelenleg ez az alkalmazás 'alpha' tesztelés alatt áll, csak néhány teszter férhet hozzá. Ha nem sikerül belépned, akkor Te nem vagy a teszterek között. Kérlek látogass vissza később.",
@@ -49,19 +53,19 @@
     "solvingProblem": "Probléma megoldása ...",
     "ready": "Kész",
 
-    "typeWordHere": "typeWordHere",
-    "clearTiles": "clearTiles",
-    "showSolutions": "showSolutions",
-    "newGame": "newGame",
+    "typeWordHere": "Írd ide a szót, vagy kattints a betűkre.",
+    "clearTiles": "A leírt szó törlése",
+    "showSolutions": "Megoldások",
+    "newGame": "Új játék",
 
-    "selectLetterOrType": "selectLetterOrType",
-    "wordDoesNotExist": "wordDoesNotExist",
-    "wordExists": "wordExists",
+    "selectLetterOrType": "Válassz egy betűt vagy gépeld be a szót.",
+    "wordDoesNotExist": "Ez a szó nem található a szótárban.",
+    "wordExists": "Ez a szó megtalálható a szótárban.",
 
-    "progress": "progress",
+    "progress": "aktuális állás",
 
-    "notFoundYet": "notFoundYet",
-    "allFoundWords": "allFoundWords"
+    "notFoundYet": "Még nincsen találat ...",
+    "allFoundWords": "Megtalált szavak listája:"
   },
 
   "singlePlayer": {

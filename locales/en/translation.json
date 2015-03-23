@@ -15,6 +15,10 @@
 
   "mayTakeAFewSeconds": "This may take a few seconds.",
 
+  "dictType": {
+    "default": "default dictionary"
+  },
+
   "login": {
     "header": "Login to Lycophron.org",
     "info": "Currently this application is under alpha testing and it is open to a limited number of people. If you cannot login that means you are not an alpha tester. Please come back later.",
@@ -28,7 +32,6 @@
     "mainPageText": "Back to main page",
     "loginText": "Back to login page",
     "logoutText": "Logout"
-
   },
 
   "menu": {
@@ -50,19 +53,19 @@
     "solvingProblem": "Solving problem ...",
     "ready": "Done",
 
-    "typeWordHere": "typeWordHere",
-    "clearTiles": "clearTiles",
-    "showSolutions": "showSolutions",
-    "newGame": "newGame",
+    "typeWordHere": "Type here your word or click on the tiles.",
+    "clearTiles": "Clear the word",
+    "showSolutions": "Show solutions",
+    "newGame": "New game",
 
-    "selectLetterOrType": "selectLetterOrType",
-    "wordDoesNotExist": "wordDoesNotExist",
-    "wordExists": "wordExists",
+    "selectLetterOrType": "Pick a letter tile or type a word in the text box.",
+    "wordDoesNotExist": "Given word does not exists in the dictionary.",
+    "wordExists": "Given word exists in the dictionary.",
 
-    "progress": "progress",
+    "progress": "Progress",
 
-    "notFoundYet": "notFoundYet",
-    "allFoundWords": "allFoundWords"
+    "notFoundYet": "No hits yet ...",
+    "allFoundWords": "All found words:"
   },
 
   "singlePlayer": {
