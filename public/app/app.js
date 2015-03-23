@@ -164,7 +164,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         $scope.jokerSelected = function (idx, tile) {
 
-            $scope.typedLetters += dict.encodeLetter(tile.letter);
+            $scope.typedLetters += tile.letter;
             $scope.typedLettersPrev = $scope.typedLetters;
             $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
 
@@ -212,7 +212,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             newLetter = $scope.typedLetters[$scope.typedLetters.length - 1];
             decodedLetter = dict.decodeLetter(newLetter);
 
-            $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+            $scope.typedLetters = $scope.typedLetters.slice(0, - newLetter.length);
             $scope.typedLettersPrev = $scope.typedLetters;
 
             if (newLetter === ' ') {
@@ -252,7 +252,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         function addToSelection(letter, value) {
-            $scope.typedLetters += dict.encodeLetter(letter);
+            $scope.typedLetters += letter;
             $scope.typedLettersPrev = $scope.typedLetters;
             $scope.selectedTiles.push({letter: letter, value: value});
 
@@ -312,18 +312,21 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         function removeLastLetter() {
             var i,
-                letterToPutBack;
+                letterToPutBack,
+                len;
 
             if ($scope.typedLetters.length > 0 &&
                 $scope.selectedTiles.length > 0) {
                 if ($scope.selectedTiles[$scope.selectedTiles.length - 1].value === 0 && /* joker */
                     $scope.typedLetters[$scope.typedLetters.length - 1] !== '*') {
 
+                    len = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter.length;
+
                     $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
 
                     checkWord();
 
-                    $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+                    $scope.typedLetters = $scope.typedLetters.slice(0, - len);
                     $scope.typedLettersPrev = $scope.typedLetters;
 
                     $scope.showJoker = true;
@@ -331,7 +334,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     letterToPutBack = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter;
                     // delete last letter
 
-                    $scope.typedLetters = $scope.typedLetters.slice(0, -1);
+                    $scope.typedLetters = $scope.typedLetters.slice(0, - letterToPutBack.length);
                     $scope.typedLettersPrev = $scope.typedLetters;
                     $scope.selectedTiles.pop();
 
