@@ -44,10 +44,10 @@ input {
 
 /* TILES */
 .tile {
-    height: 6.8ex;
-    width: 6.8ex;
+    height: 6.3ex;
+    width: 6.3ex;
     margin: 0.3ex;
-    padding: 1.3ex;
+    padding: 1.1ex;
     text-transform: lowercase;
 }
 
@@ -60,8 +60,18 @@ input {
 }
 
 .solution {
-    min-width: 24.4ex;
-    margin: 0 0.2ex;
+    width: 22.9ex;
+    margin: 0.2ex 0.1ex;
+}
+
+.solution-header {
+    font-size: 1.1em;
+    min-height: 3ex;
+}
+
+
+.solution-header h3 {
+    height: 3ex;
 }
 
 .selected-word {
@@ -73,8 +83,8 @@ input {
 }
 
 .word-not-found {
-    /* md-accent */
-    color: #FF4081;
+    /* md-warn */
+    color: #F44336;
 }
 
 .word-content {

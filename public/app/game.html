@@ -19,7 +19,7 @@
         <div>{{problemText}}</div>
 
         <form name="problem" layout-fill ng-submit="removeAllLetters()">
-            <md-input-container ng-class="{'md-accent' : message}">
+            <md-input-container ng-class="{'md-warn' : message}">
                 <label ng-i18next="game.typeWordHere"></label>
                 <input autofocus="on" name="typedLetters" ng-model="typedLetters" ng-change="inputChanged()"
                        ng-trim="true">
@@ -48,7 +48,7 @@
         </section>
 
         <section ng-if="message">
-            <md-subheader class="md-accent" ng-i18next="{{message}}"></md-subheader>
+            <md-subheader class="md-warn" ng-i18next="{{message}}"></md-subheader>
         </section>
 
         <section ng-if="!message">
@@ -64,6 +64,7 @@
 
 
         <md-progress-linear class="md-primary" md-mode="determinate" value="{{percentage}}"></md-progress-linear>
+
         <!--<md-toolbar class="">-->
         <div class="md-toolbar-tools" layout-align="space-between center">
             <div>{{solutions.lang}}</div>
@@ -76,36 +77,38 @@
 
         <!-- WORD LISTS -->
 
-        <div layout="row" layout-wrap layout-align="start start">
+        <div layout="row" layout-wrap layout-align="center start">
             <section class="solution" ng-repeat="key in words" ng-if="words.length - $index - 1">
-                <md-toolbar class="md-theme-light">
+                <md-toolbar class="md-theme-light solution-header" ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}">
                     <h3 class="md-toolbar-tools" layout-align="space-between center">
                         <div>{{words.length - $index - 1}}</div>
                         <div>{{key.found.length}}/{{key.allSolutions}}</div>
-                        <div>{{key.percentage}}%</div>
+                        <!--<div>{{key.percentage}}%</div>-->
                     </h3>
                 </md-toolbar>
 
                 <md-content>
-                    <md-list>
+                    <md-progress-linear ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}" md-mode="determinate" value="{{key.percentage}}"></md-progress-linear>
+
+                    <md-list layout="row" layout-wrap layout-align="start start">
                         <md-item ng-repeat="word in key.found">
                             <md-item-content>
                                 <!--<div class="md-tile-left">-->
                                 <!--<img ng-src="{{item.face}}" class="face" alt="{{item.who}}">-->
                                 <!--</div>-->
                                 <div class="md-tile-content word-content">
-                                    <h3 class="word">
+                                    <h4 class="word">
                                         {{word}}
-                                    </h3>
+                                    </h4>
                                 </div>
                             </md-item-content>
                             <!--<md-divider md-inset ng-if="!$last"></md-divider>-->
                         </md-item>
 
-                        <md-item ng-if="!key.found.length" class="md-accent">
+                        <md-item ng-if="!key.found.length" class="md-warn">
                             <md-item-content>
                                 <div class="md-tile-content word-content">
-                                    <h3 class="word-not-found" ng-i18next="game.notFoundYet"></h3>
+                                    <h4 class="word-not-found" ng-i18next="game.notFoundYet"></h4>
                                 </div>
                             </md-item-content>
                         </md-item>
@@ -117,9 +120,9 @@
                                 <!--<img ng-src="{{item.face}}" class="face" alt="{{item.who}}">-->
                                 <!--</div>-->
                                 <div class="md-tile-content word-content">
-                                    <h3 class="word-not-found">
+                                    <h4 class="word-not-found">
                                         {{word}}
-                                    </h3>
+                                    </h4>
                                     <!--<h4>{{item.who}}</h4>-->
                                     <!--<p>-->
                                     <!--{{word}}-->
