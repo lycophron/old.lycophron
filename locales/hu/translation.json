@@ -9,6 +9,8 @@
   "vowelsText": "Magánhangzók",
   "jokersText": "Jokerek",
 
+  "words": "szó",
+
   "createNewGame": "Új játék kezdése",
 
   "mayTakeAFewSeconds": "Ez eltarthat néhány másodpercig.",
@@ -45,7 +47,21 @@
     "downloading": "Letöltés ...",
     "drawingLetters": "Betűk húzása a zsákból ...",
     "solvingProblem": "Probléma megoldása ...",
-    "ready": "Kész"
+    "ready": "Kész",
+
+    "typeWordHere": "typeWordHere",
+    "clearTiles": "clearTiles",
+    "showSolutions": "showSolutions",
+    "newGame": "newGame",
+
+    "selectLetterOrType": "selectLetterOrType",
+    "wordDoesNotExist": "wordDoesNotExist",
+    "wordExists": "wordExists",
+
+    "progress": "progress",
+
+    "notFoundYet": "notFoundYet",
+    "allFoundWords": "allFoundWords"
   },
 
   "singlePlayer": {

@@ -52,7 +52,7 @@
         </section>
 
         <section ng-if="!message">
-            <md-subheader class="md-primary" ng-i18next="wordExists"></md-subheader>
+            <md-subheader class="md-primary" ng-i18next="game.wordExists"></md-subheader>
         </section>
 
         <div class="selected-word">{{word}}</div>
@@ -134,7 +134,7 @@
         </div>
 
         <div layout-align="start start">
-            <div ng-i18next="game.allFouundWords"></div>
+            <div ng-i18next="game.allFoundWords"></div>
             <div><span ng-repeat="word in foundWords">{{word}}, </span></div>
         </div>
 

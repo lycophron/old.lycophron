@@ -436,7 +436,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 });
 
                                 $scope.problemText = $scope.letters.map(function (letter, index) {
-                                    return letter + ' (' + dict.encodeLetter(letter) + ')';
+                                    return letter === dict.encodeLetter(letter) ? letter : letter + '(' + dict.encodeLetter(letter) + ')';
                                 }).join(', ');
 
                                 //console.log($scope.solutions);

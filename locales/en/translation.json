@@ -9,6 +9,8 @@
   "vowelsText": "Vowels",
   "jokersText": "Jokers",
 
+  "words": "words",
+
   "createNewGame": "Create a new game",
 
   "mayTakeAFewSeconds": "This may take a few seconds.",
@@ -46,7 +48,21 @@
     "downloading": "Downloading ...",
     "drawingLetters": "Drawing letters from bag ...",
     "solvingProblem": "Solving problem ...",
-    "ready": "Done"
+    "ready": "Done",
+
+    "typeWordHere": "typeWordHere",
+    "clearTiles": "clearTiles",
+    "showSolutions": "showSolutions",
+    "newGame": "newGame",
+
+    "selectLetterOrType": "selectLetterOrType",
+    "wordDoesNotExist": "wordDoesNotExist",
+    "wordExists": "wordExists",
+
+    "progress": "progress",
+
+    "notFoundYet": "notFoundYet",
+    "allFoundWords": "allFoundWords"
   },
 
   "singlePlayer": {

@@ -17,8 +17,8 @@
                 <span ng-if="!language" ng-i18next="chooseLanguage"></span>
             </md-select-label>
             <md-option ng-value="language" ng-repeat="language in languages">
-                <div md-no-ink class="md-primary">{{language.fullName}}</div>
-                <label ng-disabled="true"><span ng-i18next="numWordsText"></span> {{language.numWords}}</label>
+                <div md-no-ink class="md-primary">{{language.fullName}} [{{language.numWords}} <span ng-i18next="words"></span>]</div>
+                <!--<label ng-disabled="true"><span ng-i18next="numWordsText"></span> {{language.numWords}}</label>-->
 
                 <md-divider ng-if="!$last"></md-divider>
             </md-option>

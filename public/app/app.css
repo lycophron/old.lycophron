@@ -14,7 +14,6 @@ md-list .md-button {
     text-align: left;
     padding: 1.5ex 1ex;
     width: 100%;
-    text-transform: lowercase;
 }
 
 /* Using Data-URI converted from svg until <md-icon> becomes available*/
@@ -26,6 +25,11 @@ md-list .md-button {
 
 
 /* Lycophron specific styles */
+
+/* material design override */
+.md-button {
+    text-transform: none;
+}
 
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
