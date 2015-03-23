@@ -1,5 +1,5 @@
 {
-  "oldGame": "Open the old game",
+  "oldGame": "Open the old game (available till 03/25/2015)",
 
   "chooseLanguage": "Choose a language",
 
@@ -36,14 +36,14 @@
 
   "menu": {
     "home": "Home",
-    "singlePlayer": "Single Player",
-    "multiplayer": "Multiplayer",
+    "singlePlayer": "New single player game",
+    "multiplayer": "New multiplayer game",
     "statistics": "Statistics"
 
   },
 
   "home": {
-    "welcomeMessage": "This website is still under construction. Please navigate to the old website if you like to play."
+    "welcomeMessage": "This website is still under construction. Use the menu on the left hand side to create a new game."
   },
 
   "game": {

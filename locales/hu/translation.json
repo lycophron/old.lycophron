@@ -1,5 +1,5 @@
 {
-  "oldGame": "Régi játék megnyitása",
+  "oldGame": "Régi játék megnyitása (elérhető 2015. 03. 25-ig)",
 
   "chooseLanguage": "Válassz nyelvet",
 
@@ -36,14 +36,14 @@
 
   "menu": {
     "home": "Kezdőlap",
-    "singlePlayer": "Egyjátékos",
-    "multiplayer": "Több játékos",
+    "singlePlayer": "Új játék (egyjátékos)",
+    "multiplayer": "Űj játék (több játékos)",
     "statistics": "Statisztikák"
 
   },
 
   "home": {
-    "welcomeMessage": "Ez a weboldal még fejlesztés alatt áll. Navigálj a régi weboldalra új játék kezdéséhez."
+    "welcomeMessage": "Ez a weboldal még fejlesztés alatt áll. Használd a baloldali menüt új játék kezdéséhez."
   },
 
   "game": {
