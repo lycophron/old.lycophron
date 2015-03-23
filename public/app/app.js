@@ -124,7 +124,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         console.log($scope.name);
     })
 
-    .controller('GameSinglePlayerController', function ($scope, $routeParams, $timeout) {
+    .controller('GameSinglePlayerController', function ($scope, $routeParams, $timeout, $route) {
         'use strict';
 
         $scope.name = 'GameSinglePlayerController';
@@ -327,6 +327,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.removeAllLetters();
+
+        $scope.newGame = function () {
+            $route.reload();
+        };
 
         // FIXME: turn timeouts into promises
         // FIXME: add failure states

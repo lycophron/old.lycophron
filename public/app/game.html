@@ -21,7 +21,8 @@
         <form name="problem" layout-fill ng-submit="removeAllLetters()">
             <md-input-container ng-class="{'md-accent' : message}">
                 <label ng-i18next="game.typeWordHere"></label>
-                <input autofocus="on" name="typedLetters" ng-model="typedLetters" ng-change="inputChanged()" ng-trim="true">
+                <input autofocus="on" name="typedLetters" ng-model="typedLetters" ng-change="inputChanged()"
+                       ng-trim="true">
                 <!--<div ng-messages="projectForm.clientName.$error">-->
                 <!--<div ng-message="required">This is required.</div>-->
                 <!--</div>-->
@@ -49,7 +50,8 @@
 
         <div>{{word}}</div>
 
-        <tile-group tiles="selectedTiles" on-selected="removeAllLetters"></tile-group>
+        <tile-group tiles="selectedTiles"
+                    on-selected="removeAllLetters"></tile-group>
 
         <tile-group ng-if="showJoker" tiles="jokerTiles" joker="true" on-selected="jokerSelected"></tile-group>
     </div>
