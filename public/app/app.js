@@ -146,16 +146,26 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.typedLetters = '';
         $scope.typedLettersPrev = '';
 
+        $scope.problemText = '';
+        $scope.word = '';
+        $scope.lastWord = '';
+        $scope.message = '';
+
         // game related
         $scope.solutions = {};
         $scope.problemTiles = [];
         $scope.selectedTiles = [];
+
+        checkWord();
 
         $scope.jokerSelected = function (idx, tile) {
 
             $scope.typedLetters += dict.encodeLetter(tile.letter);
             $scope.typedLettersPrev = $scope.typedLetters;
             $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
+
+            checkWord();
+
             $scope.showJoker = false;
         };
 
@@ -165,18 +175,14 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             if (tile.disabled) {
                 return;
             }
-            
+
             // disable letter
             tile.disabled = true;
 
             // add it
             addToSelection(tile.letter, tile.value);
 
-            if (tile.letter === '*') {
-                $scope.showJoker = true;
-            } else {
-                $scope.showJoker = false;
-            }
+            $scope.showJoker = tile.letter === '*';
         };
 
         $scope.inputChanged = function () {
@@ -205,6 +211,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.typedLetters = $scope.typedLetters.slice(0, -1);
             $scope.typedLettersPrev = $scope.typedLetters;
 
+            if (newLetter === ' ') {
+                // FIXME [BUG]: ng-change does not fire on space
+                // space will remove all letters and wait for the next one
+                $scope.removeAllLetters();
+                return;
+            }
+
             if ($scope.showJoker) {
                 // see if it is a valid letter or not
                 // FIXME [OPT]: there is probably a faster way to do this.
@@ -230,7 +243,28 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.typedLetters += dict.encodeLetter(letter);
             $scope.typedLettersPrev = $scope.typedLetters;
             $scope.selectedTiles.push({letter: letter, value: value});
+
             // check new word
+            checkWord();
+        }
+
+        function checkWord() {
+            $scope.word = $scope.selectedTiles.map(function (tile, index) {
+                return tile.letter;
+            }).join('');
+
+            if ($scope.word) {
+                if (dict.checkWord($scope.word)) {
+                    $scope.lastWord = $scope.word;
+
+                    $scope.message = '';
+
+                } else {
+                    $scope.message = 'game.wordDoesNotExist';
+                }
+            } else {
+                $scope.message = 'game.selectLetterOrType';
+            }
         }
 
         function removeLastLetter() {
@@ -243,6 +277,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.typedLetters[$scope.typedLetters.length - 1] !== '*') {
 
                     $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
+
+                    checkWord();
+
                     $scope.typedLetters = $scope.typedLetters.slice(0, -1);
                     $scope.typedLettersPrev = $scope.typedLetters;
 
@@ -254,6 +291,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.typedLetters = $scope.typedLetters.slice(0, -1);
                     $scope.typedLettersPrev = $scope.typedLetters;
                     $scope.selectedTiles.pop();
+
+                    checkWord();
 
                     $scope.showJoker = false;
 
@@ -279,6 +318,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             // clear array
             $scope.selectedTiles = void 0;
             $scope.selectedTiles = [];
+
+            checkWord();
 
             for (i = 0; i < $scope.problemTiles.length; i += 1) {
                 $scope.problemTiles[i].disabled = false;
@@ -324,6 +365,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 $scope.problemTiles = $scope.letters.map(function (letter, index) {
                                     return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
                                 });
+
+                                $scope.problemText = $scope.letters.map(function (letter, index) {
+                                    return letter + ' (' + dict.encodeLetter(letter) + ')';
+                                }).join(', ');
 
                                 //console.log($scope.solutions);
                             }, timeoutValue);
