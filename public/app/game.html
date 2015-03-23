@@ -55,7 +55,7 @@
             <md-subheader class="md-primary" ng-i18next="game.wordExists"></md-subheader>
         </section>
 
-        <div class="selected-word">{{word}}</div>
+        <div class="selected-word">{{word}} <span ng-if="score.last">(<span ng-i18next="[i18next]({count:score.last})game.score"></span>)</span></div>
 
         <tile-group class="selected-tiles" tiles="selectedTiles"
                     on-selected="removeAllLetters"></tile-group>
@@ -70,6 +70,7 @@
             <div hide-sm>{{solutions.lang}}</div>
             <div hide-sm ng-i18next="dictType.{{solutions.typeName}}"></div>
             <div ng-i18next="game.progress"></div>
+            <div ng-i18next="[i18next]({count:score.sum})game.score"></div>
             <div>{{foundWords.length}}/{{solutions.solution.length}}</div>
             <div>{{percentage}}%</div>
         </div>

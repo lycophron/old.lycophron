@@ -63,6 +63,8 @@
     "wordExists": "Given word exists in the dictionary.",
 
     "progress": "Progress",
+    "score": "__count__ point",
+    "score_plural": "__count__ points",
 
     "notFoundYet": "No hits yet ...",
     "allFoundWords": "All found words:"

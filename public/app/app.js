@@ -150,6 +150,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.problemText = '';
         $scope.word = '';
         $scope.words = [];
+        $scope.score = {
+            sum: 0,
+            last: 0
+        };
         $scope.foundWords = [];
         $scope.percentage = 0;
         $scope.lastWord = '';
@@ -262,9 +266,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         function checkWord() {
             var w,
-                idx;
+                idx,
+                lenBefore,
+                lenAfter;
 
             $scope.visibleSolutions = false;
+
+            $scope.score.last = 0;
 
             $scope.word = $scope.selectedTiles.map(function (tile, index) {
                 return tile.letter;
@@ -275,11 +283,19 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.lastWord = $scope.word;
                     $scope.message = '';
 
-
+                    lenBefore = $scope.foundWords.length;
                     $scope.foundWords.push($scope.word);
 
                     $scope.foundWords = $scope.foundWords.LUnique();
                     $scope.foundWords.LSortAlphabetically();
+                    lenAfter =  $scope.foundWords.length;
+
+                    $scope.score.last = $scope.scoring.score($scope.selectedTiles);
+
+                    if (lenBefore !== lenAfter) {
+                        // new word not found yet
+                        $scope.score.sum += $scope.score.last;
+                    }
 
 
                     w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
@@ -389,6 +405,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         var dict;
         $timeout(function () {
             dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);
+
+            // TODO: select scoring function
+            $scope.scoring = new L.Score();
+
             $scope.state = 'game.downloading';
             $scope.longProcess = true;
 

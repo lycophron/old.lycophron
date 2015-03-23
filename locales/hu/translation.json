@@ -63,6 +63,8 @@
     "wordExists": "Ez a szó megtalálható a szótárban.",
 
     "progress": "aktuális állás",
+    "score": "__count__  pont",
+    "score_plural": "__count__  pont",
 
     "notFoundYet": "Még nincsen találat ...",
     "allFoundWords": "Megtalált szavak listája:"
