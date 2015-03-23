@@ -29,7 +29,7 @@
             </md-input-container>
         </form>
 
-        <section layout="row" layout-fill layout-align="center center">
+        <section layout="row" layout-wrap layout-align="center center">
             <md-button class="md-primary"
                        aria-label="game.clearTiles"
                        ng-disabled="typedLetters.length === 0"
@@ -67,8 +67,8 @@
 
         <!--<md-toolbar class="">-->
         <div class="md-toolbar-tools" layout-align="space-between center">
-            <div>{{solutions.lang}}</div>
-            <div ng-i18next="dictType.{{solutions.typeName}}"></div>
+            <div hide-sm>{{solutions.lang}}</div>
+            <div hide-sm ng-i18next="dictType.{{solutions.typeName}}"></div>
             <div ng-i18next="game.progress"></div>
             <div>{{foundWords.length}}/{{solutions.solution.length}}</div>
             <div>{{percentage}}%</div>
