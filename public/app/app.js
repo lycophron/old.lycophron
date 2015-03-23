@@ -162,6 +162,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.letterSelected = function (idx, tile) {
             //console.log(idx, tile);
 
+            if (tile.disabled) {
+                return;
+            }
+            
             // disable letter
             tile.disabled = true;
 
