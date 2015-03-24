@@ -1,4 +1,4 @@
-/*globals angular, console, require*/
+/*globals angular, console, require, io*/
 /**
  * @author lattmann / https://github.com/lattmann
  */
@@ -62,7 +62,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 text: 'menu.singlePlayer'
             },
             //{
-            //    url: '/game/multiplayer/wizard/',
+            //    url: '/game/multiplayer/',
             //    text: 'menu.multiplayer'
             //},
             {
@@ -104,6 +104,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         // TODO: get user
         //$scope.username = 'anonymous';
+
     })
 
     .controller('HomeController', function ($scope, $routeParams) {
@@ -124,351 +125,27 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         console.log($scope.name);
     })
 
-    .controller('GameSinglePlayerController', function ($scope, $routeParams, $timeout, $route) {
+    .controller('GameSinglePlayerController', function ($scope, $routeParams, $route) {
         'use strict';
 
         $scope.name = 'GameSinglePlayerController';
         $scope.params = $routeParams;
 
-        // TODO: validate route params!
+        //console.log($scope.name);
+        //console.log($scope.params);
 
-        console.log($scope.name);
-        console.log($scope.params);
-
-
-        $scope.gameIsReady = false;
-        $scope.longProcess = false;
-
-        $scope.state = 'game.loading';
-
-        // ui related
-        $scope.showJoker = false;
-        $scope.visibleSolutions = false;
-        $scope.typedLetters = '';
-        $scope.typedLettersPrev = '';
-
-        $scope.problemText = '';
-        $scope.word = '';
-        $scope.words = [];
-        $scope.score = {
-            sum: 0,
-            last: 0
-        };
-        $scope.foundWords = [];
-        $scope.percentage = 0;
-        $scope.lastWord = '';
-        $scope.message = '';
-
-        // game related
-        $scope.solutions = {};
-        $scope.problemTiles = [];
-        $scope.selectedTiles = [];
-
-        checkWord();
-
-        $scope.jokerSelected = function (idx, tile) {
-
-            $scope.typedLetters += tile.letter;
-            $scope.typedLettersPrev = $scope.typedLetters;
-            $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
-
-            checkWord();
-
-            $scope.showJoker = false;
-        };
-
-        $scope.letterSelected = function (idx, tile) {
-            //console.log(idx, tile);
-
-            if (tile.disabled) {
-                return;
-            }
-
-            // disable letter
-            tile.disabled = true;
-
-            // add it
-            addToSelection(tile.letter, tile.value);
-
-            $scope.showJoker = tile.letter === '*';
-        };
-
-        $scope.inputChanged = function () {
-            var newLetter,
-                decodedLetter,
-                i;
-            // we do not get any input arguments
-
-            // figure out the new letter
-            if ($scope.typedLettersPrev.length > $scope.typedLetters.length) {
-                // last letter was deleted
-                $scope.typedLetters = $scope.typedLettersPrev;
-                removeLastLetter();
-                return;
-            }
-
-            if ($scope.typedLettersPrev.length + 1 !== $scope.typedLetters.length) {
-                // FIXME: we accept exactly one new character
-                $scope.typedLetters = $scope.typedLettersPrev;
-                return;
-            }
-
-            newLetter = $scope.typedLetters[$scope.typedLetters.length - 1];
-            decodedLetter = dict.decodeLetter(newLetter);
-
-            $scope.typedLetters = $scope.typedLetters.slice(0, - newLetter.length);
-            $scope.typedLettersPrev = $scope.typedLetters;
-
-            if (newLetter === ' ') {
-                // FIXME [BUG]: ng-change does not fire on space
-                // space will remove all letters and wait for the next one
-                $scope.removeAllLetters();
-                return;
-            }
-
-            if (newLetter === '?') {
-                $scope.typedLetters = $scope.typedLettersPrev;
-                $scope.showSolutions();
-                return;
-            }
-
-
-
-            if ($scope.showJoker) {
-                // see if it is a valid letter or not
-                // FIXME [OPT]: there is probably a faster way to do this.
-                for (i = 0; i < $scope.jokerTiles.length; i += 1) {
-                    if ($scope.jokerTiles[i].letter === decodedLetter) {
-                        $scope.jokerSelected(i, $scope.jokerTiles[i]);
-                        break;
-                    }
-                }
-            } else {
-                // see if it is a valid letter or not
-                for (i = 0; i < $scope.problemTiles.length; i += 1) {
-                    if ($scope.problemTiles[i].disabled === false &&
-                        $scope.problemTiles[i].letter === decodedLetter) {
-                        $scope.letterSelected(i, $scope.problemTiles[i]);
-                        break;
-                    }
-                }
-            }
-        };
-
-        function addToSelection(letter, value) {
-            $scope.typedLetters += letter;
-            $scope.typedLettersPrev = $scope.typedLetters;
-            $scope.selectedTiles.push({letter: letter, value: value});
-
-            // check new word
-            checkWord();
-        }
-
-        function checkWord() {
-            var w,
-                idx,
-                lenBefore,
-                lenAfter;
-
-            $scope.visibleSolutions = false;
-
-            $scope.score.last = 0;
-
-            $scope.word = $scope.selectedTiles.map(function (tile, index) {
-                return tile.letter;
-            }).join('');
-
-            if ($scope.word) {
-                if (dict.checkWord($scope.word)) {
-                    $scope.lastWord = $scope.word;
-                    $scope.message = '';
-
-                    lenBefore = $scope.foundWords.length;
-                    $scope.foundWords.push($scope.word);
-
-                    $scope.foundWords = $scope.foundWords.LUnique();
-                    $scope.foundWords.LSortAlphabetically();
-                    lenAfter =  $scope.foundWords.length;
-
-                    $scope.score.last = $scope.scoring.score($scope.selectedTiles);
-
-                    if (lenBefore !== lenAfter) {
-                        // new word not found yet
-                        $scope.score.sum += $scope.score.last;
-                    }
-
-
-                    w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
-                    if (w.solutions.indexOf($scope.word) > -1 &&
-                        w.found.indexOf($scope.word) === -1) {
-
-                        w.found.push($scope.word);
-                        w.found.LSortAlphabetically();
-
-                        idx = w.solutions.indexOf($scope.word);
-                        w.solutions.splice(idx, 1);
-
-                        w.percentage = Math.floor(w.found.length / w.allSolutions * 10000) / 100;
-                    }
-
-                    if ($scope.solutions.solution.length > 0) {
-                        $scope.percentage = Math.floor($scope.foundWords.length / $scope.solutions.solution.length * 10000) / 100;
-                    } else {
-                        $scope.percentage = 0;
-                    }
-
-
-                } else {
-                    $scope.message = 'game.wordDoesNotExist';
-                }
-            } else {
-                $scope.message = 'game.selectLetterOrType';
-            }
-        }
-
-        function removeLastLetter() {
-            var i,
-                letterToPutBack,
-                len;
-
-            if ($scope.typedLetters.length > 0 &&
-                $scope.selectedTiles.length > 0) {
-                if ($scope.selectedTiles[$scope.selectedTiles.length - 1].value === 0 && /* joker */
-                    $scope.typedLetters[$scope.typedLetters.length - 1] !== '*') {
-
-                    len = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter.length;
-
-                    $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
-
-                    checkWord();
-
-                    $scope.typedLetters = $scope.typedLetters.slice(0, - len);
-                    $scope.typedLettersPrev = $scope.typedLetters;
-
-                    $scope.showJoker = true;
-                } else {
-                    letterToPutBack = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter;
-                    // delete last letter
-
-                    $scope.typedLetters = $scope.typedLetters.slice(0, - letterToPutBack.length);
-                    $scope.typedLettersPrev = $scope.typedLetters;
-                    $scope.selectedTiles.pop();
-
-                    checkWord();
-
-                    $scope.showJoker = false;
-
-                    // enable letter that we put back
-                    for (i = 0; i < $scope.problemTiles.length; i += 1) {
-                        if ($scope.problemTiles[i].disabled &&
-                            $scope.problemTiles[i].letter === letterToPutBack) {
-
-                            $scope.problemTiles[i].disabled = false;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        $scope.removeAllLetters = function () {
-            var i;
-
-            $scope.showJoker = false;
-            $scope.typedLetters = '';
-            $scope.typedLettersPrev = $scope.typedLetters;
-            // clear array
-            $scope.selectedTiles = void 0;
-            $scope.selectedTiles = [];
-
-            checkWord();
-
-            for (i = 0; i < $scope.problemTiles.length; i += 1) {
-                $scope.problemTiles[i].disabled = false;
-            }
-        };
-
-        $scope.removeAllLetters();
-
-        $scope.newGame = function () {
+        $scope.onNewGame = function () {
             $route.reload();
         };
 
-        $scope.showSolutions = function () {
-            $scope.visibleSolutions = true;
+        $scope.onFoundWord = function () {
+
         };
 
-        // FIXME: turn timeouts into promises
-        // FIXME: add failure states
-        // 50ms, let the browser draw our updated state
-        var timeoutValue = 50;
-        var dict;
-        $timeout(function () {
-            dict = new L.Dictionary($scope.params.lang + '/' + $scope.params.type, true /* use superagent */);
+        $scope.onNewLettersReady = function () {
 
-            // TODO: select scoring function
-            $scope.scoring = new L.Score();
+        };
 
-            $scope.state = 'game.downloading';
-            $scope.longProcess = true;
-
-            dict.initialize(function () {
-                $scope.jokerTiles = dict.getAllLetters().map(function (letter, index) {
-                    if (letter !== '*') {
-                        return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
-                    }
-                });
-
-                $timeout(function () {
-                    $scope.state = 'game.drawingLetters';
-                    $scope.longProcess = false;
-
-                    $timeout(function () {
-                        $scope.letters = dict.drawLetters($scope.params.consonants, $scope.params.vowels, $scope.params.jokers);
-                        $scope.state = 'game.solvingProblem';
-                        $scope.longProcess = true;
-
-                        $timeout(function () {
-                            var len,
-                                i;
-
-                            $scope.solutions = dict.getSolutionForProblem(dict.encodeArray($scope.letters).join(''));
-
-
-                            for (len in $scope.solutions.byLength) {
-                                $scope.words[len] = $scope.words[len] || {found: [], solutions: [], percentage: 0};
-                                for (i = 0; i < $scope.solutions.byLength[len].length; i += 1) {
-                                    // get all decoded solutions
-                                    $scope.words[len].solutions.push($scope.solutions.byLength[len][i].d);
-                                }
-                                $scope.words[len].solutions = $scope.words[len].solutions.LUnique();
-                                $scope.words[len].solutions.LSortAlphabetically();
-                                $scope.words[len].allSolutions = $scope.words[len].solutions.length;
-                            }
-
-                            $scope.words.reverse();
-
-                            $scope.state = 'game.ready';
-                            $scope.longProcess = false;
-
-                            $timeout(function () {
-                                $scope.gameIsReady = true;
-
-                                $scope.problemTiles = $scope.letters.map(function (letter, index) {
-                                    return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
-                                });
-
-                                $scope.problemText = $scope.letters.map(function (letter, index) {
-                                    return letter === dict.encodeLetter(letter) ? letter : letter + '(' + dict.encodeLetter(letter) + ')';
-                                }).join(', ');
-
-                                //console.log($scope.solutions);
-                            }, timeoutValue);
-                        }, timeoutValue);
-                    }, timeoutValue);
-                }, timeoutValue);
-            });
-        }, timeoutValue);
     })
 
     .controller('SingleWizardController', function ($scope, $routeParams, $http) {
@@ -523,6 +200,312 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
     })
 
+    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location) {
+        'use strict';
+
+        var socket = io.connect({forceNew: true}),
+            requiresSignIn = true;
+
+        $scope.name = 'MultiplayerController';
+        $scope.params = $routeParams;
+
+        $scope.availableUsers = [];
+        $scope.availableRooms = [];
+
+        $scope.currentUser = null;
+        $scope.currentRoom = null;
+        $scope.currentRoomId = null;
+        $scope.newRoom = null; // initializer is below
+        $scope.wizardShown = false;
+
+        $scope.connectionStatus = 'multiplayer.connecting';
+
+        function forceDigestCycle() {
+            // Angular is unaware of data updates outside the "angular world,
+            // the timeout will force a new digest cycle.
+            $timeout(function () {
+            });
+        }
+
+        socket.on('connect', function () {
+            if (requiresSignIn && $scope.currentUser) {
+                socket.emit('signIn', $scope.currentUser);
+                requiresSignIn = false;
+                $scope.connectionStatus = 'multiplayer.connected';
+            }
+            $scope.connectionStatus = 'multiplayer.connected';
+
+            forceDigestCycle();
+        });
+
+        socket.on('disconnect', function () {
+            $scope.connectionStatus = 'multiplayer.disconnected';
+            requiresSignIn = true;
+
+            $scope.currentRoomId = null;
+            updateCurrentRoom();
+
+            forceDigestCycle();
+        });
+
+        socket.on('userAvailable', function (data) {
+            console.log('userAvailable', data);
+        });
+
+        socket.on('userLeft', function (data) {
+            console.log('userLeft', data);
+        });
+
+        socket.on('availableUsers', function (data) {
+            console.log('availableUsers', data);
+            $scope.availableUsers = data;
+
+            forceDigestCycle();
+        });
+
+        socket.on('availableRooms', function (data) {
+            console.log('availableRooms', data);
+            $scope.availableRooms = data;
+
+            updateCurrentRoom();
+
+            forceDigestCycle();
+        });
+
+        $scope.newRoomWizard = function () {
+            $scope.wizardShown = true;
+        };
+
+        $scope.createRoom = function (room) {
+            // FIXME: any race conditions here?
+            room.id = 'multiplayer_' + (new Date()).toISOString();
+            socket.emit('createRoom', room);
+            $scope.joinRoom(room.roomId);
+            $scope.wizardShown = false;
+        };
+
+        function updateCurrentRoom() {
+            var i;
+
+            if ($scope.currentRoomId) {
+                for (i = 0; i < $scope.availableRooms.length; i += 1) {
+                    if ($scope.availableRooms[i].id === $scope.currentRoomId) {
+                        $scope.currentRoom = $scope.availableRooms[i];
+                    }
+                }
+            } else {
+                $scope.currentRoom = null;
+                stopGame();
+            }
+        }
+
+        $scope.joinRoom = function (roomId) {
+            var i;
+            if (roomId) {
+                socket.emit('joinRoom', roomId);
+
+                $scope.currentRoomId = roomId;
+
+                updateCurrentRoom();
+
+                // FIXME: on success only
+                //$location.path('/game/multiplayer/' + roomId);
+            }
+        };
+
+        $scope.leaveRoom = function (roomId) {
+            socket.emit('leaveRoom', roomId);
+            $scope.currentRoomId = null;
+
+            updateCurrentRoom();
+
+            $location.path('/game/multiplayer/');
+        };
+
+
+        $http.get('/auth/').
+            success(function (data, status, headers, config) {
+                // this callback will be called asynchronously
+                // when the response is available
+                console.log(data);
+                data.id = data.id || 'anonymous_' + (new Date()).toISOString();
+                data.displayName = data.displayName || 'anonymous';
+
+                $scope.currentUser = data;
+
+                if (requiresSignIn && $scope.currentUser) {
+                    socket.emit('signIn', $scope.currentUser);
+                    requiresSignIn = false;
+                }
+
+                // default
+                $scope.createRoom({
+                    title: 'Default ' + Math.floor(Math.random() * 100),
+                    owner: $scope.currentUser.id,
+                    gameType: 'anagramProblem',
+                    language: {
+                        fullName: "hu-HU (default)",
+                        name: "hu-HU",
+                        numWords: 115654,
+                        type: "default"
+                    },
+                    numConsonants: 10,
+                    numVowels: 9,
+                    numJokers: 0,
+                    allowedUsers: []
+                });
+
+                $scope.newRoom = {
+                    title: 'new room ' + Math.floor(Math.random() * 100),
+                    owner: data.id,
+                    gameType: 'anagramProblem',
+                    language: null,
+                    numConsonants: 10,
+                    numVowels: 9,
+                    numJokers: 0,
+                    allowedUsers: []
+                };
+
+                if ($routeParams.roomId) {
+                    $scope.joinRoom($routeParams.roomId);
+                } else {
+                    //$scope.newRoom = {
+                    //    id: 'multiplayer_' + (new Date()).toISOString(),
+                    //    title: 'new room ' + Math.floor(Math.random() * 100),
+                    //    owner: data.id,
+                    //    gameType: 'anagramProblem',
+                    //    language: {
+                    //        name: 'hu-HU',
+                    //        type: 'default',
+                    //        fullName: 'hu-HU (default)',
+                    //        numWords: Math.floor(Math.random() * 50000) + 30000
+                    //    },
+                    //    numConsonants: Math.floor(Math.random() * 7) + 3,
+                    //    numVowels: Math.floor(Math.random() * 3) + 3,
+                    //    numJokers: Math.floor(Math.random() * 2),
+                    //    allowedUsers: []
+                    //};
+                    //$scope.createRoom($scope.newRoom);
+                }
+            }).
+            error(function (data, status, headers, config) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+                console.error('cannot retrieve /auth/ info');
+            });
+
+
+        // FIXME: duplicated code !!!
+        $scope.gameTypes = ['anagramProblem'];
+
+        $scope.loadLanguages = function () {
+            $scope.languages = [];
+            // TODO: service to get languages
+            return $http.get('/locales/info.json').
+                success(function (data, status, headers, config) {
+                    // this callback will be called asynchronously
+                    // when the response is available
+                    var langCodes = Object.keys(data),
+                        language,
+                        types,
+                        i,
+                        j;
+
+                    for (i = 0; i < langCodes.length; i += 1) {
+                        types = Object.keys(data[langCodes[i]].types);
+                        for (j = 0; j < types.length; j += 1) {
+                            language = {
+                                name: langCodes[i],
+                                type: types[j],
+                                fullName: langCodes[i] + ' (' + types[j] + ')',
+                                numWords: data[langCodes[i]].types[types[j]].numWords
+                            };
+                            $scope.languages.push(language);
+                        }
+                    }
+
+                    $scope.languages.sort(function (a, b) {
+                        return a.fullName.localeCompare(b.fullName);
+                    });
+                }).
+                error(function (data, status, headers, config) {
+                    // called asynchronously if an error occurs
+                    // or server returns response with an error status.
+                });
+        };
+
+
+        socket.on('foundWord', function (data) {
+            // another user has found a word
+
+            // user
+            // length
+            // word
+
+            $scope.userWords[data.user] = $scope.userWords[data.user] || {};
+            $scope.userWords[data.user][data.length] = $scope.userWords[data.user][data.length] || [];
+            $scope.userWords[data.user][data.length].push(data.word);
+
+            forceDigestCycle();
+        });
+
+
+        //////////////////
+        // TODO: this is a copy pasted code, refactor it! see single player controller
+
+
+        $scope.startNewGame = function () {
+            var options = {
+                lang: $scope.currentRoom.language.name,
+                type: $scope.currentRoom.language.type,
+                consonants: $scope.currentRoom.numConsonants,
+                vowels: $scope.currentRoom.numVowels,
+                jokers: $scope.currentRoom.numJokers
+            };
+            startGame(options);
+
+            forceDigestCycle();
+        };
+
+        socket.on('startGame', function (options) {
+            startGame(options);
+
+            forceDigestCycle();
+        });
+
+        function stopGame() {
+            $scope.gameIsRunning = false;
+        }
+
+        function startGame(options) {
+            $scope.gameIsRunning = true;
+            $scope.multiplayer = true;
+            $scope.userWords = {};
+            $scope.gameOptions = options;
+
+            $scope.onNewGame = function () {
+                // FIXME: we should not use the $route.reload for new game, but this is the only option for now
+                $route.reload();
+            };
+
+            $scope.onFoundWord = function (length, word) {
+                socket.emit('foundWord', {user: $scope.currentUser.id, length: length, word: word});
+            };
+
+            $scope.onNewLettersReady = function (letters) {
+                if (options.letters) {
+                    // slave mode
+                } else {
+                    // master mode
+                    options.letters = letters;
+                    socket.emit('startGame', options);
+                }
+            };
+
+
+        }
+    })
+
     .directive('tile', function () {
         'use strict';
 
@@ -557,13 +540,379 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
     })
 
+    .directive('game', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            scope: {
+                options: '=',
+                onNewGame: '&',
+                onFoundWord: '&',
+                onNewLettersReady: '&'
+            },
+            templateUrl: 'game.html',
+            controller: function ($scope, $timeout) {
+
+                // TODO: validate options!
+                $scope.gameIsReady = false;
+                $scope.longProcess = false;
+
+                $scope.state = 'game.loading';
+
+                // ui related
+                $scope.showJoker = false;
+                $scope.visibleSolutions = false;
+                $scope.typedLetters = '';
+                $scope.typedLettersPrev = '';
+
+                $scope.problemText = '';
+                $scope.word = '';
+                $scope.words = [];
+                $scope.score = {
+                    sum: 0,
+                    last: 0
+                };
+                $scope.foundWords = [];
+                $scope.percentage = 0;
+                $scope.lastWord = '';
+                $scope.message = '';
+
+                // game related
+                $scope.solutions = {};
+                $scope.problemTiles = [];
+                $scope.selectedTiles = [];
+
+                checkWord();
+
+                $scope.jokerSelected = function (idx, tile) {
+
+                    $scope.typedLetters += tile.letter;
+                    $scope.typedLettersPrev = $scope.typedLetters;
+                    $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
+
+                    checkWord();
+
+                    $scope.showJoker = false;
+                };
+
+                $scope.letterSelected = function (idx, tile) {
+                    //console.log(idx, tile);
+
+                    if (tile.disabled) {
+                        return;
+                    }
+
+                    // disable letter
+                    tile.disabled = true;
+
+                    // add it
+                    addToSelection(tile.letter, tile.value);
+
+                    $scope.showJoker = tile.letter === '*';
+                };
+
+                $scope.inputChanged = function () {
+                    var newLetter,
+                        decodedLetter,
+                        i;
+                    // we do not get any input arguments
+
+                    // figure out the new letter
+                    if ($scope.typedLettersPrev.length > $scope.typedLetters.length) {
+                        // last letter was deleted
+                        $scope.typedLetters = $scope.typedLettersPrev;
+                        removeLastLetter();
+                        return;
+                    }
+
+                    if ($scope.typedLettersPrev.length + 1 !== $scope.typedLetters.length) {
+                        // FIXME: we accept exactly one new character
+                        $scope.typedLetters = $scope.typedLettersPrev;
+                        return;
+                    }
+
+                    newLetter = $scope.typedLetters[$scope.typedLetters.length - 1];
+                    decodedLetter = dict.decodeLetter(newLetter);
+
+                    $scope.typedLetters = $scope.typedLetters.slice(0, -newLetter.length);
+                    $scope.typedLettersPrev = $scope.typedLetters;
+
+                    if (newLetter === ' ') {
+                        // FIXME [BUG]: ng-change does not fire on space
+                        // space will remove all letters and wait for the next one
+                        $scope.removeAllLetters();
+                        return;
+                    }
+
+                    if (newLetter === '?') {
+                        $scope.typedLetters = $scope.typedLettersPrev;
+                        $scope.showSolutions();
+                        return;
+                    }
+
+
+                    if ($scope.showJoker) {
+                        // see if it is a valid letter or not
+                        // FIXME [OPT]: there is probably a faster way to do this.
+                        for (i = 0; i < $scope.jokerTiles.length; i += 1) {
+                            if ($scope.jokerTiles[i].letter === decodedLetter) {
+                                $scope.jokerSelected(i, $scope.jokerTiles[i]);
+                                break;
+                            }
+                        }
+                    } else {
+                        // see if it is a valid letter or not
+                        for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                            if ($scope.problemTiles[i].disabled === false &&
+                                $scope.problemTiles[i].letter === decodedLetter) {
+                                $scope.letterSelected(i, $scope.problemTiles[i]);
+                                break;
+                            }
+                        }
+                    }
+                };
+
+                function addToSelection(letter, value) {
+                    $scope.typedLetters += letter;
+                    $scope.typedLettersPrev = $scope.typedLetters;
+                    $scope.selectedTiles.push({letter: letter, value: value});
+
+                    // check new word
+                    checkWord();
+                }
+
+                function checkWord() {
+                    var w,
+                        idx,
+                        lenBefore,
+                        lenAfter;
+
+                    $scope.visibleSolutions = false;
+
+                    $scope.score.last = 0;
+
+                    $scope.word = $scope.selectedTiles.map(function (tile, index) {
+                        return tile.letter;
+                    }).join('');
+
+                    if ($scope.word) {
+                        if (dict.checkWord($scope.word)) {
+                            $scope.lastWord = $scope.word;
+                            $scope.message = '';
+
+                            lenBefore = $scope.foundWords.length;
+                            $scope.foundWords.push($scope.word);
+
+                            $scope.foundWords = $scope.foundWords.LUnique();
+                            $scope.foundWords.LSortAlphabetically();
+                            lenAfter = $scope.foundWords.length;
+
+                            $scope.score.last = $scope.scoring.score($scope.selectedTiles);
+
+                            if (lenBefore !== lenAfter) {
+                                // new word not found yet
+                                $scope.score.sum += $scope.score.last;
+                            }
+
+                            $scope.onFoundWord()($scope.selectedTiles.length, $scope.word);
+
+                            w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
+                            if (w.solutions.indexOf($scope.word) > -1 &&
+                                w.found.indexOf($scope.word) === -1) {
+
+                                w.found.push($scope.word);
+                                w.found.LSortAlphabetically();
+
+                                idx = w.solutions.indexOf($scope.word);
+                                w.solutions.splice(idx, 1);
+
+                                w.percentage = Math.floor(w.found.length / w.allSolutions * 10000) / 100;
+                            }
+
+                            if ($scope.solutions.solution.length > 0) {
+                                $scope.percentage = Math.floor($scope.foundWords.length / $scope.solutions.solution.length * 10000) / 100;
+                            } else {
+                                $scope.percentage = 0;
+                            }
+
+
+                        } else {
+                            $scope.message = 'game.wordDoesNotExist';
+                        }
+                    } else {
+                        $scope.message = 'game.selectLetterOrType';
+                    }
+                }
+
+                function removeLastLetter() {
+                    var i,
+                        letterToPutBack,
+                        len;
+
+                    if ($scope.typedLetters.length > 0 &&
+                        $scope.selectedTiles.length > 0) {
+                        if ($scope.selectedTiles[$scope.selectedTiles.length - 1].value === 0 && /* joker */
+                            $scope.typedLetters[$scope.typedLetters.length - 1] !== '*') {
+
+                            len = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter.length;
+
+                            $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
+
+                            checkWord();
+
+                            $scope.typedLetters = $scope.typedLetters.slice(0, -len);
+                            $scope.typedLettersPrev = $scope.typedLetters;
+
+                            $scope.showJoker = true;
+                        } else {
+                            letterToPutBack = $scope.selectedTiles[$scope.selectedTiles.length - 1].letter;
+                            // delete last letter
+
+                            $scope.typedLetters = $scope.typedLetters.slice(0, -letterToPutBack.length);
+                            $scope.typedLettersPrev = $scope.typedLetters;
+                            $scope.selectedTiles.pop();
+
+                            checkWord();
+
+                            $scope.showJoker = false;
+
+                            // enable letter that we put back
+                            for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                                if ($scope.problemTiles[i].disabled &&
+                                    $scope.problemTiles[i].letter === letterToPutBack) {
+
+                                    $scope.problemTiles[i].disabled = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                $scope.removeAllLetters = function () {
+                    var i;
+
+                    $scope.showJoker = false;
+                    $scope.typedLetters = '';
+                    $scope.typedLettersPrev = $scope.typedLetters;
+                    // clear array
+                    $scope.selectedTiles = void 0;
+                    $scope.selectedTiles = [];
+
+                    checkWord();
+
+                    for (i = 0; i < $scope.problemTiles.length; i += 1) {
+                        $scope.problemTiles[i].disabled = false;
+                    }
+                };
+
+                $scope.removeAllLetters();
+
+                $scope.newGame = function () {
+                    $scope.onNewGame()();
+                };
+
+                $scope.showSolutions = function () {
+                    $scope.visibleSolutions = true;
+                };
+
+                // FIXME: turn timeouts into promises
+                // FIXME: add failure states
+                // 50ms, let the browser draw our updated state
+                var timeoutValue = 50;
+                var dict;
+                $timeout(function () {
+                    dict = new L.Dictionary($scope.options.lang + '/' + $scope.options.type, true /* use superagent */);
+
+                    // TODO: select scoring function
+                    $scope.scoring = new L.Score();
+
+                    $scope.state = 'game.downloading';
+                    $scope.longProcess = true;
+
+                    dict.initialize(function () {
+                        $scope.jokerTiles = dict.getAllLetters().map(function (letter, index) {
+                            if (letter !== '*') {
+                                return {letter: letter, value: dict.getLetterValue(letter), disabled: false};
+                            }
+                        });
+
+                        $timeout(function () {
+                            $scope.state = 'game.drawingLetters';
+                            $scope.longProcess = false;
+
+                            $timeout(function () {
+                                if ($scope.options.letters) {
+                                    // we got letters
+                                    $scope.letters = $scope.options.letters;
+                                } else {
+                                    // we need to draw letters
+                                    $scope.letters = dict.drawLetters($scope.options.consonants, $scope.options.vowels, $scope.options.jokers);
+                                }
+                                $scope.state = 'game.solvingProblem';
+                                $scope.longProcess = true;
+
+                                $timeout(function () {
+                                    var len,
+                                        i;
+
+                                    $scope.onNewLettersReady()($scope.letters);
+
+                                    $scope.solutions = dict.getSolutionForProblem(dict.encodeArray($scope.letters).join(''));
+
+                                    for (len in $scope.solutions.byLength) {
+                                        $scope.words[len] = $scope.words[len] || {
+                                            found: [],
+                                            solutions: [],
+                                            percentage: 0
+                                        };
+                                        for (i = 0; i < $scope.solutions.byLength[len].length; i += 1) {
+                                            // get all decoded solutions
+                                            $scope.words[len].solutions.push($scope.solutions.byLength[len][i].d);
+                                        }
+                                        $scope.words[len].solutions = $scope.words[len].solutions.LUnique();
+                                        $scope.words[len].solutions.LSortAlphabetically();
+                                        $scope.words[len].allSolutions = $scope.words[len].solutions.length;
+                                    }
+
+                                    $scope.words.reverse();
+
+                                    $scope.state = 'game.ready';
+                                    $scope.longProcess = false;
+
+                                    $timeout(function () {
+                                        $scope.gameIsReady = true;
+
+                                        $scope.problemTiles = $scope.letters.map(function (letter, index) {
+                                            return {
+                                                letter: letter,
+                                                value: dict.getLetterValue(letter),
+                                                disabled: false
+                                            };
+                                        });
+
+                                        $scope.problemText = $scope.letters.map(function (letter, index) {
+                                            return letter === dict.encodeLetter(letter) ? letter : letter + '(' + dict.encodeLetter(letter) + ')';
+                                        }).join(', ');
+
+                                        //console.log($scope.solutions);
+                                    }, timeoutValue);
+                                }, timeoutValue);
+                            }, timeoutValue);
+                        }, timeoutValue);
+                    });
+                }, timeoutValue);
+            }
+        };
+    })
 
     .config(function ($routeProvider, $locationProvider) {
         'use strict';
 
         $routeProvider
             .when('/game/:gameType/single/:lang/:type/', {
-                templateUrl: 'game.html',
+                templateUrl: 'singlePlayer.html',
                 controller: 'GameSinglePlayerController',
                 resolve: {
                     // I will cause a 1 second delay
@@ -574,9 +923,17 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     }
                 }
             })
-            .when('/game/single/wizard', {
+            .when('/game/single/wizard/', {
                 templateUrl: 'singleWizard.html',
                 controller: 'SingleWizardController'
+            })
+            .when('/game/multiplayer/', {
+                templateUrl: 'multiplayer.html',
+                controller: 'MultiplayerController'
+            })
+            .when('/game/multiplayer/:roomId', {
+                templateUrl: 'multiplayer.html',
+                controller: 'MultiplayerController'
             })
             .when('/home/', {
                 templateUrl: 'home.html',
@@ -586,7 +943,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 templateUrl: 'stats.html',
                 controller: 'StatsController'
             })
-            .when('/auth/logout', {
+            .when('/auth/logout/', {
                 template: '',
                 controller: function ($window) {
                     $window.location.reload();

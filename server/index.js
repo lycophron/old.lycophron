@@ -27,6 +27,7 @@ function start(config, done) {
 
             auth = require('./auth'),
             controller = require('./controllers'),
+            websockets = require('./websockets'),
 
             app = express(),
             server;
@@ -71,7 +72,11 @@ function start(config, done) {
         //console.log('Connected to db');
         logger.debug('Binding to ' + config.server.port);
         server = app.listen(config.server.port, function (err) {
-            logger.info('Listening on port %d', server.address().port);
+            logger.info('Web server is listening on port %d', server.address().port);
+
+            logger.debug('Adding websockets ... ', server.address().port);
+            websockets.init(server, logger, config);
+
             done(err);
         });
         //});
