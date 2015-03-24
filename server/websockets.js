@@ -19,7 +19,7 @@ function init(server, logger, config) {
 
     io.sockets.on('connection', function (socket) {
 
-        logger.debug('New client connected: ' + socket.id);
+        //logger.debug('New client connected: ' + socket.id);
         socket.emit('message', {
             message: 'Welcome to the chat',
             roomId: 'Global',
@@ -45,7 +45,7 @@ function init(server, logger, config) {
 
                 if (io.nsps['/'].adapter.rooms[roomId]) {
                     rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
-                    logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
+                    //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 }
             }
             sendAvailableRooms();
@@ -58,7 +58,7 @@ function init(server, logger, config) {
 
                 if (io.nsps['/'].adapter.rooms[roomId]) {
                     rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
-                    logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
+                    //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 } else {
                     // if everybody left the room just delete it
                     delete rooms[roomId];
@@ -79,18 +79,6 @@ function init(server, logger, config) {
             createBroadcastedHandler(broadcastedMessages[i]);
         }
 
-
-        //socket.on('send', function (data) {
-        //    console.log(data.user, data.message, data.room);
-        //    if (data.room) {
-        //        socket.broadcast.to(data.room).emit('message', data);
-        //    } else {
-        //        // This is a global message
-        //        data.room = 'Global';
-        //        socket.broadcast.emit('message', data);
-        //    }
-        //});
-
         //
         socket.on('signIn', function (data) {
             var resData = {
@@ -98,7 +86,7 @@ function init(server, logger, config) {
                     roomId: 'Global'
                 };
 
-            logger.debug('user is signing in using socket io');
+            //logger.debug('user is signing in using socket io');
 
             // check if user is already in the list
             if (users.hasOwnProperty(socket.id)) {
@@ -108,7 +96,7 @@ function init(server, logger, config) {
 
             users[socket.id] = data;
 
-            logger.debug('connected users available ' + Object.keys(users).length);
+            //logger.debug('connected users available ' + Object.keys(users).length);
             socket.broadcast.emit('userAvailable', resData);
 
             sendAvailableUsers();
@@ -118,7 +106,7 @@ function init(server, logger, config) {
             var i,
                 keys = Object.keys(rooms);
 
-            logger.debug(socket.id + ' disconnected');
+            //logger.debug(socket.id + ' disconnected');
 
 
             for (i = 0; i < keys.length; i += 1) {
@@ -159,7 +147,7 @@ function init(server, logger, config) {
                 resAllUsersArr.push(resAllUsers[key]);
             }
 
-            logger.debug('unique users available ' + resAllUsersArr.length);
+            //logger.debug('unique users available ' + resAllUsersArr.length);
 
             // send it to all connected clients
             io.emit('availableUsers', resAllUsersArr);
@@ -176,7 +164,7 @@ function init(server, logger, config) {
                 }
             }
 
-            logger.debug('unique rooms available ' + resAllRooms.length);
+            //logger.debug('unique rooms available ' + resAllRooms.length);
 
             // send it to all connected clients
             io.emit('availableRooms', resAllRooms);

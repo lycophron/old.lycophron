@@ -142,10 +142,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         };
 
-        $scope.onNewLettersReady = function () {
+        $scope.onNewLettersReady = function (letters) {
 
         };
 
+        $scope.onGameReady = function (solutions) {
+
+        };
     })
 
     .controller('SingleWizardController', function ($scope, $routeParams, $http) {
@@ -276,11 +279,15 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.wizardShown = true;
         };
 
-        $scope.createRoom = function (room) {
+        $scope.createRoom = function (room, doNotJoin) {
             // FIXME: any race conditions here?
             room.id = 'multiplayer_' + (new Date()).toISOString();
             socket.emit('createRoom', room);
-            $scope.joinRoom(room.roomId);
+
+            if (!doNotJoin) {
+                // try to join to the created room
+                $scope.joinRoom(room.id);
+            }
             $scope.wizardShown = false;
         };
 
@@ -327,7 +334,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             success(function (data, status, headers, config) {
                 // this callback will be called asynchronously
                 // when the response is available
-                console.log(data);
+                //console.log(data);
                 data.id = data.id || 'anonymous_' + (new Date()).toISOString();
                 data.displayName = data.displayName || 'anonymous';
 
@@ -353,7 +360,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     numVowels: 9,
                     numJokers: 0,
                     allowedUsers: []
-                });
+                }, true);
 
                 $scope.newRoom = {
                     title: 'new room ' + Math.floor(Math.random() * 100),
@@ -436,15 +443,39 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
 
         socket.on('foundWord', function (data) {
+            var i,
+                key,
+                thisUser = $scope.userWords[data.user];
             // another user has found a word
 
             // user
             // length
             // word
 
-            $scope.userWords[data.user] = $scope.userWords[data.user] || {};
-            $scope.userWords[data.user][data.length] = $scope.userWords[data.user][data.length] || [];
-            $scope.userWords[data.user][data.length].push(data.word);
+            thisUser = thisUser || {};
+            thisUser.id = thisUser.id || data.user;
+            thisUser.name = 'unknown';
+
+            for (i = 0; i < $scope.availableUsers.length; i += 1) {
+                if ($scope.availableUsers[i].id === data.user) {
+                    thisUser.name = $scope.availableUsers[i].displayName;
+                    break;
+                }
+            }
+
+            thisUser.words = thisUser.words || {};
+            thisUser.words[data.length] = thisUser.words[data.length] || [];
+            thisUser.words[data.length].push(data.word);
+
+            if (thisUser.numFoundWords) {
+                thisUser.numFoundWords += 1;
+            } else {
+                thisUser.numFoundWords = 1;
+            }
+            thisUser.numSolution = thisUser.numSolution || $scope.solutions.solution.length;
+            thisUser.percentage = Math.floor(thisUser.numFoundWords / thisUser.numSolution * 10000) / 100;
+
+            $scope.userWords[data.user] = thisUser;
 
             forceDigestCycle();
         });
@@ -479,9 +510,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         function startGame(options) {
             $scope.gameIsRunning = true;
-            $scope.multiplayer = true;
+
             $scope.userWords = {};
-            $scope.gameOptions = options;
+
+            $scope.gameOptions = JSON.parse(JSON.stringify(options)); // we need a deep copy
+            $scope.gameOptions.multiplayer = true;
+            $scope.gameOptions.userWords = $scope.userWords;
+            $scope.gameOptions.currentUser = $scope.currentUser;
 
             $scope.onNewGame = function () {
                 // FIXME: we should not use the $route.reload for new game, but this is the only option for now
@@ -502,6 +537,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 }
             };
 
+            $scope.onGameReady = function (solutions) {
+                //console.log(solutions);
+                $scope.solutions = solutions;
+            };
 
         }
     })
@@ -549,7 +588,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 options: '=',
                 onNewGame: '&',
                 onFoundWord: '&',
-                onNewLettersReady: '&'
+                onNewLettersReady: '&',
+                onGameReady: '&'
             },
             templateUrl: 'game.html',
             controller: function ($scope, $timeout) {
@@ -711,11 +751,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             $scope.score.last = $scope.scoring.score($scope.selectedTiles);
 
                             if (lenBefore !== lenAfter) {
-                                // new word not found yet
+                                // new word found
                                 $scope.score.sum += $scope.score.last;
+                                $scope.onFoundWord()($scope.selectedTiles.length, $scope.word);
                             }
-
-                            $scope.onFoundWord()($scope.selectedTiles.length, $scope.word);
 
                             w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
                             if (w.solutions.indexOf($scope.word) > -1 &&
@@ -896,6 +935,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                             return letter === dict.encodeLetter(letter) ? letter : letter + '(' + dict.encodeLetter(letter) + ')';
                                         }).join(', ');
 
+                                        $scope.onGameReady()($scope.solutions);
                                         //console.log($scope.solutions);
                                     }, timeoutValue);
                                 }, timeoutValue);

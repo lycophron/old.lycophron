@@ -44,6 +44,7 @@
             <md-button class="md-primary"
                        aria-label="game.newGame"
                        ng-i18next="game.newGame"
+                       ng-hide="options.multiplayer"
                        ng-click="newGame()"></md-button>
         </section>
 
@@ -67,12 +68,27 @@
 
         <!--<md-toolbar class="">-->
         <div class="md-toolbar-tools" layout-align="space-between center">
-            <div hide-sm>{{solutions.lang}}</div>
-            <div hide-sm ng-i18next="dictType.{{solutions.typeName}}"></div>
-            <div ng-i18next="game.progress"></div>
-            <div ng-i18next="[i18next]({count:score.sum})game.score"></div>
+            <div ng-if="options.multiplayer">{{options.currentUser.displayName}}</div>
+            <div ng-hide="options.multiplayer" hide-sm>{{solutions.lang}}</div>
+            <div ng-hide="options.multiplayer" hide-sm ng-i18next="dictType.{{solutions.typeName}}"></div>
+            <div ng-hide="options.multiplayer" ng-i18next="game.progress"></div>
+            <div ng-hide="options.multiplayer" ng-i18next="[i18next]({count:score.sum})game.score"></div>
             <div>{{foundWords.length}}/{{solutions.solution.length}}</div>
             <div>{{percentage}}%</div>
+        </div>
+
+        <div ng-if="options.multiplayer" layout-fill>
+            <div ng-repeat="user in options.userWords" layout-fill>
+                <!--{{user}}-->
+                <md-progress-linear class="md-primary" md-mode="determinate" value="{{user.percentage}}"></md-progress-linear>
+
+                <div class="md-toolbar-tools" layout-align="space-between center">
+                    <div>{{user.name}}</div>
+                    <div>{{user.numFoundWords}}/{{user.numSolution}}</div>
+                    <div>{{user.percentage}}%</div>
+                </div>
+            </div>
+
         </div>
         <!--</md-toolbar>-->
 
