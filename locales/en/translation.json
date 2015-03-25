@@ -1,6 +1,8 @@
 {
   "oldGame": "Open the old game (available till 03/25/2015)",
 
+  "underConstruction": "Under construction ...",
+
   "chooseLanguage": "Choose a language",
 
   "numWordsText": "Number of words:",
@@ -47,6 +49,11 @@
   },
 
   "game": {
+    "name": "Name of the game",
+    "defaultTitle": "My game",
+
+    "owner": "Owner",
+
     "loading": "Loading ...",
     "downloading": "Downloading ...",
     "drawingLetters": "Drawing letters from bag ...",
@@ -56,6 +63,7 @@
     "typeWordHere": "Type here your word or click on the tiles.",
     "clearTiles": "Clear the word",
     "showSolutions": "Show solutions",
+    "hideSolutions": "Hide solutions",
     "newGame": "New game",
 
     "selectLetterOrType": "Pick a letter tile or type a word in the text box.",
@@ -72,5 +80,29 @@
 
   "singlePlayer": {
     "info": "Wizard to create a new single player game. Select the options and click on the button below."
-  }
+  },
+
+  "multiplayer": {
+    "connected": "Connected to server.",
+
+    "newRoomWizard": "Create a new room",
+    "cancelWizard": "Cancel",
+
+    "rooms": "Active rooms",
+    "noRoomsCreateOne": "No rooms, please create a new one.",
+    "defaultRoomName": "New room",
+
+    "players": "Number of players",
+    "openRoom": "Public room",
+    "roomState": "State",
+
+    "startGame": "Start the game",
+    "leave": "Leave room",
+
+    "join": "Join"
+
+  },
+
+  "waitingForUsers": "waiting ...",
+  "running": "in progress"
 }

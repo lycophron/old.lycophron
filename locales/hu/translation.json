@@ -1,6 +1,8 @@
 {
   "oldGame": "Régi játék megnyitása (elérhető 2015. 03. 25-ig)",
 
+  "underConstruction": "Fejlesztés alatt ...",
+
   "chooseLanguage": "Válassz nyelvet",
 
   "numWordsText": "Szavak száma:",
@@ -47,6 +49,12 @@
   },
 
   "game": {
+    "name": "Játék neve",
+    "defaultTitle": "Az én játékom",
+
+    "owner": "Játékmester",
+
+
     "loading": "Betöltés ...",
     "downloading": "Letöltés ...",
     "drawingLetters": "Betűk húzása a zsákból ...",
@@ -56,6 +64,7 @@
     "typeWordHere": "Írd ide a szót, vagy kattints a betűkre.",
     "clearTiles": "A leírt szó törlése",
     "showSolutions": "Megoldások",
+    "hideSolutions": "Megoldások elrejtése",
     "newGame": "Új játék",
 
     "selectLetterOrType": "Válassz egy betűt vagy gépeld be a szót.",
@@ -71,6 +80,32 @@
   },
 
   "singlePlayer": {
-    "info": "Varázsló egyjátékos játék létrehozásához. Válassz beállitásokat majd kattints a gombra."
-  }
+    "info": "Varázsló egyjátékos játék létrehozásához. Válassz beállításokat majd kattints a gombra."
+  },
+
+  "multiplayer": {
+    "connected": "Csatlakoztál a szerverhez.",
+
+    "newRoomWizard": "Új szoba létrehozása",
+    "cancelWizard": "Mégsem",
+
+    "rooms": "Aktív szobák",
+    "noRoomsCreateOne": "Nincsenek szobák, hozz létre egy újat.",
+    "defaultRoomName": "Új szoba",
+
+    "players": "Játékosok száma",
+    "openRoom": "Nyilvános szoba",
+    "roomState": "Állapot",
+
+    "startGame": "Játék indítása",
+    "leave": "Kilépés",
+
+    "join": "Belépés"
+
+  },
+
+  "waitingForUsers": "várakozás ...",
+  "running": "játékban"
+
+
 }

@@ -54,10 +54,10 @@
             </div>
 
             <div>
-                <div layout="row" layout-align="space-between center"><span ng-i18next="mulitplayer.roomState"></span><span>{{room.state}}</span></div>
+                <div layout="row" layout-align="space-between center"><span ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{room.state}}"></span></div>
             </div>
 
-            <md-button ng-disabled="!room.state || room.state !== 'waitingForUsers'" class="md-primary" ng-click="onJoinToRoom(room.id)">Join</md-button>
+            <md-button ng-disabled="!room.state || room.state !== 'waitingForUsers'" class="md-primary" ng-click="onJoinToRoom(room.id)"><span ng-i18next="multiplayer.join"></span></md-button>
 
         </md-whiteframe>
     </div>

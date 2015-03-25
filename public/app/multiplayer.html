@@ -1,7 +1,7 @@
 <div>
     <h3 ng-i18next="underConstruction"></h3>
 
-    <div>{{connectionStatus}}</div>
+    <div ng-i18next="{{connectionStatus}}"></div>
 
     <!--<div>-->
     <!--<h3 ng-i18next="multiplayer.userListTitle"></h3>-->
@@ -29,8 +29,9 @@
         </div>
     </div>
 
-    <div ng-if="!currentRoom && !wizardShown" layout="row" layout-fill layout-align="center start">
+    <div ng-if="!currentRoom && !wizardShown" layout="column" layout-fill layout-align="center start">
         <rooms layout-fill rooms="availableRooms" currentUser="currentUser" on-join="joinRoom"></rooms>
+        <div ng-if="availableRooms.length === 0"><span ng-i18next="multiplayer.noRoomsCreateOne"></span></div>
     </div>
 
 
@@ -50,11 +51,11 @@
                 <md-button class="md-warn md-raised" ng-click="leaveRoom(currentRoomId)" ng-i18next="multiplayer.leave"></md-button>
             </div>
 
-            <div><span ng-i18next="mulitplayer.numUsers"></span> {{currentRoom.numUsers}}</div>
-            <div><span ng-i18next="mulitplayer.owner"></span> {{currentRoom.owner}}</div>
-            <div>{{currentUser}}</div>
+            <div><span ng-i18next="multiplayer.players"></span> {{currentRoom.numUsers}}</div>
+            <div><span ng-i18next="game.owner"></span> {{currentRoom.owner.displayName}}</div>
+            <div>{{currentUser.displayName}}</div>
             <div>{{currentRoom.title}}</div>
-            <div><span ng-i18next="mulitplayer.roomState"></span> {{currentRoom.state}}</div>
+            <div><span ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{multiplayer.roomState}}"></span><span ng-i18next="{{currentRoom.state}}"></span> </div>
 
             <game ng-if="gameIsRunning" options="gameOptions" on-new-game="onNewGame" on-found-word="onFoundWord"
                   on-new-letters-ready="onNewLettersReady" on-game-ready="onGameReady"></game>
