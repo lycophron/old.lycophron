@@ -28,7 +28,7 @@ var gulp = require('gulp'),
     templateCache = require('gulp-angular-templatecache');
 
 
-gulp.task('delete-build', function (cb) {
+gulp.task('clean', function (cb) {
     'use strict';
 
     rimraf('build/', cb);
@@ -47,7 +47,9 @@ gulp.task('jsx', function () {
 // Basic usage
 
 gulp.task('templates', function () {
-    gulp.src('public/app/**/*.html')
+    'use strict';
+
+    return gulp.src('public/app/**/*.html')
         .pipe(templateCache())
         .pipe(gulp.dest('public/app/'));
 });
@@ -85,40 +87,31 @@ gulp.task('browserify-website', ['jsx', 'templates'], function () {
             debug: true
         }))
         .pipe(gulp.dest('build/app/'));
+
 });
 
-gulp.task('browserify-dicts', ['update-dictionaries', 'jsx'], function () {
+gulp.task('browserify-dicts', function (cb) {
     'use strict';
-    gulp.src(['locales/**/*.js*']).pipe(gulp.dest('build/locales'));
+    gulp.src(['locales/**/*.js*'])
+        .pipe(gulp.dest('build/locales'));
+
+    runSequence('update-dictionaries', 'jsx', cb);
 });
 
-gulp.task('browserify', ['browserify-dicts', 'browserify-website'], function () {
+gulp.task('browserify', function (cb) {
     'use strict';
+
+    runSequence('browserify-dicts', 'browserify-website', cb);
 });
 
 gulp.task('lint', function () {
     'use strict';
 
-    gulp.src(sourcePattern)
+    return gulp.src(sourcePattern)
         .pipe(jshint('.jshintrc'))
         .pipe(jshint.reporter('jshint-stylish'));
 });
 
-function changeNotification(event) {
-    'use strict';
-
-    console.log('File', event.path, 'was', event.type, ', running tasks...');
-}
-
-function build(cb) {
-    'use strict';
-
-    var jsWatcher = gulp.watch(sourcePattern, [/*'js',*/ 'lint']);
-
-    jsWatcher.on('change', changeNotification);
-
-    return cb;
-}
 
 gulp.task('jsx-build', function () {
     'use strict';
@@ -139,7 +132,7 @@ gulp.task('register-watchers-website', [], function (cb) {
 gulp.task('dev-website', function (cb) {
     'use strict';
 
-    runSequence('delete-build', 'browserify-website', 'register-watchers-website', cb);
+    runSequence('clean', 'browserify-website', 'register-watchers-website', cb);
 });
 
 gulp.task('register-watchers', [], function (cb) {
@@ -153,7 +146,7 @@ gulp.task('register-watchers', [], function (cb) {
 gulp.task('dev', function (cb) {
     'use strict';
 
-    runSequence('delete-build', 'browserify', 'register-watchers', cb);
+    runSequence('clean', 'browserify', 'register-watchers', cb);
 });
 
 gulp.task('test_cover', shell.task(['npm run test_cover']));
@@ -168,7 +161,9 @@ gulp.task('test_watch', ['test_cover'], function (cb) {
 gulp.task('compile-all', function (cb) {
     'use strict';
 
-    runSequence('delete-build', 'browserify', cb);
+    runSequence('clean', 'browserify', cb);
 });
 
-gulp.task('default', [/*'js',*/ 'lint'], build);
+gulp.task('default', ['compile-all', 'lint'], function () {
+    'use strict';
+});
