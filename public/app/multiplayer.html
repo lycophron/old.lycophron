@@ -1,180 +1,41 @@
 <div>
-    <h1 ng-i18next="underConstruction"></h1>
+    <h3 ng-i18next="underConstruction"></h3>
 
-    <div>
-        {{connectionStatus}}
-    </div>
+    <div>{{connectionStatus}}</div>
+
     <!--<div>-->
-        <!--<h3 ng-i18next="multiplayer.userListTitle"></h3>-->
+    <!--<h3 ng-i18next="multiplayer.userListTitle"></h3>-->
 
-        <!--<div ng-repeat="user in availableUsers">-->
-            <!--<span>{{user.id}} {{user.displayName}}</span>-->
-        <!--</div>-->
+    <!--<div ng-repeat="user in availableUsers">-->
+    <!--<span>{{user.id}} {{user.displayName}}</span>-->
+    <!--</div>-->
     <!--</div>-->
 
-
     <div>
-        <div ng-if="currentRoom">
+        <div ng-show="currentRoom">
             <!--<span>{{currentRoom}}</span>-->
             <md-button class="md-warn md-raised" ng-click="leaveRoom(currentRoom)">Leave</md-button>
         </div>
 
-        <div ng-if="!currentRoom && newRoom">
-            <md-button class="md-primary md-raised"
-                       aria-label="multiplayer.newRoomWizard" ng-disabled="wizardShown" ng-click="newRoomWizard()"
-                       ng-i18next="multiplayer.newRoomWizard"></md-button>
+        <div ng-show="!currentRoom && newRoom" layout="column" layout-align="center center">
+            <div>
+                <!-- controls -->
+                <md-button class="md-primary md-raised"
+                           aria-label="multiplayer.newRoomWizard" ng-disabled="wizardShown" ng-click="newRoomWizard()"
+                           ng-i18next="multiplayer.newRoomWizard"></md-button>
+                <md-button class="md-warn md-raised"
+                           aria-label="multiplayer.cancelWizard" ng-hide="!wizardShown" ng-click="cancelWizard()"
+                           ng-i18next="multiplayer.cancelWizard"></md-button>
+            </div>
 
-            <div ng-if="wizardShown">
-
-                <!-- FIXME: DUPLICATED TEMPLATE !!! COMPARE: singleWizard.html -->
-                <form layout="column" layout-align="center center" layout-fill name="roomForm">
-
-                    <md-input-container>
-                        <label ng-i18next="multiplayer.roomName"></label>
-                        <input required md-maxlength="30" name="title" ng-model="newRoom.title">
-                        <!--<div ng-messages="roomForm.title.$error">-->
-                            <!--<div ng-message="required">rfklnsknfsjknfkdsjnfkjdsnfkjdsn</div>-->
-                            <!--&lt;!&ndash;The name has to be less than 30 characters long.&ndash;&gt;-->
-                            <!--<div ng-message="md-maxlength" ng-i18next="form.max30Char"></div>-->
-                        <!--</div>-->
-                    </md-input-container>
-
-                    <md-select ng-disabled="true" ng-model="newRoom.gameType" md-on-open="loadLanguages()">
-                        <md-select-label>{{ newRoom.gameType ? newRoom.gameType : 'Choose a game type' }}
-                        </md-select-label>
-                        <md-option ng-value="newRoom.gameType" ng-repeat="gameType in gameTypes">
-                            <div md-no-ink class="md-primary">{{newRoom.gameType}}</div>
-                            <md-divider ng-if="!$last"></md-divider>
-                        </md-option>
-                    </md-select>
-
-                    <md-select ng-model="newRoom.language" md-on-open="loadLanguages()">
-                        <md-select-label>
-                            <span ng-if="newRoom.language">{{newRoom.language.fullName}}</span>
-                            <span ng-if="!newRoom.language" ng-i18next="chooseLanguage"></span>
-                        </md-select-label>
-                        <md-option ng-value="language" ng-repeat="language in languages">
-                            <div md-no-ink class="md-primary">{{language.fullName}} [{{language.numWords}} <span
-                                    ng-i18next="words"></span>]
-                            </div>
-                            <!--<label ng-disabled="true"><span ng-i18next="numWordsText"></span> {{language.numWords}}</label>-->
-
-                            <md-divider ng-if="!$last"></md-divider>
-                        </md-option>
-                    </md-select>
-
-                    <div ng-show="newRoom.language" layout-fill layout-align="space-between center">
-                        <div layout>
-                            <div flex layout layout-align="center center">
-                                <span ng-i18next="consonantsText"></span>
-                            </div>
-
-                            <div flex layout layout-align="center center">
-                                <span>{{newRoom.numConsonants}}</span>
-                            </div>
-
-                            <md-slider flex class="md-primary" md-discrete ng-model="newRoom.numConsonants" step="1" min="3"
-                                       max="10"
-                                       aria-label="Consonants"></md-slider>
-                        </div>
-                        <div layout>
-                            <div flex layout layout-align="center center">
-                                <span ng-i18next="vowelsText"></span>
-                            </div>
-
-                            <div flex layout layout-align="center center">
-                                <span>{{newRoom.numVowels}}</span>
-                            </div>
-
-                            <md-slider flex class="md-primary" md-discrete ng-model="newRoom.numVowels" step="1" min="2"
-                                       max="9"
-                                       aria-label="Vowels"></md-slider>
-                        </div>
-                        <div layout>
-                            <div flex layout layout-align="center center">
-                                <span ng-i18next="jokersText"></span>
-                            </div>
-
-                            <div flex layout layout-align="center center">
-                                <span>{{newRoom.numJokers}}</span>
-                            </div>
-
-                            <md-slider flex class="md-primary" md-discrete ng-model="newRoom.numJokers" step="1" min="0"
-                                       max="1"
-                                       aria-label="Jokers"></md-slider>
-                        </div>
-
-                        <!--<div layout>-->
-                        <!--<md-button flex layout layout-align="center center" aria-label="CreateNewGame"-->
-                        <!--class="md-raised md-primary"-->
-                        <!--href="/game/{{gameType}}/single/{{language.name}}/{{language.type}}/?consonants={{numConsonants}}&vowels={{numVowels}}&jokers={{numJokers}}"-->
-                        <!--ng-i18next="createNewGame"></md-button>-->
-                        <!--</div>-->
-                        <div layout>
-                            <md-button
-                                class="md-primary md-raised"
-                                   aria-label="multiplayer.createRoom" ng-click="createRoom(newRoom)"
-                                   ng-i18next="multiplayer.createRoom"></md-button>
-                        </div>
-                    </div>
-                </form>
-
-
-                <!-- FIXME: DUPLICATED TEMPLATE !!!-->
+            <div ng-show="wizardShown" layout-fill>
+                <game-wizard game="newRoom" on-create="createRoom"></game-wizard>
             </div>
         </div>
     </div>
 
-    <!-- FIXME: create a ROOM directive -->
     <div ng-if="!currentRoom" layout="row" layout-fill layout-align="center start">
-        <section layout-fill>
-            <!--<md-toolbar class="">-->
-                <h2 class="md-toolbar-tools" layout-align="space-between center"
-                    ng-i18next="multiplayer.rooms">
-                </h2>
-            <!--</md-toolbar>-->
-
-            <md-content>
-                <md-list layout="row" layout-fill layout-align="start start">
-                    <md-item ng-repeat="room in availableRooms">
-                        <!-- TODO: show it only if user can get in {{room.allowedUsers}} -->
-
-                        <md-item-content>
-                            <!--<div class="md-tile-left">-->
-                            <!--<img ng-src="{{item.face}}" class="face" alt="{{item.who}}">-->
-                            <!--</div>-->
-                            <div class="md-tile-content word-content">
-                                <h3>{{room.title}}</h3>
-
-                                <p>{{room.id}}</p>
-
-                                <h4>{{room.owner}}</h4>
-                                <h4>{{room.gameType}}</h4>
-
-                                <div><span>{{room.language.fullName}}</span><span> [{{room.language.numWords}}]</span>
-                                </div>
-
-                                <div><span ng-i18next="consonantsText"></span><span> {{room.numConsonants}}</span></div>
-                                <div><span ng-i18next="vowelsText"></span><span> {{room.numVowels}}</span></div>
-                                <div><span ng-i18next="jokersText"></span><span> {{room.numJokers}}</span></div>
-
-                                <div ng-if="room.allowedUsers.length === 0">
-                                    <span ng-i18next="multiplayer.openRoom"></span>
-                                </div>
-                                <div ng-if="room.allowedUsers.length !== 0">
-                                    <span ng-i18next="multiplayer.closedRoom"></span>
-                                </div>
-
-                                <div><span ng-i18next="multiplayer.players"></span> {{room.numUsers}}</div>
-                                <md-button class="md-primary" ng-click="joinRoom(room.id)">Join</md-button>
-
-                            </div>
-                        </md-item-content>
-                        <!--<md-divider md-inset ng-if="!$last"></md-divider>-->
-                    </md-item>
-                </md-list>
-            </md-content>
-        </section>
+        <rooms layout-fill rooms="availableRooms" currentUser="currentUser" on-join="joinRoom"></rooms>
     </div>
 
 

@@ -151,59 +151,32 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
     })
 
-    .controller('SingleWizardController', function ($scope, $routeParams, $http) {
+    .controller('SingleWizardController', function ($scope, $routeParams, $http, $location, $i18next) {
         'use strict';
 
         $scope.name = 'SingleWizardController';
         $scope.params = $routeParams;
 
         // TODO: extract business logic min/max/default num of consonants, vowels, jokers
-        $scope.numConsonants = 10;
-        $scope.numVowels = 9;
-        $scope.numJokers = 0;
+        $scope.game = {
+            title: $i18next('game.defaultTitle'),
+            gameType: 'anagramProblem',
+            language: null,
+            numConsonants: 10,
+            numVowels: 9,
+            numJokers: 0
+        };
 
-        $scope.language = null;
-        $scope.gameType = 'anagramProblem';
-        $scope.gameTypes = ['anagramProblem'];
-
-        $scope.loadLanguages = function () {
-            $scope.languages = [];
-            // TODO: service to get languages
-            return $http.get('/locales/info.json').
-                success(function (data, status, headers, config) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    var langCodes = Object.keys(data),
-                        language,
-                        types,
-                        i,
-                        j;
-
-                    for (i = 0; i < langCodes.length; i += 1) {
-                        types = Object.keys(data[langCodes[i]].types);
-                        for (j = 0; j < types.length; j += 1) {
-                            language = {
-                                name: langCodes[i],
-                                type: types[j],
-                                fullName: langCodes[i] + ' (' + types[j] + ')',
-                                numWords: data[langCodes[i]].types[types[j]].numWords
-                            };
-                            $scope.languages.push(language);
-                        }
-                    }
-
-                    $scope.languages.sort(function (a, b) {
-                        return a.fullName.localeCompare(b.fullName);
-                    });
-                }).
-                error(function (data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
+        $scope.createNew = function () {
+            var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/' + $scope.game.language.type +
+                '/?consonants=' + $scope.game.numConsonants + '&vowels=' + $scope.game.numVowels + '&jokers=' + $scope.game.numJokers;
+            // FIXME: how to navigate to a route nicely
+            //$location.path('/game/{{gameType}}/single/{{language.name}}/{{language.type}}/?consonants={{numConsonants}}&vowels={{numVowels}}&jokers={{numJokers}}');
+            $location.url(url);
         };
     })
 
-    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location) {
+    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next) {
         'use strict';
 
         var socket = io.connect({forceNew: true}),
@@ -279,6 +252,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.wizardShown = true;
         };
 
+        $scope.cancelWizard = function () {
+            $scope.wizardShown = false;
+        };
+
         $scope.createRoom = function (room, doNotJoin) {
             // FIXME: any race conditions here?
             room.id = 'multiplayer_' + (new Date()).toISOString();
@@ -346,25 +323,31 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 }
 
                 // default
-                $scope.createRoom({
-                    title: 'Default ' + Math.floor(Math.random() * 100),
-                    owner: $scope.currentUser.id,
-                    gameType: 'anagramProblem',
-                    language: {
-                        fullName: "hu-HU (default)",
-                        name: "hu-HU",
-                        numWords: 115654,
-                        type: "default"
-                    },
-                    numConsonants: 10,
-                    numVowels: 9,
-                    numJokers: 0,
-                    allowedUsers: []
-                }, true);
-
+                var numRoomsToGenerate = Math.floor(Math.random() * 20) + 30;
+                //numRoomsToGenerate = 0;
+                console.log(numRoomsToGenerate);
+                for (var i = 0; i < numRoomsToGenerate; i += 1) {
+                    $timeout(function () {
+                        $scope.createRoom({
+                            title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 100),
+                            owner: $scope.currentUser,
+                            gameType: 'anagramProblem',
+                            language: {
+                                fullName: "hu-HU (default)",
+                                name: "hu-HU",
+                                numWords: 115654,
+                                type: "default"
+                            },
+                            numConsonants: 10,
+                            numVowels: 9,
+                            numJokers: 0,
+                            allowedUsers: []
+                        }, true);
+                    }, 10);
+                }
                 $scope.newRoom = {
-                    title: 'new room ' + Math.floor(Math.random() * 100),
-                    owner: data.id,
+                    title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 100),
+                    owner: $scope.currentUser,
                     gameType: 'anagramProblem',
                     language: null,
                     numConsonants: 10,
@@ -400,47 +383,6 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 // or server returns response with an error status.
                 console.error('cannot retrieve /auth/ info');
             });
-
-
-        // FIXME: duplicated code !!!
-        $scope.gameTypes = ['anagramProblem'];
-
-        $scope.loadLanguages = function () {
-            $scope.languages = [];
-            // TODO: service to get languages
-            return $http.get('/locales/info.json').
-                success(function (data, status, headers, config) {
-                    // this callback will be called asynchronously
-                    // when the response is available
-                    var langCodes = Object.keys(data),
-                        language,
-                        types,
-                        i,
-                        j;
-
-                    for (i = 0; i < langCodes.length; i += 1) {
-                        types = Object.keys(data[langCodes[i]].types);
-                        for (j = 0; j < types.length; j += 1) {
-                            language = {
-                                name: langCodes[i],
-                                type: types[j],
-                                fullName: langCodes[i] + ' (' + types[j] + ')',
-                                numWords: data[langCodes[i]].types[types[j]].numWords
-                            };
-                            $scope.languages.push(language);
-                        }
-                    }
-
-                    $scope.languages.sort(function (a, b) {
-                        return a.fullName.localeCompare(b.fullName);
-                    });
-                }).
-                error(function (data, status, headers, config) {
-                    // called asynchronously if an error occurs
-                    // or server returns response with an error status.
-                });
-        };
-
 
         socket.on('foundWord', function (data) {
             var i,
@@ -479,10 +421,6 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
             forceDigestCycle();
         });
-
-
-        //////////////////
-        // TODO: this is a copy pasted code, refactor it! see single player controller
 
 
         $scope.startNewGame = function () {
@@ -556,6 +494,83 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 joker: '=joker'
             },
             templateUrl: 'tile.html'
+        };
+    })
+
+    .directive('gameWizard', function ($http) {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            scope: {
+                game: '=game',
+                onCreate: '&onCreate'
+            },
+            templateUrl: 'gameWizard.html',
+            controller: function ($scope) {
+
+                $scope.onCreateNew = function () {
+                    $scope.onCreate()($scope.game);
+                };
+
+                $scope.gameTypes = ['anagramProblem'];
+
+                $scope.loadLanguages = function () {
+                    $scope.languages = [];
+                    // TODO: service to get languages
+                    return $http.get('/locales/info.json').
+                        success(function (data, status, headers, config) {
+                            // this callback will be called asynchronously
+                            // when the response is available
+                            var langCodes = Object.keys(data),
+                                language,
+                                types,
+                                i,
+                                j;
+
+                            for (i = 0; i < langCodes.length; i += 1) {
+                                types = Object.keys(data[langCodes[i]].types);
+                                for (j = 0; j < types.length; j += 1) {
+                                    language = {
+                                        name: langCodes[i],
+                                        type: types[j],
+                                        fullName: langCodes[i] + ' (' + types[j] + ')',
+                                        numWords: data[langCodes[i]].types[types[j]].numWords
+                                    };
+                                    $scope.languages.push(language);
+                                }
+                            }
+
+                            $scope.languages.sort(function (a, b) {
+                                return a.fullName.localeCompare(b.fullName);
+                            });
+                        }).
+                        error(function (data, status, headers, config) {
+                            // called asynchronously if an error occurs
+                            // or server returns response with an error status.
+                        });
+                };
+            }
+        };
+    })
+
+    .directive('rooms', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            scope: {
+                rooms: '=rooms',
+                currentUser: '=currentUser',
+                onJoin: '&onJoin'
+            },
+            templateUrl: 'rooms.html',
+            controller: function ($scope) {
+
+                $scope.onJoinToRoom = function (roomId) {
+                    $scope.onJoin()(roomId);
+                };
+            }
         };
     })
 

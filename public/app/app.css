@@ -90,3 +90,32 @@ input {
 .word-content {
     padding: 0.5ex;
 }
+
+.room {
+    padding: 1ex;
+    margin: 0.5ex;
+    min-width: 22.1ex;
+}
+
+.room .room-title {
+    font-size: 1.2em;
+    padding: 1ex 0;
+}
+
+.room .room-details {
+    font-size: 0.85em;
+}
+
+.room .room-id {
+    font-size: 0.61em;
+}
+
+.room .room-restriction {
+    padding: 0.5ex 0;
+}
+
+.rooms-header {
+    font-size: 1.3em;
+    padding: 2ex 0;
+    font-weight: bold;
+}

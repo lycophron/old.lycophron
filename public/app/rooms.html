@@ -1,0 +1,59 @@
+<section layout="column" layout-align="center center">
+    <!--<md-toolbar class="">-->
+    <div class="rooms-header"
+        ng-i18next="multiplayer.rooms">
+    </div>
+    <!--</md-toolbar>-->
+
+    <div layout="row" layout-wrap layout-align="start start">
+        <md-whiteframe class="md-whiteframe-z1 md-padding room" layout="column" ng-repeat="room in rooms">
+
+            <div class="room-title">{{room.title}}</div>
+            <div class="room-id">{{room.id}}</div>
+
+            <div class="room-details">
+                <div layout="row" layout-align="space-between center">
+                    <div ng-i18next="game.owner"></div>
+                    <div class="md-primary">{{room.owner.displayName}}</div>
+                </div>
+                <!--<div layout="row" layout-align="space-between center"><div ng-i18next="game.typeText"></div><div>{{room.gameType}}</div></div>-->
+
+                <div layout="row" layout-align="space-between center">
+                    <div>{{room.language.fullName}}</div>
+                    <div>[{{room.language.numWords}}]</div>
+                </div>
+
+                <div layout="row" layout-align="space-between center">
+                    <div ng-i18next="consonantsText"></div>
+                    <div> {{room.numConsonants}}</div>
+                </div>
+                <div layout="row" layout-align="space-between center">
+                    <div ng-i18next="vowelsText"></div>
+                    <div> {{room.numVowels}}</div>
+                </div>
+                <div layout="row" layout-align="space-between center">
+                    <div ng-i18next="jokersText"></div>
+                    <div> {{room.numJokers}}</div>
+                </div>
+
+                <div layout="row" layout-align="space-between center">
+                    <div ng-i18next="multiplayer.players"></div>
+                    <div>{{room.numUsers}}</div>
+                </div>
+
+            </div>
+
+
+            <div class="room-restriction">
+                <div ng-if="room.allowedUsers.length === 0">
+                    <span ng-i18next="multiplayer.openRoom"></span>
+                </div>
+                <div ng-if="room.allowedUsers.length !== 0">
+                    <span ng-i18next="multiplayer.closedRoom"></span>
+                </div>
+            </div>
+            <md-button class="md-primary" ng-click="onJoinToRoom(room.id)">Join</md-button>
+
+        </md-whiteframe>
+    </div>
+</section>
