@@ -169,7 +169,11 @@ function init(app, logger, config) {
 
     logger.debug('Adding generic /auth/ rules');
     app.get('/auth/success', function (req, res) {
-        logger.info('Successful login ' + req.user.displayName + ' ' + req.user.emails[0].value);
+        if (req.user) {
+            logger.info('Successful login ' + req.user.displayName + ' ' + req.user.emails[0].value + ' from ' + req.ip);
+        } else {
+            logger.error('Success page was requested by ' + req.ip + ' but no user name is given.');
+        }
         res.redirect(req.session.authRedirect || '/');
     });
 
