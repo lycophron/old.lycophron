@@ -39,6 +39,7 @@
             <md-button class="md-primary"
                        aria-label="game.showSolutions"
                        ng-i18next="game.showSolutions"
+                       ng-hide="options.multiplayer"
                        ng-click="showSolutions()"></md-button>
 
             <md-button class="md-primary"
@@ -122,7 +123,7 @@
                             <!--<md-divider md-inset ng-if="!$last"></md-divider>-->
                         </md-item>
 
-                        <md-item ng-if="!key.found.length" class="md-warn">
+                        <md-item ng-show="!key.found.length" class="md-warn">
                             <md-item-content>
                                 <div class="md-tile-content word-content">
                                     <h4 class="word-not-found" ng-i18next="game.notFoundYet"></h4>
@@ -131,7 +132,7 @@
                         </md-item>
 
 
-                        <md-item ng-if="visibleSolutions" ng-repeat="word in key.solutions">
+                        <md-item ng-if="options.visibleSolutions" ng-repeat="word in key.solutions">
                             <md-item-content>
                                 <!--<div class="md-tile-left">-->
                                 <!--<img ng-src="{{item.face}}" class="face" alt="{{item.who}}">-->

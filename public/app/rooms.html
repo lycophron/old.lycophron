@@ -52,7 +52,12 @@
                     <span ng-i18next="multiplayer.closedRoom"></span>
                 </div>
             </div>
-            <md-button class="md-primary" ng-click="onJoinToRoom(room.id)">Join</md-button>
+
+            <div>
+                <div layout="row" layout-align="space-between center"><span ng-i18next="mulitplayer.roomState"></span><span>{{room.state}}</span></div>
+            </div>
+
+            <md-button ng-disabled="!room.state || room.state !== 'waitingForUsers'" class="md-primary" ng-click="onJoinToRoom(room.id)">Join</md-button>
 
         </md-whiteframe>
     </div>

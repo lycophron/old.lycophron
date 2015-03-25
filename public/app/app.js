@@ -275,6 +275,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 for (i = 0; i < $scope.availableRooms.length; i += 1) {
                     if ($scope.availableRooms[i].id === $scope.currentRoomId) {
                         $scope.currentRoom = $scope.availableRooms[i];
+                        $scope.toogleSolutions($scope.currentRoom.visibleSolutions);
                     }
                 }
             } else {
@@ -325,12 +326,14 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 // default
                 var numRoomsToGenerate = Math.floor(Math.random() * 20) + 30;
                 //numRoomsToGenerate = 0;
+                numRoomsToGenerate = 1;
                 console.log(numRoomsToGenerate);
                 for (var i = 0; i < numRoomsToGenerate; i += 1) {
                     $timeout(function () {
                         $scope.createRoom({
-                            title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 100),
+                            title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 9000 + 1000),
                             owner: $scope.currentUser,
+                            state: 'waitingForUsers',
                             gameType: 'anagramProblem',
                             language: {
                                 fullName: "hu-HU (default)",
@@ -341,42 +344,23 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             numConsonants: 10,
                             numVowels: 9,
                             numJokers: 0,
+                            letters: null,
                             allowedUsers: []
                         }, true);
                     }, 10);
                 }
                 $scope.newRoom = {
-                    title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 100),
+                    title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 9000 + 1000),
                     owner: $scope.currentUser,
+                    state: 'waitingForUsers',
                     gameType: 'anagramProblem',
                     language: null,
                     numConsonants: 10,
                     numVowels: 9,
                     numJokers: 0,
+                    letters: null,
                     allowedUsers: []
                 };
-
-                if ($routeParams.roomId) {
-                    $scope.joinRoom($routeParams.roomId);
-                } else {
-                    //$scope.newRoom = {
-                    //    id: 'multiplayer_' + (new Date()).toISOString(),
-                    //    title: 'new room ' + Math.floor(Math.random() * 100),
-                    //    owner: data.id,
-                    //    gameType: 'anagramProblem',
-                    //    language: {
-                    //        name: 'hu-HU',
-                    //        type: 'default',
-                    //        fullName: 'hu-HU (default)',
-                    //        numWords: Math.floor(Math.random() * 50000) + 30000
-                    //    },
-                    //    numConsonants: Math.floor(Math.random() * 7) + 3,
-                    //    numVowels: Math.floor(Math.random() * 3) + 3,
-                    //    numJokers: Math.floor(Math.random() * 2),
-                    //    allowedUsers: []
-                    //};
-                    //$scope.createRoom($scope.newRoom);
-                }
             }).
             error(function (data, status, headers, config) {
                 // called asynchronously if an error occurs
@@ -436,14 +420,43 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             forceDigestCycle();
         };
 
+        $scope.finishGame = function () {
+            stopGame();
+        };
+
         socket.on('startGame', function (options) {
             startGame(options);
 
             forceDigestCycle();
         });
 
+        $scope.toogleSolutions = function (newValue, send) {
+            if (newValue === true || newValue === false) {
+
+                $scope.gameOptions.visibleSolutions = newValue;
+            } else {
+                $scope.gameOptions.visibleSolutions = !$scope.gameOptions.visibleSolutions;
+            }
+            if ($scope.gameOptions.visibleSolutions) {
+                $scope.solutionsText = 'game.hideSolutions';
+            } else {
+                $scope.solutionsText = 'game.showSolutions';
+            }
+
+            if (send) {
+                $scope.sendSolutionVisibility();
+            }
+        };
+
+        $scope.sendSolutionVisibility = function () {
+            socket.emit('roomStateUpdate', {roomId: $scope.currentRoomId, roomUpdate: {visibleSolutions: $scope.gameOptions.visibleSolutions}});
+        };
+
         function stopGame() {
             $scope.gameIsRunning = false;
+            socket.emit('roomStateUpdate', {roomId: $scope.currentRoomId, state: 'finished'});
+
+            // TODO: how to show winner?
         }
 
         function startGame(options) {
@@ -472,6 +485,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     // master mode
                     options.letters = letters;
                     socket.emit('startGame', options);
+                    socket.emit('roomStateUpdate', {roomId: $scope.currentRoomId, roomUpdate: {state: 'running', letters: letters, visibleSolutions: false}});
+                    $scope.toogleSolutions(false, true);
                 }
             };
 
@@ -617,7 +632,6 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                 // ui related
                 $scope.showJoker = false;
-                $scope.visibleSolutions = false;
                 $scope.typedLetters = '';
                 $scope.typedLettersPrev = '';
 
@@ -743,7 +757,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                         lenBefore,
                         lenAfter;
 
-                    $scope.visibleSolutions = false;
+                    $scope.options.visibleSolutions = false;
 
                     $scope.score.last = 0;
 
@@ -868,7 +882,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 };
 
                 $scope.showSolutions = function () {
-                    $scope.visibleSolutions = true;
+                    $scope.options.visibleSolutions = true;
                 };
 
                 // FIXME: turn timeouts into promises
@@ -986,10 +1000,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 templateUrl: 'multiplayer.html',
                 controller: 'MultiplayerController'
             })
-            .when('/game/multiplayer/:roomId', {
-                templateUrl: 'multiplayer.html',
-                controller: 'MultiplayerController'
-            })
+            //.when('/game/multiplayer/:roomId', {
+            //    templateUrl: 'multiplayer.html',
+            //    controller: 'MultiplayerController'
+            //})
             .when('/home/', {
                 templateUrl: 'home.html',
                 controller: 'HomeController'

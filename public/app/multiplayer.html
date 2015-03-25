@@ -12,11 +12,6 @@
     <!--</div>-->
 
     <div>
-        <div ng-show="currentRoom">
-            <!--<span>{{currentRoom}}</span>-->
-            <md-button class="md-warn md-raised" ng-click="leaveRoom(currentRoom)">Leave</md-button>
-        </div>
-
         <div ng-show="!currentRoom && newRoom" layout="column" layout-align="center center">
             <div>
                 <!-- controls -->
@@ -34,20 +29,32 @@
         </div>
     </div>
 
-    <div ng-if="!currentRoom" layout="row" layout-fill layout-align="center start">
+    <div ng-if="!currentRoom && !wizardShown" layout="row" layout-fill layout-align="center start">
         <rooms layout-fill rooms="availableRooms" currentUser="currentUser" on-join="joinRoom"></rooms>
     </div>
 
 
-    <div ng-if="currentRoom" layout="row" layout-fill layout-align="center start">
-        <section layout-fill>
+    <div ng-if="currentRoom" layout="column" layout-fill layout-align="center start">
+        <section layout-fill layout-align="center center">
 
-            <div>{{currentRoom.numUsers}}</div>
 
-            <md-button ng-disabled="currentRoom.owner !== currentUser.id || gameIsRunning"
-                       aria-label="multiplayer.startGame"
-                       ng-i18next="multiplayer.startGame"
-                       ng-click="startNewGame()"></md-button>
+            <div layout-align="space-between center" layout="row">
+                <!--<span>{{currentRoom}}</span>-->
+                <md-button ng-disabled="currentRoom.owner.id !== currentUser.id || gameIsRunning"
+                           aria-label="multiplayer.startGame"
+                           ng-i18next="multiplayer.startGame"
+                           class="md-primary md-raised"
+                           ng-click="startNewGame()"></md-button>
+
+                <md-button ng-show="gameIsRunning" class="md-warn md-raised" ng-click="toogleSolutions(null, true)" ng-i18next="{{solutionsText}}"></md-button>
+                <md-button class="md-warn md-raised" ng-click="leaveRoom(currentRoomId)" ng-i18next="multiplayer.leave"></md-button>
+            </div>
+
+            <div><span ng-i18next="mulitplayer.numUsers"></span> {{currentRoom.numUsers}}</div>
+            <div><span ng-i18next="mulitplayer.owner"></span> {{currentRoom.owner}}</div>
+            <div>{{currentUser}}</div>
+            <div>{{currentRoom.title}}</div>
+            <div><span ng-i18next="mulitplayer.roomState"></span> {{currentRoom.state}}</div>
 
             <game ng-if="gameIsRunning" options="gameOptions" on-new-game="onNewGame" on-found-word="onFoundWord"
                   on-new-letters-ready="onNewLettersReady" on-game-ready="onGameReady"></game>

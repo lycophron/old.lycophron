@@ -62,12 +62,34 @@ function init(server, logger, config) {
                     //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 } else {
                     // if everybody left the room just delete it
+                    //logger.debug('deleting room: ' + roomId);
                     delete rooms[roomId];
                 }
                 sendAvailableRooms();
             }
         });
 
+        socket.on('roomStateUpdate', function (data) {
+            var roomId = data.roomId,
+                roomUpdate = data.roomUpdate,
+                room = rooms[data.roomId],
+                user = users[socket.id],
+                key;
+
+            if (room && user /*&& room.owner.id === user.id*/) {
+                // accept updates only from owner of the room
+                for (key in roomUpdate) {
+                    if (roomUpdate.hasOwnProperty(key)) {
+                        room[key] = roomUpdate[key];
+                    }
+                }
+
+                //logger.debug(roomId + ' state updated.');
+
+                sendAvailableRooms();
+            }
+
+        });
 
         function createBroadcastedHandler(msgName) {
             socket.on(msgName, function (data) {
@@ -109,15 +131,24 @@ function init(server, logger, config) {
 
             //logger.debug(socket.id + ' disconnected');
 
-
             for (i = 0; i < keys.length; i += 1) {
                 // transfer room owner ship if possible
-                if (io.nsps['/'].adapter.rooms[keys[i]] && io.nsps['/'].adapter.rooms[keys[i]].length > 0) {
-                    rooms[keys[i]].owner = users[io.nsps['/'].adapter.rooms[keys[i]][0]];
+                if (io.nsps['/'].adapter.rooms[keys[i]] && Object.keys(io.nsps['/'].adapter.rooms[keys[i]]).length > 0) {
+                    rooms[keys[i]].owner = users[Object.keys(io.nsps['/'].adapter.rooms[keys[i]])[0]];
+                    if (rooms[keys[i]].owner) {
+                        //logger.debug('transferred user\'s room to: ' + rooms[keys[i]].owner.id + ' roomid: ' + keys[i]);
+                    } else {
+                        if (users.hasOwnProperty(socket.id) &&
+                            rooms[keys[i]].owner.id === users[socket.id].id) {
+                            //logger.debug('deleting user\'s room, was not able to reassign: ' + users[socket.id].id + ' roomid: ' + keys[i]);
+                            delete rooms[keys[i]];
+                        }
+                    }
                 } else {
                     // remove all rooms that the user owned
                     if (users.hasOwnProperty(socket.id) &&
                         rooms[keys[i]].owner.id === users[socket.id].id) {
+                        //logger.debug('deleting user\'s room: ' + users[socket.id].id + ' roomid: ' + keys[i]);
                         delete rooms[keys[i]];
                     }
                 }
