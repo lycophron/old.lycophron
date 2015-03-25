@@ -54,7 +54,6 @@
 
     "owner": "Játékmester",
 
-
     "loading": "Betöltés ...",
     "downloading": "Letöltés ...",
     "drawingLetters": "Betűk húzása a zsákból ...",
@@ -106,6 +105,4 @@
 
   "waitingForUsers": "várakozás ...",
   "running": "játékban"
-
-
 }
