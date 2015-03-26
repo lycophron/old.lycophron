@@ -49,10 +49,10 @@
                            ng-click="startNewGame()"></md-button>
 
                 <md-button aria-label="toogleSolutions" ng-show="gameIsRunning" class="md-warn md-raised" ng-click="toogleSolutions(null, true)" ng-i18next="{{solutionsText}}"></md-button>
-                <md-button aria-label="leave" class="md-warn md-raised" ng-click="leaveRoom(currentRoomId)" ng-i18next="multiplayer.leave"></md-button>
+                <md-button aria-label="leave" class="md-warn md-raised" ng-click="leaveRoomWithConfirm(currentRoomId, $event)" ng-i18next="multiplayer.leave"></md-button>
             </div>
 
-            <div><span ng-i18next="multiplayer.players"></span> {{currentRoom.numUsers}}</div>
+            <div><span ng-i18next="multiplayer.players"></span> {{currentRoom.users.length}}</div>
             <md-list layout="column" layout-align="start start">
                 <md-item ng-repeat="user in currentRoom.users">
                     <span>{{user.displayName}} </span>

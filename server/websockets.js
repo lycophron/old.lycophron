@@ -32,7 +32,6 @@ function init(server, logger, config) {
         socket.on('createRoom', function (room) {
             rooms[room.id] = room;
 
-            rooms[room.id].numUsers = 0;
             rooms[room.id].users = [];
 
             sendAvailableRooms();
@@ -61,10 +60,12 @@ function init(server, logger, config) {
                 if (io.nsps['/'].adapter.rooms[roomId]) {
                     updateUserListInRoom(roomId);
                     //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
-                } else {
-                    // if everybody left the room just delete it
+                } else if (users.hasOwnProperty(socket.id) && users[socket.id].id === rooms[roomId].owner.id) {
+                    // if everybody left the room just delete it and the owner left lastly
                     //logger.debug('deleting room: ' + roomId);
                     delete rooms[roomId];
+                } else {
+                    updateUserListInRoom(roomId);
                 }
                 sendAvailableRooms();
             }
@@ -152,6 +153,8 @@ function init(server, logger, config) {
                         rooms[keys[i]].owner.id === users[socket.id].id) {
                         //logger.debug('deleting user\'s room: ' + users[socket.id].id + ' roomid: ' + keys[i]);
                         delete rooms[keys[i]];
+                    } else {
+                        updateUserListInRoom(keys[i]);
                     }
                 }
             }
@@ -168,15 +171,17 @@ function init(server, logger, config) {
         function updateUserListInRoom(roomId) {
             var socketId;
 
-            if (rooms.hasOwnProperty(roomId) &&
-                io.nsps['/'].adapter.rooms.hasOwnProperty(roomId)) {
-
-                rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
+            if (rooms.hasOwnProperty(roomId)) {
                 rooms[roomId].users = [];
-                for (socketId in io.nsps['/'].adapter.rooms[roomId]) {
-                    if (io.nsps['/'].adapter.rooms[roomId].hasOwnProperty(socketId)) {
-                        if (users.hasOwnProperty(socketId)) {
-                            rooms[roomId].users.push(users[socketId]);
+
+                if (io.nsps['/'].adapter.rooms.hasOwnProperty(roomId)) {
+                    for (socketId in io.nsps['/'].adapter.rooms[roomId]) {
+                        //logger.debug(roomId);
+                        if (io.nsps['/'].adapter.rooms[roomId].hasOwnProperty(socketId)) {
+                            //logger.debug(users[socketId]);
+                            if (users.hasOwnProperty(socketId)) {
+                                rooms[roomId].users.push(users[socketId]);
+                            }
                         }
                     }
                 }
@@ -212,6 +217,7 @@ function init(server, logger, config) {
             // FIXME: this will not scale for many users well
             for (key in rooms) {
                 if (rooms.hasOwnProperty(key)) {
+                    updateUserListInRoom(key);
                     resAllRooms.push(rooms[key]);
                 }
             }

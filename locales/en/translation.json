@@ -104,10 +104,18 @@
     "startGame": "Start the game",
     "leave": "Leave room",
 
+    "leavingRoom": {
+        "title": "Leaving room?",
+        "content": "You are the owner of this room. If you leave it and there are other players in the room, ownership will be transferred to another player otherwise the room will be deleted."
+    },
+
     "join": "Join"
 
   },
 
   "waitingForUsers": "waiting ...",
-  "running": "in progress"
+  "running": "in progress",
+
+  "confirm": "Confirm",
+  "cancel": "Cancel"
 }

@@ -104,10 +104,18 @@
     "startGame": "Játék indítása",
     "leave": "Kilépés",
 
+    "leavingRoom": {
+      "title": "Szoba elhagyása?",
+      "content": "Te vagy a szoba játékmestere. Ha elhagyod a szobát és vannak másik játékosok, a játékmesteri cím átadódik valamelyik játékosnak. Ha Te vagy az utolsó játékos a szoba törlődik."
+    },
+
     "join": "Belépés"
 
   },
 
   "waitingForUsers": "várakozás ...",
-  "running": "játékban"
+  "running": "játékban",
+
+  "confirm": "Megerősítés",
+  "cancel": "Mégsem"
 }

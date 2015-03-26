@@ -176,7 +176,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
     })
 
-    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next) {
+    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next, $mdDialog) {
         'use strict';
 
         var socket = io.connect({forceNew: true}),
@@ -298,6 +298,32 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             }
         };
 
+        $scope.leaveRoomWithConfirm = function (roomId, ev) {
+
+            if ($scope.currentRoom.owner.id === $scope.currentUser.id) {
+                // if we are the owner, then get confirmation
+                var confirm = $mdDialog.confirm()
+                    //.parent(angular.element(document.body))
+                    .title($i18next('multiplayer.leavingRoom.title'))
+                    .content($i18next('multiplayer.leavingRoom.content'))
+                    .ariaLabel('LeavingRoomConfirm')
+                    .ok($i18next('confirm'))
+                    .cancel($i18next('cancel'))
+                    .targetEvent(ev);
+
+                $mdDialog.show(confirm).then(function () {
+                    // user wants to leave
+                    $scope.leaveRoom(roomId);
+                }, function () {
+                    // user decided to stay
+
+                });
+            } else {
+                $scope.leaveRoom(roomId);
+            }
+
+        };
+
         $scope.leaveRoom = function (roomId) {
             socket.emit('leaveRoom', roomId);
             $scope.currentRoomId = null;
@@ -305,7 +331,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             updateCurrentRoom();
 
             $location.path('/game/multiplayer/');
-        };
+        }
 
 
         $http.get('/auth/').
