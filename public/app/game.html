@@ -16,9 +16,9 @@
 
         <tile-group tiles="problemTiles" on-selected="letterSelected"></tile-group>
 
-        <div>{{problemText}}</div>
+        <div hide-sm>{{problemText}}</div>
 
-        <form name="problem" layout-fill ng-submit="removeAllLetters()">
+        <form hide-sm name="problem" layout-fill ng-submit="removeAllLetters()">
             <md-input-container ng-class="{'md-warn' : message}">
                 <label ng-i18next="game.typeWordHere"></label>
                 <input name="typedLetters" ng-model="typedLetters" ng-change="inputChanged()"
