@@ -40,15 +40,20 @@ function init(server, logger, config) {
         socket.on('joinRoom', function (roomId) {
             // TODO: handle if users are not allowed to join, only owner + allowedUsers
             if (rooms.hasOwnProperty(roomId)) {
-                socket.join(roomId);
-                socket.broadcast.emit('message', {message: 'multiplayer.userJoinedToRoom', user: users[socket.id]});
 
-                if (io.nsps['/'].adapter.rooms[roomId]) {
-                    updateUserListInRoom(roomId);
-                    //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
+                if (rooms[roomId].allowedUsers.length === 0 || rooms[roomId].allowedUsers.indexOf(users[socket.id].id) > -1) {
+                    socket.join(roomId);
+                    socket.broadcast.emit('message', {message: 'multiplayer.userJoinedToRoom', user: users[socket.id]});
+
+                    if (io.nsps['/'].adapter.rooms[roomId]) {
+                        updateUserListInRoom(roomId);
+                        //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
+                    }
+
+                    sendAvailableRooms();
+                } else {
+                    logger.error('User is not allowed to join to room', {metadata: {room: rooms[roomId], user: users[socket.id]}});
                 }
-
-                sendAvailableRooms();
             }
         });
 

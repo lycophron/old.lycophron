@@ -268,6 +268,11 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 }
             }
 
+            if (room.allowedUsers.length > 0) {
+                // grant access to the owner too.
+                room.allowedUsers.push(room.owner.id);
+            }
+
             socket.emit('createRoom', room);
 
             if (!doNotJoin) {
