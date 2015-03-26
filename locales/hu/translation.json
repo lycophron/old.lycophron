@@ -75,7 +75,12 @@
     "score_plural": "__count__  pont",
 
     "notFoundYet": "Még nincsen találat ...",
-    "allFoundWords": "Megtalált szavak listája:"
+    "allFoundWords": "Megtalált szavak listája:",
+
+    "chooseGameType": "chooseGameType",
+    "types": {
+      "anagramProblem": "Anagramma feladvány"
+    }
   },
 
   "singlePlayer": {
@@ -97,6 +102,7 @@
     "noRoomsCreateOne": "Nincsenek szobák, hozz létre egy újat.",
     "defaultRoomName": "Új szoba",
 
+    "currentUser": "currentUser",
     "players": "Játékosok száma",
     "openRoom": "Nyilvános szoba",
     "roomState": "Állapot",

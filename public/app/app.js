@@ -7,6 +7,7 @@
 
 // application library
 var L = require('../../lib/lycophron');
+var isoLanguages = require('../libs/isoLanguages');
 
 // html templates
 angular.module('templates', []);
@@ -355,6 +356,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 numRoomsToGenerate = 1;
                 console.log(numRoomsToGenerate);
                 for (var i = 0; i < numRoomsToGenerate; i += 1) {
+                    var langName = 'hu-HU',
+                        langType = 'default';
                     $timeout(function () {
                         $scope.createRoom({
                             title: $i18next('multiplayer.defaultRoomName') + ' ' + Math.floor(Math.random() * 9000 + 1000),
@@ -362,10 +365,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             state: 'waitingForUsers',
                             gameType: 'anagramProblem',
                             language: {
-                                fullName: "hu-HU (default)",
-                                name: "hu-HU",
+                                fullName: isoLanguages.getLanguageNativeName(langName) + ' (' + $i18next('dictType.' + langType) + ')',
+                                name: langName,
                                 numWords: 115654,
-                                type: "default"
+                                type: langType
                             },
                             numConsonants: 10,
                             numVowels: 9,
@@ -559,7 +562,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
     })
 
-    .directive('gameWizard', function ($http) {
+    .directive('gameWizard', function () {
         'use strict';
 
         return {
@@ -569,7 +572,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 onCreate: '&onCreate'
             },
             templateUrl: 'gameWizard.html',
-            controller: function ($scope) {
+            controller: function ($scope, $http, $i18next) {
 
                 $scope.onCreateNew = function () {
                     $scope.onCreate()($scope.game);
@@ -596,7 +599,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                     language = {
                                         name: langCodes[i],
                                         type: types[j],
-                                        fullName: langCodes[i] + ' (' + types[j] + ')',
+                                        fullName: isoLanguages.getLanguageNativeName(langCodes[i]) + ' (' + $i18next('dictType.' + types[j]) + ')',
                                         numWords: data[langCodes[i]].types[types[j]].numWords
                                     };
                                     $scope.languages.push(language);

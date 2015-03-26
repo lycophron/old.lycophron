@@ -12,10 +12,12 @@
     </md-input-container>
 
     <md-select ng-disabled="true" ng-model="game.gameType" md-on-open="loadLanguages()">
-        <md-select-label>{{ game.gameType ? game.gameType : 'Choose a game type' }}
+        <md-select-label>
+            <span ng-if="game.gameType" ng-i18next="game.types.{{game.gameType}}"></span>
+            <span ng-if="!game.gameType" ng-i18next="game.chooseGameType"></span>
         </md-select-label>
         <md-option ng-value="game.gameType" ng-repeat="gameType in gameTypes">
-            <div md-no-ink class="md-primary">{{game.gameType}}</div>
+            <div md-no-ink class="md-primary" ng-i18next="game.types.{{game.gameType}}"></div>
             <md-divider ng-if="!$last"></md-divider>
         </md-option>
     </md-select>
