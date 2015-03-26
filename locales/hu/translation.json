@@ -13,16 +13,16 @@
 
   "words": "szó",
 
-  "createNewGame": "Új játék kezdése",
+  "createNewGame": "Új játék indítása",
 
-  "mayTakeAFewSeconds": "Ez eltarthat néhány másodpercig.",
+  "mayTakeAFewSeconds": "Ez eltarthat néhány másodpercig ...",
 
   "dictType": {
     "default": "alapszótár"
   },
 
   "login": {
-    "header": "Bejelentkezés Lycophron.org weboldalra",
+    "header": "Bejelentkezés a Lycophron.org weboldalra",
     "info": "Jelenleg ez az alkalmazás 'alpha' tesztelés alatt áll, csak néhány teszter férhet hozzá. Ha nem sikerül belépned, akkor Te nem vagy a teszterek között. Kérlek látogass vissza később.",
     "google": "Google fiókom használata",
 
@@ -38,8 +38,8 @@
 
   "menu": {
     "home": "Kezdőlap",
-    "singlePlayer": "Új játék (egyjátékos)",
-    "multiplayer": "Űj játék (több játékos)",
+    "singlePlayer": "Új játék (egy játékos)",
+    "multiplayer": "Új játék (több játékos)",
     "statistics": "Statisztikák"
 
   },
@@ -56,11 +56,11 @@
 
     "loading": "Betöltés ...",
     "downloading": "Letöltés ...",
-    "drawingLetters": "Betűk húzása a zsákból ...",
+    "drawingLetters": "Betű választás ...",
     "solvingProblem": "Probléma megoldása ...",
     "ready": "Kész",
 
-    "typeWordHere": "Írd ide a szót, vagy kattints a betűkre.",
+    "typeWordHere": "Kattints a betűkre vagy írd ide a szót majd nyomj entert.",
     "clearTiles": "A leírt szó törlése",
     "showSolutions": "Megoldások",
     "hideSolutions": "Megoldások elrejtése",
@@ -77,23 +77,23 @@
     "notFoundYet": "Még nincsen találat ...",
     "allFoundWords": "Megtalált szavak listája:",
 
-    "chooseGameType": "chooseGameType",
+    "chooseGameType": "Válasz játékot",
     "types": {
       "anagramProblem": "Anagramma feladvány"
     }
   },
 
   "singlePlayer": {
-    "info": "Varázsló egyjátékos játék létrehozásához. Válassz beállításokat majd kattints a gombra."
+    "info": "Varázsló egy játékos típusú játék létrehozásához. Válassz beállításokat majd kattints a gombra."
   },
 
   "multiplayer": {
     "connected": "Csatlakoztál a szerverhez.",
-    "connecting": "connecting",
-    "disconnected": "disconnected",
+    "connecting": "Csatlakozás folyamatban ...",
+    "disconnected": "Kapcsolat megszakadt.",
 
-    "onlineUsers": "onlineUsers",
-    "onlineUsers_plural": "onlineUsers_plural",
+    "onlineUsers": "Jelenlegi online játékosok száma: __count__",
+    "onlineUsers_plural": "Jelenlegi online játékosok száma: __count__",
 
     "newRoomWizard": "Új szoba létrehozása",
     "cancelWizard": "Mégsem",
@@ -102,7 +102,7 @@
     "noRoomsCreateOne": "Nincsenek szobák, hozz létre egy újat.",
     "defaultRoomName": "Új szoba",
 
-    "currentUser": "currentUser",
+    "currentUser": "felhasználó",
     "players": "Játékosok száma",
     "publicRoom": "Nyilvános szoba",
     "privateRoom": "Privát szoba",
