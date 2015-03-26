@@ -1,7 +1,8 @@
 <section layout="column" layout-align="center center">
     <!--<md-toolbar class="">-->
-    <div class="rooms-header"
-        ng-i18next="multiplayer.rooms">
+    <div class="rooms-header">
+        <span ng-i18next="multiplayer.rooms"></span>
+        <span> ({{rooms.length}})</span>
     </div>
     <!--</md-toolbar>-->
 
@@ -54,10 +55,13 @@
             </div>
 
             <div>
-                <div layout="row" layout-align="space-between center"><span ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{room.state}}"></span></div>
+                <div layout="row" layout-align="space-between center"><span
+                        ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{room.state}}"></span></div>
             </div>
 
-            <md-button ng-disabled="!room.state || room.state !== 'waitingForUsers'" class="md-primary" ng-click="onJoinToRoom(room.id)"><span ng-i18next="multiplayer.join"></span></md-button>
+            <md-button aria-label="Join" ng-disabled="!room.state || room.state !== 'waitingForUsers'"
+                       class="md-primary" ng-click="onJoinToRoom(room.id)"><span ng-i18next="multiplayer.join"></span>
+            </md-button>
 
         </md-whiteframe>
     </div>

@@ -389,23 +389,34 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 }
             }
 
-            thisUser.words = thisUser.words || {};
-            thisUser.words[data.length] = thisUser.words[data.length] || [];
-            thisUser.words[data.length].push(data.word);
+            if (data.length) {
+                thisUser.words = thisUser.words || {};
+                thisUser.words[data.length] = thisUser.words[data.length] || [];
+                thisUser.words[data.length].push(data.word);
 
-            if (thisUser.numFoundWords) {
-                thisUser.numFoundWords += 1;
+                if (thisUser.numFoundWords) {
+                    thisUser.numFoundWords += 1;
+                } else {
+                    thisUser.numFoundWords = 1;
+                }
             } else {
-                thisUser.numFoundWords = 1;
+                thisUser.numFoundWords = 0;
             }
-            thisUser.numSolution = thisUser.numSolution || $scope.solutions.solution.length;
-            thisUser.percentage = Math.floor(thisUser.numFoundWords / thisUser.numSolution * 10000) / 100;
+
+            if (thisUser.numSolution === undefined &&
+                $scope.solutions) {
+                updateUserPercentage(thisUser);
+            }
 
             $scope.userWords[data.user] = thisUser;
 
             forceDigestCycle();
         });
 
+        function updateUserPercentage(thisUser) {
+            thisUser.numSolution = thisUser.numSolution || $scope.solutions.solution.length;
+            thisUser.percentage = Math.floor(thisUser.numFoundWords / thisUser.numSolution * 10000) / 100;
+        }
 
         $scope.startNewGame = function () {
             var options = {
@@ -431,6 +442,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         });
 
         $scope.toogleSolutions = function (newValue, send) {
+            $scope.gameOptions = $scope.gameOptions || {};
+
             if (newValue === true || newValue === false) {
 
                 $scope.gameOptions.visibleSolutions = newValue;
@@ -491,8 +504,16 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             };
 
             $scope.onGameReady = function (solutions) {
+                var key;
                 //console.log(solutions);
                 $scope.solutions = solutions;
+                socket.emit('foundWord', {user: $scope.currentUser.id, length: 0, word: ''});
+
+                for (key in $scope.userWords) {
+                    if ($scope.userWords.hasOwnProperty(key)) {
+                        updateUserPercentage($scope.userWords[key]);
+                    }
+                }
             };
 
         }

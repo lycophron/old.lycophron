@@ -84,6 +84,11 @@
 
   "multiplayer": {
     "connected": "Connected to server.",
+    "connecting": "Connecting to server ...",
+    "disconnected": "Server is disconnected.",
+
+    "onlineUsers": "You are the only online user.",
+    "onlineUsers_plural": "__count__ users are online including you.",
 
     "newRoomWizard": "Create a new room",
     "cancelWizard": "Cancel",

@@ -84,6 +84,11 @@
 
   "multiplayer": {
     "connected": "Csatlakoztál a szerverhez.",
+    "connecting": "connecting",
+    "disconnected": "disconnected",
+
+    "onlineUsers": "onlineUsers",
+    "onlineUsers_plural": "onlineUsers_plural",
 
     "newRoomWizard": "Új szoba létrehozása",
     "cancelWizard": "Mégsem",

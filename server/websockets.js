@@ -33,6 +33,7 @@ function init(server, logger, config) {
             rooms[room.id] = room;
 
             rooms[room.id].numUsers = 0;
+            rooms[room.id].users = [];
 
             sendAvailableRooms();
         });
@@ -41,10 +42,10 @@ function init(server, logger, config) {
             // TODO: handle if users are not allowed to join, only owner + allowedUsers
             if (rooms.hasOwnProperty(roomId)) {
                 socket.join(roomId);
-                socket.broadcast.emit('message', {message: 'multiplayer.userJoinedToRoom', user: users[socket.id].id});
+                socket.broadcast.emit('message', {message: 'multiplayer.userJoinedToRoom', user: users[socket.id]});
 
                 if (io.nsps['/'].adapter.rooms[roomId]) {
-                    rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
+                    updateUserListInRoom(roomId);
                     //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 }
 
@@ -55,10 +56,10 @@ function init(server, logger, config) {
         socket.on('leaveRoom', function (roomId) {
             if (rooms.hasOwnProperty(roomId)) {
                 socket.leave(roomId);
-                socket.broadcast.emit('message', {message: 'multiplayer.userLeftRoom', user: users[socket.id].id});
+                socket.broadcast.emit('message', {message: 'multiplayer.userLeftRoom', user: users[socket.id]});
 
                 if (io.nsps['/'].adapter.rooms[roomId]) {
-                    rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
+                    updateUserListInRoom(roomId);
                     //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 } else {
                     // if everybody left the room just delete it
@@ -135,6 +136,7 @@ function init(server, logger, config) {
                 // transfer room owner ship if possible
                 if (io.nsps['/'].adapter.rooms[keys[i]] && Object.keys(io.nsps['/'].adapter.rooms[keys[i]]).length > 0) {
                     rooms[keys[i]].owner = users[Object.keys(io.nsps['/'].adapter.rooms[keys[i]])[0]];
+                    updateUserListInRoom(keys[i]);
                     if (rooms[keys[i]].owner) {
                         //logger.debug('transferred user\'s room to: ' + rooms[keys[i]].owner.id + ' roomid: ' + keys[i]);
                     } else {
@@ -162,6 +164,24 @@ function init(server, logger, config) {
             sendAvailableRooms();
         });
 
+
+        function updateUserListInRoom(roomId) {
+            var socketId;
+
+            if (rooms.hasOwnProperty(roomId) &&
+                io.nsps['/'].adapter.rooms.hasOwnProperty(roomId)) {
+
+                rooms[roomId].numUsers = Object.keys(io.nsps['/'].adapter.rooms[roomId]).length;
+                rooms[roomId].users = [];
+                for (socketId in io.nsps['/'].adapter.rooms[roomId]) {
+                    if (io.nsps['/'].adapter.rooms[roomId].hasOwnProperty(socketId)) {
+                        if (users.hasOwnProperty(socketId)) {
+                            rooms[roomId].users.push(users[socketId]);
+                        }
+                    }
+                }
+            }
+        }
 
         function sendAvailableUsers() {
             var key,
