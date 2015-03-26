@@ -258,8 +258,16 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.createRoom = function (room, doNotJoin) {
+            var i;
             // FIXME: any race conditions here?
             room.id = 'multiplayer_' + (new Date()).toISOString();
+
+            for (i = 0; i < $scope.availableUsers.length; i += 1) {
+                if ($scope.availableUsers[i].selected) {
+                    room.allowedUsers.push($scope.availableUsers[i].id);
+                }
+            }
+
             socket.emit('createRoom', room);
 
             if (!doNotJoin) {

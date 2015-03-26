@@ -104,7 +104,8 @@
 
     "currentUser": "current user",
     "players": "Number of players",
-    "openRoom": "Public room",
+    "publicRoom": "Public room",
+    "privateRoom": "Private room",
     "roomState": "State",
 
     "startGame": "Start the game",

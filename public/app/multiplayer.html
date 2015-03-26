@@ -25,13 +25,16 @@
             </div>
 
             <div ng-show="wizardShown" layout-fill>
+                <md-checkbox ng-repeat="user in availableUsers" ng-if="user.id !== newRoom.owner.id" ng-model="user.selected" aria-label="Checkbox {{user.id}}">
+                    {{ user.displayName }}
+                </md-checkbox>
                 <game-wizard game="newRoom" on-create="createRoom"></game-wizard>
             </div>
         </div>
     </div>
 
     <div ng-if="!currentRoom && !wizardShown" layout="column" layout-fill layout-align="center start">
-        <rooms layout-fill rooms="availableRooms" currentUser="currentUser" on-join="joinRoom"></rooms>
+        <rooms layout-fill rooms="availableRooms" current-user="currentUser" on-join="joinRoom"></rooms>
         <div ng-if="availableRooms.length === 0"><span ng-i18next="multiplayer.noRoomsCreateOne"></span></div>
     </div>
 

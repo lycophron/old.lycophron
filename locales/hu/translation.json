@@ -104,7 +104,8 @@
 
     "currentUser": "currentUser",
     "players": "Játékosok száma",
-    "openRoom": "Nyilvános szoba",
+    "publicRoom": "Nyilvános szoba",
+    "privateRoom": "Privát szoba",
     "roomState": "Állapot",
 
     "startGame": "Játék indítása",

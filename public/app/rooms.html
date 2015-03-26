@@ -47,10 +47,10 @@
 
             <div class="room-restriction">
                 <div ng-if="room.allowedUsers.length === 0">
-                    <span ng-i18next="multiplayer.openRoom"></span>
+                    <span ng-i18next="multiplayer.publicRoom"></span>
                 </div>
                 <div ng-if="room.allowedUsers.length !== 0">
-                    <span ng-i18next="multiplayer.closedRoom"></span>
+                    <span ng-i18next="multiplayer.privateRoom"></span>
                 </div>
             </div>
 
@@ -59,10 +59,15 @@
                         ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{room.state}}"></span></div>
             </div>
 
-            <md-button aria-label="Join" ng-disabled="!room.state || room.state !== 'waitingForUsers'"
+            <!-- FIXME: complicated disabled expression!-->
+            <md-button aria-label="Join"
+                       ng-disabled="!room.state || room.state !== 'waitingForUsers' || (room.allowedUsers.length > 0 && room.allowedUsers.indexOf(currentUser.id) === -1)"
                        class="md-primary" ng-click="onJoinToRoom(room.id)"><span ng-i18next="multiplayer.join"></span>
             </md-button>
 
+            <!--{{room.allowedUsers}}-->
+
+            <!--{{currentUser}}-->
         </md-whiteframe>
     </div>
 </section>
