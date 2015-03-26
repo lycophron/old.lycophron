@@ -61,10 +61,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 url: '/game/single/wizard/',
                 text: 'menu.singlePlayer'
             },
-            //{
-            //    url: '/game/multiplayer/',
-            //    text: 'menu.multiplayer'
-            //},
+            {
+                url: '/game/multiplayer/',
+                text: 'menu.multiplayer'
+            },
             {
                 url: '/stats/',
                 text: 'menu.statistics'

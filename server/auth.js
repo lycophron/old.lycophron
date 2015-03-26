@@ -69,7 +69,7 @@ function init(app, logger, config) {
                 // we have to filter
                 // if current user is not on the list we just redirect him to /auth/failed
                 logger.error('Invalid user ' + req.user.displayName + ' ' + req.user.emails[0].value);
-                req.session.authRedirect = req.path;
+                req.session.authRedirect = req.originalUrl;
                 res.redirect('/auth/failed');
                 return;
             } else {
@@ -80,7 +80,7 @@ function init(app, logger, config) {
 
         // user is not authenticated yet, and requested a path which is not /auth/*
         // save the requested path (redirect him after a successful login - /auth/login/success
-        req.session.authRedirect = req.path;
+        req.session.authRedirect = req.originalUrl;
         // redirect him to the main login page
         res.redirect('/auth/login');
     });
