@@ -8,7 +8,6 @@ var gulp = require('gulp'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
     browserify = require('gulp-browserify'),
-    jsonminify = require('gulp-jsonminify'),
     rimraf = require('rimraf'),
     templateCache = require('gulp-angular-templatecache'),
 
