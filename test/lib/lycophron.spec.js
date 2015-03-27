@@ -5,7 +5,10 @@
 
 var should = require('chai').should,
     expect = require('chai').expect,
-    L = require('../../lib/lycophron');
+    L = require('../../lib/lycophron'),
+    winston = require('winston');
+
+winston.level = 'warn';
 
 describe('Lycophron module', function () {
     'use strict';
@@ -283,7 +286,7 @@ describe('Lycophron module', function () {
 
                 expect(L.Dictionary).to.have.property('processWords');
 
-                newDict = L.Dictionary.processWords(words, dict.letters);
+                newDict = L.Dictionary.processWords(words, dict.letters, winston);
 
                 expect(newDict).to.have.property('root');
                 expect(newDict).to.have.property('numWords');
