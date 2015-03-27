@@ -7,12 +7,14 @@ var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
     runSequence = require('run-sequence'),
-    sourcePattern = ['public/scripts/*.js', 'public/app/**/*.js', '!public/app/**/templates.js', 'lib/**/*.js', 'locales/**/*.js'],
+    browserify = require('gulp-browserify'),
+    jsonminify = require('gulp-jsonminify'),
+    rimraf = require('rimraf'),
+    templateCache = require('gulp-angular-templatecache'),
+
+    sourcePattern = ['public/app/**/*.js', '!public/app/**/templates.js', 'lib/**/*.js', 'locales/**/*.js'],
     websitePattern = sourcePattern.concat([
         'locales/**/translation.json',
-        'public/scripts/*.jsx',
-        'public/libs/*.jsx',
-        'public/styles/**/*',
         'public/app/**/*.css',
         'public/**/*.html',
         'public/auth/**/*'
@@ -20,12 +22,7 @@ var gulp = require('gulp'),
     allPatterns = websitePattern.concat([
         'locales/**/*.js',
         'locales/**/*.tar.gz'
-    ]),
-    browserify = require('gulp-browserify'),
-    react = require('gulp-react'),
-    rimraf = require('rimraf'),
-
-    templateCache = require('gulp-angular-templatecache');
+    ]);
 
 
 gulp.task('clean', function (cb) {
@@ -33,19 +30,10 @@ gulp.task('clean', function (cb) {
 
     rimraf('build/', cb);
 });
+
 gulp.task('update-dictionaries', shell.task(['node lib/update_dictionaries.js']));
 
-
-gulp.task('jsx', function () {
-    'use strict';
-
-    return gulp.src('./public/scripts/main.jsx')
-        .pipe(react({harmony: true}))
-        .pipe(gulp.dest('./public/scripts/'));
-});
-
-// Basic usage
-
+// angular templates
 gulp.task('templates', function () {
     'use strict';
 
@@ -54,7 +42,7 @@ gulp.task('templates', function () {
         .pipe(gulp.dest('public/app/'));
 });
 
-gulp.task('browserify-website', ['jsx', 'templates'], function () {
+gulp.task('browserify-website', ['templates'], function () {
     'use strict';
 
     // copy over all required files
@@ -62,17 +50,9 @@ gulp.task('browserify-website', ['jsx', 'templates'], function () {
     gulp.src(['public/auth/**/*']).pipe(gulp.dest('build/auth'));
     gulp.src(['public/app/**/*.css']).pipe(gulp.dest('build/app'));
     gulp.src(['public/libs/**/*']).pipe(gulp.dest('build/libs'));
-    gulp.src(['public/styles/**/*']).pipe(gulp.dest('build/styles'));
     gulp.src(['public/*.html']).pipe(gulp.dest('build'));
 
     // Single entry point to browserify
-    gulp.src('public/scripts/app.js')
-        .pipe(browserify({
-            insertGlobals: true,
-            debug: true
-        }))
-        .pipe(gulp.dest('build/scripts'));
-
     gulp.src('public/auth/**/*.js')
         .pipe(browserify({
             insertGlobals: true,
@@ -92,10 +72,30 @@ gulp.task('browserify-website', ['jsx', 'templates'], function () {
 
 gulp.task('browserify-dicts', function (cb) {
     'use strict';
-    gulp.src(['locales/**/*.js*'])
+    var translations = {
+            'en': ['en-US', 'en-GB'],
+            'hu': ['hu-HU']
+        },
+        key,
+        i;
+
+    gulp.src(['locales/**/*.js'])
         .pipe(gulp.dest('build/locales'));
 
-    runSequence('update-dictionaries', 'jsx', cb);
+    gulp.src(['locales/**/*.json'])
+        .pipe(gulp.dest('build/locales'));
+
+    // TODO: copy translation.json files
+    for (key in translations) {
+        if (translations.hasOwnProperty(key)) {
+            for (i = 0; i < translations[key].length; i += 1) {
+                gulp.src(['locales/' + key + '/translation.json'])
+                    .pipe(gulp.dest('build/locales/' + translations[key][i] + '/'));
+            }
+        }
+    }
+
+    runSequence('update-dictionaries', cb);
 });
 
 gulp.task('browserify', function (cb) {
@@ -112,14 +112,6 @@ gulp.task('lint', function () {
         .pipe(jshint.reporter('jshint-stylish'));
 });
 
-
-gulp.task('jsx-build', function () {
-    'use strict';
-
-    return gulp.src('./public/scripts/main.jsx')
-        .pipe(react({harmony: true}))
-        .pipe(gulp.dest('./public/scripts/'));
-});
 
 gulp.task('register-watchers-website', [], function (cb) {
     'use strict';

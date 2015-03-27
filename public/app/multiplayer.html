@@ -25,7 +25,8 @@
             </div>
 
             <div ng-show="wizardShown" layout-fill>
-                <md-checkbox ng-repeat="user in availableUsers" ng-if="user.id !== newRoom.owner.id" ng-model="user.selected" aria-label="Checkbox {{user.id}}">
+                <div ng-i18next="multiplayer.selectUsersForPrivateRoom"></div>
+                <md-checkbox class="md-primary" ng-repeat="user in availableUsers" ng-if="user.id !== newRoom.owner.id" ng-model="user.selected" aria-label="Checkbox {{user.id}}">
                     {{ user.displayName }}
                 </md-checkbox>
                 <game-wizard game="newRoom" on-create="createRoom"></game-wizard>
