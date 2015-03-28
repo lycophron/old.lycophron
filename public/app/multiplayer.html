@@ -61,7 +61,7 @@
                 <md-item ng-repeat="user in currentRoom.users">
                     <span>{{user.displayName}} </span>
                     <span ng-if="currentRoom.owner.id === user.id" ng-i18next="game.owner"></span>
-                    <span ng-if="currentUser.id === user.id" ng-i18next="game.currentUser"></span>
+                    <span ng-if="currentUser.id === user.id" ng-i18next="multiplayer.currentUser"></span>
                 </md-item>
             </md-list>
 

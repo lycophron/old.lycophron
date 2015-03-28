@@ -11,7 +11,7 @@
         <!--</div>-->
     </md-input-container>
 
-    <md-select ng-disabled="true" ng-model="game.gameType" md-on-open="loadLanguages()">
+    <md-select ng-disabled="true" ng-model="game.gameType">
         <md-select-label>
             <span ng-if="game.gameType" ng-i18next="game.types.{{game.gameType}}"></span>
             <span ng-if="!game.gameType" ng-i18next="game.chooseGameType"></span>
@@ -22,18 +22,22 @@
         </md-option>
     </md-select>
 
-    <md-select ng-model="game.language" md-on-open="loadLanguages()">
-        <md-select-label>
-            <span ng-if="game.language">{{game.language.fullName}}</span>
-            <span ng-if="!game.language" ng-i18next="chooseLanguage"></span>
-        </md-select-label>
-        <md-option ng-value="language" ng-repeat="language in languages">
-            <div md-no-ink class="md-primary">{{language.fullName}} [{{language.numWords}} <span
-                    ng-i18next="words"></span>]
+    <!--$scope.languages-->
+
+    <div ng-hide="languages" layout="column" layout-fill layout-align="space-around center">
+        <md-progress-circular class="md-hue-2" md-mode="indeterminate"></md-progress-circular>
+        <md-label ng-i18next="{{state}}"></md-label>
+        <md-label ng-show="longProcess" ng-i18next="mayTakeAFewSeconds"></md-label>
+    </div>
+
+    <md-radio-group ng-show="languages" ng-model="game.language">
+        <div ng-i18next="chooseLanguage"></div>
+        <md-radio-button class="md-primary" ng-value="language" ng-repeat="language in languages">
+            <div md-no-ink>{{language.fullName}} [{{language.numWords}} <span
+                ng-i18next="words"></span>]
             </div>
-            <md-divider ng-if="!$last"></md-divider>
-        </md-option>
-    </md-select>
+        </md-radio-button>
+    </md-radio-group>
 
     <div ng-show="game.language" layout-fill layout-align="space-between center">
         <div layout>

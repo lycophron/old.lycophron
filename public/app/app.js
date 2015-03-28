@@ -225,6 +225,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             forceDigestCycle();
         });
 
+        $scope.$on("$destroy", function() {
+            socket.disconnect();
+        });
+
         socket.on('userAvailable', function (data) {
             console.log('userAvailable', data);
         });
@@ -345,7 +349,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             updateCurrentRoom();
 
             $location.path('/game/multiplayer/');
-        }
+        };
 
 
         $http.get('/auth/').
@@ -518,6 +522,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.gameIsRunning = true;
 
             $scope.userWords = {};
+            $scope.solutions = null;
 
             $scope.gameOptions = JSON.parse(JSON.stringify(options)); // we need a deep copy
             $scope.gameOptions.multiplayer = true;
@@ -585,7 +590,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 onCreate: '&onCreate'
             },
             templateUrl: 'gameWizard.html',
-            controller: function ($scope, $http, $i18next) {
+            controller: function ($scope, $http, $i18next, $timeout) {
 
                 $scope.onCreateNew = function () {
                     $scope.onCreate()($scope.game);
@@ -594,7 +599,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 $scope.gameTypes = ['anagramProblem'];
 
                 $scope.loadLanguages = function () {
-                    $scope.languages = [];
+
                     // TODO: service to get languages
                     return $http.get('/locales/info.json').
                         success(function (data, status, headers, config) {
@@ -606,6 +611,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 i,
                                 j;
 
+                            $scope.languages = [];
+
                             for (i = 0; i < langCodes.length; i += 1) {
                                 types = Object.keys(data[langCodes[i]].types);
                                 for (j = 0; j < types.length; j += 1) {
@@ -616,18 +623,31 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                         numWords: data[langCodes[i]].types[types[j]].numWords
                                     };
                                     $scope.languages.push(language);
+
+                                    if (!$scope.game.language &&
+                                        (langCodes[i] === i18n.lng() || langCodes[i].slice(0, 2) === i18n.lng())) {
+                                        $scope.game.language = language;
+                                    }
                                 }
                             }
 
                             $scope.languages.sort(function (a, b) {
                                 return a.fullName.localeCompare(b.fullName);
                             });
+
+                            // select a language based on our best guess
+                            $scope.state = 'ready';
                         }).
                         error(function (data, status, headers, config) {
                             // called asynchronously if an error occurs
                             // or server returns response with an error status.
+                            $scope.state = 'failedToLoadLanguages';
                         });
                 };
+
+                $scope.state = 'loadingLanguages';
+                //$timeout($scope.loadLanguages, 6000);
+                $scope.loadLanguages();
             }
         };
     })
@@ -1009,7 +1029,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                                     $scope.words.reverse();
 
-                                    $scope.state = 'game.ready';
+                                    $scope.state = 'ready';
                                     $scope.longProcess = false;
 
                                     $timeout(function () {

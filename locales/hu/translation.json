@@ -48,6 +48,10 @@
     "welcomeMessage": "Ez a weboldal még fejlesztés alatt áll. Használd a baloldali menüt új játék kezdéséhez."
   },
 
+  "ready": "Kész",
+  "loadingLanguages": "loadingLanguages",
+  "failedToLoadLanguages": "failedToLoadLanguages",
+
   "game": {
     "name": "Játék neve",
     "defaultTitle": "Az én játékom",
@@ -58,7 +62,6 @@
     "downloading": "Letöltés ...",
     "drawingLetters": "Betű választás ...",
     "solvingProblem": "Probléma megoldása ...",
-    "ready": "Kész",
 
     "typeWordHere": "Kattints a betűkre vagy írd ide a szót majd nyomj entert.",
     "clearTiles": "A leírt szó törlése",

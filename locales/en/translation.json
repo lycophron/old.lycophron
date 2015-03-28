@@ -48,6 +48,10 @@
     "welcomeMessage": "This website is still under construction. Use the menu on the left hand side to create a new game."
   },
 
+  "ready": "Done",
+  "loadingLanguages": "loadingLanguages",
+  "failedToLoadLanguages": "failedToLoadLanguages",
+
   "game": {
     "name": "Name of the game",
     "defaultTitle": "My game",
@@ -58,7 +62,6 @@
     "downloading": "Downloading ...",
     "drawingLetters": "Drawing letters from bag ...",
     "solvingProblem": "Solving problem ...",
-    "ready": "Done",
 
     "typeWordHere": "Type here your word or click on the tiles.",
     "clearTiles": "Clear the word",

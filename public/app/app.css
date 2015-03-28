@@ -18,6 +18,10 @@ md-list .md-button {
     width: 100%;
 }
 
+md-radio-group.md-default-theme:focus:not(:empty) {
+    border-color: transparent;
+}
+
 /* Using Data-URI converted from svg until <md-icon> becomes available*/
 /*https://github.com/google/material-design-icons*/
 
@@ -58,6 +62,14 @@ input {
 
 .tile .value {
     font-size: 11pt;
+}
+
+tile-group {
+    max-width: 37em;
+}
+
+.foundWords {
+    min-width: 13em;
 }
 
 .solution {
