@@ -1,23 +1,22 @@
 <div>
-    <h3 ng-i18next="underConstruction"></h3>
-
     <div ng-i18next="{{connectionStatus}}"></div>
-    <div ng-i18next="[i18next]({count:availableUsers.length})multiplayer.onlineUsers"></div>
+    <div ng-show="connected">
+        <div ng-i18next="[i18next]({count:availableUsers.length})multiplayer.onlineUsers"></div>
 
-    <!--<div>-->
-    <!--<h3 ng-i18next="multiplayer.userListTitle"></h3>-->
+        <!--<div>-->
+        <!--<h3 ng-i18next="multiplayer.userListTitle"></h3>-->
 
-    <!--<div ng-repeat="user in availableUsers">-->
-    <!--<span>{{user.id}} {{user.displayName}}</span>-->
-    <!--</div>-->
-    <!--</div>-->
+        <!--<div ng-repeat="user in availableUsers">-->
+        <!--<span>{{user.id}} {{user.displayName}}</span>-->
+        <!--</div>-->
+        <!--</div>-->
 
-    <div>
         <div ng-show="!currentRoom && newRoom" layout="column" layout-align="center center">
             <div>
                 <!-- controls -->
                 <md-button class="md-primary md-raised"
-                           aria-label="multiplayer.newRoomWizard" ng-disabled="wizardShown" ng-click="newRoomWizard()"
+                           aria-label="multiplayer.newRoomWizard" ng-disabled="wizardShown"
+                           ng-click="newRoomWizard()"
                            ng-i18next="multiplayer.newRoomWizard"></md-button>
                 <md-button class="md-warn md-raised"
                            aria-label="multiplayer.cancelWizard" ng-hide="!wizardShown" ng-click="cancelWizard()"
@@ -25,51 +24,60 @@
             </div>
 
             <div ng-show="wizardShown" layout-fill>
-                <div ng-i18next="multiplayer.selectUsersForPrivateRoom"></div>
-                <md-checkbox class="md-primary" ng-repeat="user in availableUsers" ng-if="user.id !== newRoom.owner.id" ng-model="user.selected" aria-label="Checkbox {{user.id}}">
+                <div ng-if="availableUsers.length > 1" ng-i18next="multiplayer.selectUsersForPrivateRoom"></div>
+                <md-checkbox class="md-primary" ng-repeat="user in availableUsers"
+                             ng-if="user.id !== newRoom.owner.id" ng-model="user.selected"
+                             aria-label="Checkbox {{user.id}}">
                     {{ user.displayName }}
                 </md-checkbox>
                 <game-wizard game="newRoom" on-create="createRoom"></game-wizard>
             </div>
         </div>
-    </div>
 
-    <div ng-if="!currentRoom && !wizardShown" layout="column" layout-fill layout-align="center start">
-        <rooms layout-fill rooms="availableRooms" current-user="currentUser" on-join="joinRoom"></rooms>
-        <div ng-if="availableRooms.length === 0"><span ng-i18next="multiplayer.noRoomsCreateOne"></span></div>
-    </div>
-
-
-    <div ng-if="currentRoom" layout="column" layout-fill layout-align="center start">
-        <section layout-fill layout-align="center center">
+        <div ng-if="!currentRoom && !wizardShown" layout="column" layout-fill layout-align="center start">
+            <rooms layout-fill rooms="availableRooms" current-user="currentUser" on-join="joinRoom"></rooms>
+            <div ng-if="availableRooms.length === 0"><span ng-i18next="multiplayer.noRoomsCreateOne"></span></div>
+        </div>
 
 
-            <div layout-align="space-between center" layout="row">
-                <!--<span>{{currentRoom}}</span>-->
-                <md-button ng-disabled="currentRoom.owner.id !== currentUser.id || gameIsRunning"
-                           aria-label="multiplayer.startGame"
-                           ng-i18next="multiplayer.startGame"
-                           class="md-primary md-raised"
-                           ng-click="startNewGame()"></md-button>
+        <div ng-if="currentRoom" layout="column" layout-fill layout-align="center start">
+            <section layout-fill layout-align="center center">
 
-                <md-button aria-label="toogleSolutions" ng-show="gameIsRunning" class="md-warn md-raised" ng-click="toogleSolutions(null, true)" ng-i18next="{{solutionsText}}"></md-button>
-                <md-button aria-label="leave" class="md-warn md-raised" ng-click="leaveRoomWithConfirm(currentRoomId, $event)" ng-i18next="multiplayer.leave"></md-button>
-            </div>
 
-            <div><span ng-i18next="multiplayer.players"></span> {{currentRoom.users.length}}</div>
-            <md-list layout="column" layout-align="start start">
-                <md-item ng-repeat="user in currentRoom.users">
-                    <span>{{user.displayName}} </span>
-                    <span ng-if="currentRoom.owner.id === user.id" ng-i18next="game.owner"></span>
-                    <span ng-if="currentUser.id === user.id" ng-i18next="multiplayer.currentUser"></span>
-                </md-item>
-            </md-list>
+                <div layout-align="space-between center" layout="row">
+                    <!--<span>{{currentRoom}}</span>-->
+                    <md-button ng-disabled="currentRoom.owner.id !== currentUser.id || gameIsRunning"
+                               aria-label="multiplayer.startGame"
+                               ng-i18next="multiplayer.startGame"
+                               class="md-primary md-raised"
+                               ng-click="startNewGame()"></md-button>
 
-            <div>{{currentRoom.title}}</div>
-            <div><span ng-i18next="multiplayer.roomState"></span><span ng-i18next="{{multiplayer.roomState}}"></span> <span ng-i18next="{{currentRoom.state}}"></span> </div>
+                    <md-button aria-label="toogleSolutions" ng-show="gameIsRunning" class="md-warn md-raised"
+                               ng-click="toogleSolutions(null, true)" ng-i18next="{{solutionsText}}"></md-button>
+                    <md-button aria-label="leave" class="md-warn md-raised"
+                               ng-click="leaveRoomWithConfirm(currentRoomId, $event)"
+                               ng-i18next="multiplayer.leave"></md-button>
+                </div>
 
-            <game ng-if="gameIsRunning" options="gameOptions" on-new-game="onNewGame" on-found-word="onFoundWord"
-                  on-new-letters-ready="onNewLettersReady" on-game-ready="onGameReady"></game>
-        </section>
+                <div><span ng-i18next="multiplayer.players"></span> {{currentRoom.users.length}}</div>
+                <md-list layout="column" layout-align="start start">
+                    <md-item ng-repeat="user in currentRoom.users">
+                        <span>{{user.displayName}} </span>
+                        <span ng-if="currentRoom.owner.id === user.id" ng-i18next="game.owner"></span>
+                        <span ng-if="currentUser.id === user.id" ng-i18next="multiplayer.currentUser"></span>
+                    </md-item>
+                </md-list>
+
+                <div class="multiplayer-game-header">
+                    <span class="room-title">{{currentRoom.title}}</span>
+                    <span ng-i18next="multiplayer.roomState"></span>
+                    <span ng-i18next="{{multiplayer.roomState}}"></span>
+                    <span ng-i18next="{{currentRoom.state}}"></span>
+                </div>
+
+                <game ng-if="gameIsRunning" options="gameOptions" on-new-game="onNewGame" on-found-word="onFoundWord"
+                      on-new-letters-ready="onNewLettersReady" on-game-ready="onGameReady"></game>
+            </section>
+        </div>
     </div>
 </div>

@@ -212,6 +212,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             }
             $scope.connectionStatus = 'multiplayer.connected';
 
+            $scope.connected = true;
             forceDigestCycle();
         });
 
@@ -222,6 +223,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.currentRoomId = null;
             updateCurrentRoom();
 
+            $scope.connected = false;
             forceDigestCycle();
         });
 
@@ -726,6 +728,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     last: 0
                 };
                 $scope.foundWords = [];
+                $scope.newlyFound = false;
+                $scope.alreadyFound = false;
+                $scope.foundWordId = -1;
+
                 $scope.percentage = 0;
                 $scope.lastWord = '';
                 $scope.message = '';
@@ -848,6 +854,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                         return tile.letter;
                     }).join('');
 
+                    $scope.newlyFound = false;
+                    $scope.alreadyFound = false;
+                    $scope.foundWordId = -1;
+
                     if ($scope.word) {
                         if (dict.checkWord($scope.word)) {
                             $scope.lastWord = $scope.word;
@@ -862,11 +872,19 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                             $scope.score.last = $scope.scoring.score($scope.selectedTiles);
 
-                            if (lenBefore !== lenAfter) {
+                            if (lenBefore === lenAfter) {
+                                $scope.newlyFound = false;
+                                $scope.alreadyFound = true;
+                            } else {
+                                $scope.newlyFound = true;
+                                $scope.alreadyFound = false;
+
                                 // new word found
                                 $scope.score.sum += $scope.score.last;
                                 $scope.onFoundWord()($scope.selectedTiles.length, $scope.word);
                             }
+                            $scope.foundWordId = $scope.foundWords.indexOf($scope.word);
+
 
                             w = $scope.words[$scope.words.length - 1 - $scope.selectedTiles.length];
                             if (w.solutions.indexOf($scope.word) > -1 &&

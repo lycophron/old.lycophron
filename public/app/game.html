@@ -159,6 +159,8 @@
 
     <div class="foundWords" ng-show="gameIsReady" layout-align="start start">
         <div ng-i18next="game.allFoundWords"></div>
-        <div><span ng-repeat="word in foundWords">{{word}}, </span></div>
+        <span ng-class="{'newly-found': newlyFound && foundWordId === $index, 'already-found': alreadyFound && foundWordId === $index}" ng-repeat="word in foundWords">
+            {{word}}<span ng-if="!$last">, </span>
+        </span>
     </div>
 </div>

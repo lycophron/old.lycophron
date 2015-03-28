@@ -93,7 +93,7 @@
   "multiplayer": {
     "connected": "Connected to server.",
     "connecting": "Connecting to server ...",
-    "disconnected": "Server is disconnected.",
+    "disconnected": "Server is disconnected. Trying to connect again ...",
 
     "onlineUsers": "You are the only online user.",
     "onlineUsers_plural": "__count__ users are online including you.",
@@ -104,9 +104,10 @@
     "rooms": "Active rooms",
     "noRoomsCreateOne": "No rooms, please create a new one.",
     "defaultRoomName": "New room",
+    "selectUsersForPrivateRoom": "If you select users the room becomes private, otherwise anybody can join to your room.",
 
     "currentUser": "current user",
-    "players": "Number of players",
+    "players": "Number of players in this room:",
     "publicRoom": "Public room",
     "privateRoom": "Private room",
     "roomState": "State",

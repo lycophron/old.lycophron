@@ -93,7 +93,7 @@
   "multiplayer": {
     "connected": "Csatlakoztál a szerverhez.",
     "connecting": "Csatlakozás folyamatban ...",
-    "disconnected": "Kapcsolat megszakadt.",
+    "disconnected": "Kapcsolat megszakadt. Próbálkozunk újra csatlakozni ...",
 
     "onlineUsers": "Jelenlegi online játékosok száma: __count__",
     "onlineUsers_plural": "Jelenlegi online játékosok száma: __count__",
@@ -104,9 +104,10 @@
     "rooms": "Aktív szobák",
     "noRoomsCreateOne": "Nincsenek szobák, hozz létre egy újat.",
     "defaultRoomName": "Új szoba",
+    "selectUsersForPrivateRoom": "Ha megjelölsz felhasználókat akkor privát szobát hozol létre, különben bárki beléphet a szobádba.",
 
     "currentUser": "felhasználó",
-    "players": "Játékosok száma",
+    "players": "Játékosok száma ebben a szobában:",
     "publicRoom": "Nyilvános szoba",
     "privateRoom": "Privát szoba",
     "roomState": "Állapot",

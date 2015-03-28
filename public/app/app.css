@@ -72,6 +72,16 @@ tile-group {
     min-width: 13em;
 }
 
+.foundWords .newly-found {
+    color: #F44336;
+    font-weight: bold;
+}
+
+
+.foundWords .already-found {
+    font-weight: bold;
+}
+
 .solution {
     width: 22.9ex;
     margin: 0.2ex 0.1ex;
@@ -113,6 +123,16 @@ tile-group {
     font-size: 1.2em;
     padding: 1ex 0;
 }
+
+.multiplayer-game-header {
+    padding: 2ex 0;
+}
+
+.multiplayer-game-header .room-title {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
 
 .room .room-details {
     font-size: 0.85em;
