@@ -19,7 +19,7 @@ A stupid anagram solver supporting multiple languages with a few sample applicat
  - `export GOOGLE_CLIENT_SECRET=...`
 4. `npm test` - run all tests
 5. `node server` - start the webserver
-6. Edit users.json, who can access to the game.
+6. Edit `users.json` to grant access to the game.
 
 ### Deployment
 
@@ -34,16 +34,33 @@ A stupid anagram solver supporting multiple languages with a few sample applicat
  * Run `curl -sL https://deb.nodesource.com/setup | sudo bash -`
  * Run `sudo  apt-get install -y nodejs`
 
+##### Setup
 
-1. Clone the project `git clone https://github.com/lycophron/lycophron.git`
-2. `cd lycophron`
-3. `cp lycophron.conf.sample lycophron.conf`
-4. Adjust settings to your needs in `lycophron.conf`
-5. `sudo cp lycophron.conf /etc/init/lycophron.conf`
-6. `npm install`
-7. `sudo service lycophron start`
+* Clone the project `git clone https://github.com/lycophron/lycophron.git`
+* `cd lycophron`
+* `cp lycophron.conf.sample lycophron.conf`
+* Adjust settings to your needs in `lycophron.conf`
+* `sudo cp lycophron.conf /etc/init/lycophron.conf`
+* `npm install`
+* `sudo service lycophron start`
+* Edit `~/lycophron/users.json` as needed
+* Run `crontab -e`
 
-TODO: pull latest source from github after git push.
+
+```crontab
+# crontab
+MAILTO=<fill in>
+# m h  dom mon dow   command
+45 * * * * curl -s -S -o /dev/null http://localhost/auth/
+```
+
+##### Update
+```bash
+cd ~/lycophron
+git pull
+npm install
+sudo service lycophron restart # if needed, i.e. server/* has changed
+```
 
 
 ## Licensed under MIT
