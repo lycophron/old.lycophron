@@ -165,7 +165,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             language: null,
             numConsonants: 10,
             numVowels: 9,
-            numJokers: 0
+            numJokers: 0,
+            autoCheck: true
         };
 
         $scope.createNew = function () {
@@ -396,6 +397,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             numVowels: 9,
                             numJokers: 0,
                             letters: null,
+                            autoCheck: true,
                             allowedUsers: []
                         }, true);
                     }, 10);
@@ -410,6 +412,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     numVowels: 9,
                     numJokers: 0,
                     letters: null,
+                    autoCheck: true,
                     allowedUsers: []
                 };
             }).
@@ -608,6 +611,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.onCreate()($scope.game);
                 };
 
+                $scope.game = $scope.game || {};
                 $scope.game.autoCheck = true;
                 $scope.gameTypes = ['anagramProblem'];
 
