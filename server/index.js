@@ -8,6 +8,7 @@ function start(config, done) {
 
     var fs = require('fs'),
         path = require('path'),
+        version = require('../version'),
 
         salts,
 
@@ -15,8 +16,17 @@ function start(config, done) {
         logger = new (winston.Logger)({
             // TODO: add transport options to configuration
             transports: [
-                new (winston.transports.Console)({ level: 'silly', colorize: config.production === false, timestamp: true }),
-                new (winston.transports.File)({filename: 'server.log'})
+                new (winston.transports.Console)({
+                    level: 'silly',
+                    colorize: config.production === false,
+                    timestamp: true,
+                    prettyPrint: config.production === false,
+                    exceptionHandling: true
+                }),
+                new (winston.transports.File)({
+                    filename: 'server.log',
+                    json: false
+                })
             ]
         });
 
@@ -32,7 +42,8 @@ function start(config, done) {
             app = express(),
             server;
 
-        logger.debug('Server is starting up ...');
+        logger.info('Server is starting up ...');
+        logger.info('Version', {metadata: version});
 
         config.sessionParameters.secret = salts.sessionSecret;
         // TODO: add https
@@ -72,11 +83,11 @@ function start(config, done) {
         //console.log('Connected to db');
         logger.debug('Binding to ' + config.server.port);
         server = app.listen(config.server.port, function (err) {
-            logger.info('Web server is listening on port %d', server.address().port);
 
-            logger.debug('Adding websockets ... ', server.address().port);
+            logger.debug('Adding web sockets ... ', server.address().port);
             websockets.init(server, logger, config);
 
+            logger.info('Web server is listening on port %d', server.address().port);
             done(err);
         });
         //});

@@ -6,8 +6,8 @@
 // TODO: this file has to be split and refactored!!!
 
 // application library
-var L = require('../../lib/lycophron');
-var isoLanguages = require('../libs/isoLanguages');
+var L = require('../../lib/lycophron'),
+    isoLanguages = require('../libs/isoLanguages');
 
 // html templates
 angular.module('templates', []);
@@ -52,6 +52,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
+
+        $scope.version = L.version;
 
         $scope.menuItems = [
             {

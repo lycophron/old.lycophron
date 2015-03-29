@@ -32,6 +32,10 @@ gulp.task('clean', function (cb) {
 
 gulp.task('update-dictionaries', shell.task(['node lib/update_dictionaries.js']));
 
+gulp.task('update-version',
+    shell.task(['git log -1 --pretty=format:\'{%n  "commit": "%H",%n  "date": "%ad",%n  "message": "%s"%n}\'' +
+    ' > version.json']));
+
 // angular templates
 gulp.task('templates', function () {
     'use strict';
@@ -41,7 +45,7 @@ gulp.task('templates', function () {
         .pipe(gulp.dest('public/app/'));
 });
 
-gulp.task('browserify-website', ['templates'], function () {
+gulp.task('browserify-website', ['templates', 'update-version'], function () {
     'use strict';
 
     // copy over all required files
