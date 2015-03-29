@@ -170,8 +170,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.createNew = function () {
-            var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/'
-                + $scope.game.language.type +
+            var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/' +
+                $scope.game.language.type +
                 '/?consonants=' + $scope.game.numConsonants +
                 '&vowels=' + $scope.game.numVowels +
                 '&jokers=' + $scope.game.numJokers +
@@ -478,7 +478,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 type: $scope.currentRoom.language.type,
                 consonants: $scope.currentRoom.numConsonants,
                 vowels: $scope.currentRoom.numVowels,
-                jokers: $scope.currentRoom.numJokers
+                jokers: $scope.currentRoom.numJokers,
+                autoCheck: $scope.currentRoom.autoCheck
             };
             startGame(options);
 
@@ -611,8 +612,6 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.onCreate()($scope.game);
                 };
 
-                $scope.game = $scope.game || {};
-                $scope.game.autoCheck = true;
                 $scope.gameTypes = ['anagramProblem'];
 
                 $scope.loadLanguages = function () {
