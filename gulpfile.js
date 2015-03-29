@@ -45,7 +45,7 @@ gulp.task('templates', function () {
         .pipe(gulp.dest('public/app/'));
 });
 
-gulp.task('browserify-website', ['templates', 'update-version'], function () {
+gulp.task('browserify-website', ['templates'], function () {
     'use strict';
 
     // copy over all required files
@@ -127,7 +127,7 @@ gulp.task('register-watchers-website', [], function (cb) {
 gulp.task('dev-website', function (cb) {
     'use strict';
 
-    runSequence('clean', 'browserify-website', 'register-watchers-website', cb);
+    runSequence('clean', 'update-version', 'browserify-website', 'register-watchers-website', cb);
 });
 
 gulp.task('register-watchers', [], function (cb) {
@@ -141,7 +141,7 @@ gulp.task('register-watchers', [], function (cb) {
 gulp.task('dev', function (cb) {
     'use strict';
 
-    runSequence('clean', 'browserify', 'register-watchers', cb);
+    runSequence('clean', 'update-version', 'browserify', 'register-watchers', cb);
 });
 
 gulp.task('test_cover', shell.task(['npm run test_cover']));
@@ -156,7 +156,7 @@ gulp.task('test_watch', ['test_cover'], function (cb) {
 gulp.task('compile-all', function (cb) {
     'use strict';
 
-    runSequence('clean', 'browserify', cb);
+    runSequence('clean', 'update-version', 'browserify', cb);
 });
 
 gulp.task('default', ['compile-all', 'lint'], function () {
