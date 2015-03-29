@@ -169,10 +169,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.createNew = function () {
-            var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/' + $scope.game.language.type +
-                '/?consonants=' + $scope.game.numConsonants + '&vowels=' + $scope.game.numVowels + '&jokers=' + $scope.game.numJokers;
+            var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/'
+                + $scope.game.language.type +
+                '/?consonants=' + $scope.game.numConsonants +
+                '&vowels=' + $scope.game.numVowels +
+                '&jokers=' + $scope.game.numJokers +
+                '&autoCheck=' + $scope.game.autoCheck;
             // FIXME: how to navigate to a route nicely
-            //$location.path('/game/{{gameType}}/single/{{language.name}}/{{language.type}}/?consonants={{numConsonants}}&vowels={{numVowels}}&jokers={{numJokers}}');
             $location.url(url);
         };
     })
@@ -227,7 +230,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             forceDigestCycle();
         });
 
-        $scope.$on('$destroy', function() {
+        $scope.$on('$destroy', function () {
             socket.disconnect();
         });
 
@@ -547,7 +550,14 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     // master mode
                     options.letters = letters;
                     socket.emit('startGame', options);
-                    socket.emit('roomStateUpdate', {roomId: $scope.currentRoomId, roomUpdate: {state: 'running', letters: letters, visibleSolutions: false}});
+                    socket.emit('roomStateUpdate', {
+                        roomId: $scope.currentRoomId,
+                        roomUpdate: {
+                            state: 'running',
+                            letters: letters,
+                            visibleSolutions: false
+                        }
+                    });
                     $scope.toogleSolutions(false, true);
                 }
             };
@@ -598,6 +608,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.onCreate()($scope.game);
                 };
 
+                $scope.game.autoCheck = true;
                 $scope.gameTypes = ['anagramProblem'];
 
                 $scope.loadLanguages = function () {
@@ -749,14 +760,17 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.typedLettersPrev = $scope.typedLetters;
                     $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = tile.letter;
 
-                    checkWord();
+                    $scope.options.visibleSolutions = false;
+
+                    if ($scope.options.autoCheck) {
+                        checkWord();
+                    }
 
                     $scope.showJoker = false;
                 };
 
                 $scope.letterSelected = function (idx, tile) {
                     //console.log(idx, tile);
-
                     if (tile.disabled) {
                         return;
                     }
@@ -841,8 +855,12 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.typedLettersPrev = $scope.typedLetters;
                     $scope.selectedTiles.push({letter: letter, value: value});
 
-                    // check new word
-                    checkWord();
+                    $scope.options.visibleSolutions = false;
+
+                    if ($scope.options.autoCheck) {
+                        // check new word
+                        checkWord();
+                    }
                 }
 
                 function checkWord() {
@@ -919,10 +937,12 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     }
                 }
 
-                $scope.removeLastLetter = function() {
+                $scope.removeLastLetter = function () {
                     var i,
                         letterToPutBack,
                         len;
+
+                    $scope.options.visibleSolutions = false;
 
                     if ($scope.typedLetters.length > 0 &&
                         $scope.selectedTiles.length > 0) {
@@ -933,7 +953,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                             $scope.selectedTiles[$scope.selectedTiles.length - 1].letter = '*';
 
-                            checkWord();
+                            if ($scope.options.autoCheck) {
+                                checkWord();
+                            }
 
                             $scope.typedLetters = $scope.typedLetters.slice(0, -len);
                             $scope.typedLettersPrev = $scope.typedLetters;
@@ -947,7 +969,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             $scope.typedLettersPrev = $scope.typedLetters;
                             $scope.selectedTiles.pop();
 
-                            checkWord();
+                            if ($scope.options.autoCheck) {
+                                checkWord();
+                            }
 
                             $scope.showJoker = false;
 
@@ -974,7 +998,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.selectedTiles = void 0;
                     $scope.selectedTiles = [];
 
-                    checkWord();
+                    if ($scope.options.autoCheck) {
+                        checkWord();
+                    }
 
                     for (i = 0; i < $scope.problemTiles.length; i += 1) {
                         $scope.problemTiles[i].disabled = false;

@@ -39,6 +39,11 @@
         </md-radio-button>
     </md-radio-group>
 
+    <md-checkbox class="md-primary" ng-disabled="true" ng-model="game.autoCheck"
+                 aria-label="Checkbox auto check">
+        <span ng-i18next="game.autoCheck"></span>
+    </md-checkbox>
+
     <div ng-show="game.language" layout-fill layout-align="space-between center">
         <div layout>
             <div flex layout layout-align="center center">
