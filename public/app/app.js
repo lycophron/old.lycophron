@@ -1,4 +1,4 @@
-/*globals angular, console, require, io*/
+/*globals angular, console, require, io, i18n*/
 /**
  * @author lattmann / https://github.com/lattmann
  */
@@ -227,7 +227,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             forceDigestCycle();
         });
 
-        $scope.$on("$destroy", function() {
+        $scope.$on('$destroy', function() {
             socket.disconnect();
         });
 
@@ -707,7 +707,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 onGameReady: '&'
             },
             templateUrl: 'game.html',
-            controller: function ($scope, $timeout) {
+            controller: function ($scope, $timeout, $window) {
 
                 // TODO: validate options!
                 $scope.gameIsReady = false;
@@ -962,7 +962,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             }
                         }
                     }
-                }
+                };
 
                 $scope.removeAllLetters = function () {
                     var i;
@@ -998,6 +998,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 var dict;
                 $timeout(function () {
                     dict = new L.Dictionary($scope.options.lang + '/' + $scope.options.type, true /* use superagent */);
+                    $scope.navigateToDefinition = function (word) {
+                        var url = dict.getDefineUrl(encodeURIComponent(word), i18n.lng());
+                        $window.open(url);
+                    };
 
                     // TODO: select scoring function
                     $scope.scoring = new L.Score();
