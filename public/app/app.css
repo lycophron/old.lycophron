@@ -69,7 +69,8 @@ tile-group {
 }
 
 .foundWords {
-    width: 13em;
+    min-width: 13em;
+    max-width: 13em;
 }
 
 .newly-found {
