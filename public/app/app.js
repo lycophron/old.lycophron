@@ -618,6 +618,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                 $scope.gameTypes = ['anagramProblem'];
 
+                function forceDigestCycle() {
+                    // Angular is unaware of data updates outside the "angular world,
+                    // the timeout will force a new digest cycle.
+                    $timeout(function () {
+                    });
+                }
+
                 $scope.loadLanguages = function () {
 
                     // TODO: service to get languages
@@ -657,6 +664,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                             // select a language based on our best guess
                             $scope.state = 'ready';
+
+                            forceDigestCycle();
                         }).
                         error(function (data, status, headers, config) {
                             // called asynchronously if an error occurs
