@@ -6,12 +6,12 @@
     </div>
     <div ng-show="gameIsReady" layout="column" layout-align="space-around center">
         <!--<div>-->
-            <!--TODO: show the game info nicer-->
-            <!--{{letters}}-->
-            <!--{{solutions.problemId}}-->
-            <!--{{solutions.lang}}-->
-            <!--{{solutions.typeName}}-->
-            <!--{{solutions.solution.length}}-->
+        <!--TODO: show the game info nicer-->
+        <!--{{letters}}-->
+        <!--{{solutions.problemId}}-->
+        <!--{{solutions.lang}}-->
+        <!--{{solutions.typeName}}-->
+        <!--{{solutions.solution.length}}-->
         <!--</div>-->
 
         <tile-group tiles="problemTiles" on-selected="letterSelected"></tile-group>
@@ -37,6 +37,12 @@
                        ng-click="removeAllLetters()"></md-button>
 
             <md-button class="md-primary"
+                       aria-label="game.removeLastTile"
+                       ng-disabled="typedLetters.length === 0"
+                       ng-i18next="game.removeLastTile"
+                       ng-click="removeLastLetter()"></md-button>
+
+            <md-button class="md-primary"
                        aria-label="game.showSolutions"
                        ng-i18next="game.showSolutions"
                        ng-hide="options.multiplayer"
@@ -57,7 +63,8 @@
             <md-subheader class="md-primary" ng-i18next="game.wordExists"></md-subheader>
         </section>
 
-        <div class="selected-word">{{word}} <span ng-if="score.last">(<span ng-i18next="[i18next]({count:score.last})game.score"></span>)</span></div>
+        <div class="selected-word">{{word}} <span ng-if="score.last">(<span
+                ng-i18next="[i18next]({count:score.last})game.score"></span>)</span></div>
 
         <tile-group class="selected-tiles" tiles="selectedTiles"
                     on-selected="removeAllLetters"></tile-group>
@@ -81,7 +88,8 @@
         <div ng-if="options.multiplayer" layout-fill>
             <div ng-repeat="user in options.userWords" layout-fill>
                 <!--{{user}}-->
-                <md-progress-linear class="md-primary" md-mode="determinate" value="{{user.percentage}}"></md-progress-linear>
+                <md-progress-linear class="md-primary" md-mode="determinate"
+                                    value="{{user.percentage}}"></md-progress-linear>
 
                 <div class="md-toolbar-tools" layout-align="space-between center">
                     <div>{{user.name}}</div>
@@ -93,11 +101,23 @@
         </div>
         <!--</md-toolbar>-->
 
+        <!-- FIXME: DUPLICATED SEE BELOW -->
+        <div hide-gt-sm ng-show="gameIsReady" layout="column" layout-align="center center" layout-fill>
+            <div ng-i18next="game.allFoundWords"></div>
+            <div><span
+                    ng-class="{'newly-found': newlyFound && foundWordId === $index, 'already-found': alreadyFound && foundWordId === $index}"
+                    ng-repeat="word in foundWords">
+                {{word}}<span ng-if="!$last">, </span>
+                </span>
+            </div>
+        </div>
+
         <!-- WORD LISTS -->
 
         <div layout="row" layout-wrap layout-align="center start">
             <section class="solution" ng-repeat="key in words" ng-if="words.length - $index - 1">
-                <md-toolbar class="md-theme-light solution-header" ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}">
+                <md-toolbar class="md-theme-light solution-header"
+                            ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}">
                     <h3 class="md-toolbar-tools" layout-align="space-between center">
                         <div>{{words.length - $index - 1}}</div>
                         <div>{{key.found.length}}/{{key.allSolutions}}</div>
@@ -106,7 +126,9 @@
                 </md-toolbar>
 
                 <md-content>
-                    <md-progress-linear ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}" md-mode="determinate" value="{{key.percentage}}"></md-progress-linear>
+                    <md-progress-linear
+                            ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}"
+                            md-mode="determinate" value="{{key.percentage}}"></md-progress-linear>
 
                     <md-list layout="row" layout-wrap layout-align="start start">
                         <md-item ng-repeat="word in key.found">
@@ -156,10 +178,11 @@
 
     </div>
 
-
-    <div class="foundWords" ng-show="gameIsReady" layout-align="start start">
+    <!-- FIXME: DUPLICATED SEE BELOW -->
+    <div hide-sm class="foundWords" ng-show="gameIsReady" layout-align="start start">
         <div ng-i18next="game.allFoundWords"></div>
-        <span ng-class="{'newly-found': newlyFound && foundWordId === $index, 'already-found': alreadyFound && foundWordId === $index}" ng-repeat="word in foundWords">
+        <span ng-class="{'newly-found': newlyFound && foundWordId === $index, 'already-found': alreadyFound && foundWordId === $index}"
+              ng-repeat="word in foundWords">
             {{word}}<span ng-if="!$last">, </span>
         </span>
     </div>

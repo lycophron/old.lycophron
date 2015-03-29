@@ -72,13 +72,13 @@ tile-group {
     min-width: 13em;
 }
 
-.foundWords .newly-found {
+.newly-found {
     color: #F44336;
     font-weight: bold;
 }
 
 
-.foundWords .already-found {
+.already-found {
     font-weight: bold;
 }
 

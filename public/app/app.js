@@ -780,7 +780,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     if ($scope.typedLettersPrev.length > $scope.typedLetters.length) {
                         // last letter was deleted
                         $scope.typedLetters = $scope.typedLettersPrev;
-                        removeLastLetter();
+                        $scope.removeLastLetter();
                         return;
                     }
 
@@ -791,6 +791,11 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     }
 
                     newLetter = $scope.typedLetters[$scope.typedLetters.length - 1];
+                    if (newLetter === '7' /* JOKER */) {
+                        newLetter = '*';
+                        $scope.typedLetters[$scope.typedLetters.length - 1] = newLetter;
+                    }
+
                     decodedLetter = dict.decodeLetter(newLetter);
 
                     $scope.typedLetters = $scope.typedLetters.slice(0, -newLetter.length);
@@ -914,7 +919,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     }
                 }
 
-                function removeLastLetter() {
+                $scope.removeLastLetter = function() {
                     var i,
                         letterToPutBack,
                         len;
