@@ -132,6 +132,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.name = 'GameSinglePlayerController';
         $scope.params = $routeParams;
 
+        $scope.params.autoCheck = $scope.params.autoCheck === 'true';
+
         //console.log($scope.name);
         //console.log($scope.params);
 
@@ -767,6 +769,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                     if ($scope.options.autoCheck) {
                         checkWord();
+                    } else {
+                        $scope.message = 'game.checkWord';
                     }
 
                     $scope.showJoker = false;
@@ -850,6 +854,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 break;
                             }
                         }
+
+                        // FIXME: if we did not pick anything, try to pick a joker?!
                     }
                 };
 
@@ -863,6 +869,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     if ($scope.options.autoCheck) {
                         // check new word
                         checkWord();
+                    } else {
+                        $scope.message = 'game.checkWord';
                     }
                 }
 
@@ -940,6 +948,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     }
                 }
 
+                $scope.checkWord = checkWord;
+
                 $scope.removeLastLetter = function () {
                     var i,
                         letterToPutBack,
@@ -958,6 +968,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                             if ($scope.options.autoCheck) {
                                 checkWord();
+                            } else {
+                                $scope.message = 'game.checkWord';
                             }
 
                             $scope.typedLetters = $scope.typedLetters.slice(0, -len);
@@ -974,6 +986,12 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                             if ($scope.options.autoCheck) {
                                 checkWord();
+                            } else {
+                                $scope.message = 'game.checkWord';
+                            }
+
+                            if ($scope.selectedTiles.length === 0) {
+                                $scope.message = 'game.selectLetterOrType';
                             }
 
                             $scope.showJoker = false;
@@ -1004,6 +1022,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     if ($scope.options.autoCheck) {
                         checkWord();
                     }
+                    //else {
+                    //    $scope.message = 'game.selectLetterOrType';
+                    //}
 
                     for (i = 0; i < $scope.problemTiles.length; i += 1) {
                         $scope.problemTiles[i].disabled = false;
@@ -1121,15 +1142,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $routeProvider
             .when('/game/:gameType/single/:lang/:type/', {
                 templateUrl: 'singlePlayer.html',
-                controller: 'GameSinglePlayerController',
-                resolve: {
-                    // I will cause a 1 second delay
-                    delay: function ($q, $timeout) {
-                        var delay = $q.defer();
-                        $timeout(delay.resolve, 1000);
-                        return delay.promise;
-                    }
-                }
+                controller: 'GameSinglePlayerController'
             })
             .when('/game/single/wizard/', {
                 templateUrl: 'singleWizard.html',
