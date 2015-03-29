@@ -20,7 +20,7 @@
 <div layout="vertical" layout-fill flex>
     <md-sidenav layout="column" class="md-sidenav-left md-whiteframe-z2" md-component-id="left"
                 md-is-locked-open="$mdMedia('gt-md')">
-        <md-list>
+        <md-list layout-fill layout="column">
             <md-item class="md-padding" ng-repeat="menuItem in menuItems">
                 <md-item-content>
                     <md-button href="{{menuItem.url}}" ng-click="selectMenuItem(menuItem)"
@@ -32,15 +32,17 @@
                 </md-item-content>
             </md-item>
 
-            <md-item class="md-padding">
+            <md-divider></md-divider>
+
+            <md-item class="md-padding version" >
                 <md-item-content>
                     <md-button href="https://github.com/lycophron/lycophron/commit/{{version.commit}}" target="_blank"
                                title="{{version.date}}">
-                        <span ng-i18next="version"></span> <span>{{version.commit.slice(0,7)}}</span>
+                        <span ng-i18next="version"></span> <span class="version-hash">{{version.commit.slice(0, 10)}}</span>
+
+                        <p class="version-date"><span ng-i18next="modifiedOn"></span> <span am-time-ago="version.date"></span></p>
                         <md-tooltip class="md-padding">
-                            <div>{{version.commit}}</div>
-                            <div>{{version.date}}</div>
-                            <div>{{version.message}}</div>
+                            <span ng-i18next="openOnGitHub"></span>
                         </md-tooltip>
                     </md-button>
                 </md-item-content>

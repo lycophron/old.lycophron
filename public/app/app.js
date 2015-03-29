@@ -7,7 +7,9 @@
 
 // application library
 var L = require('../../lib/lycophron'),
-    isoLanguages = require('../libs/isoLanguages');
+    isoLanguages = require('../libs/isoLanguages'),
+    angularMoment = require('../../node_modules/angular-moment/angular-moment.min'),
+    momentLocales = require('../../node_modules/moment/min/locales.min');
 
 // html templates
 angular.module('templates', []);
@@ -27,7 +29,7 @@ angular.module('jm.i18next').config(function ($i18nextProvider) {
 
 });
 
-angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'templates'])
+angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'templates', 'angularMoment'])
 
     .config(function ($mdThemingProvider) {
         'use strict';
@@ -45,7 +47,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         //    });
     })
 
-    .controller('MainController', function ($scope, $route, $routeParams, $location, $mdSidenav, $i18next, $timeout) {
+    .controller('MainController', function ($scope, $route, $routeParams, $location, $mdSidenav, $i18next, $timeout, amMoment) {
         'use strict';
 
         console.log('MainController');
@@ -54,6 +56,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.$routeParams = $routeParams;
 
         $scope.version = L.version;
+        $scope.version.date = new Date(L.version.date);
 
         $scope.menuItems = [
             {
@@ -93,6 +96,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         $scope.$on('i18nextLanguageChange', function () {
             //console.log('Language has changed!');
+            amMoment.changeLocale(i18n.lng());
+
             if (!$scope.i18nextReady) {
                 $timeout(function () {
                     $scope.i18nextReady = true;
@@ -107,7 +112,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         // TODO: get user
         //$scope.username = 'anonymous';
-
+        amMoment.changeLocale(i18n.lng());
     })
 
     .controller('HomeController', function ($scope, $routeParams) {

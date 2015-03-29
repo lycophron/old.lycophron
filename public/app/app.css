@@ -47,6 +47,29 @@ input {
     font-size: 20pt;
 }
 
+.version {
+    color: #777;
+
+}
+
+.version .md-button {
+    text-align: center;
+}
+
+.version-date {
+    padding: 0;
+    margin: 0;
+    font-size: 0.7em;
+}
+
+.version-hash {
+    font-family: "Lucida Console", Monaco, monospace;
+}
+
+.version-hash:hover {
+    text-decoration: underline;
+}
+
 /* TILES */
 .tile {
     height: 6.3ex;
@@ -73,14 +96,27 @@ tile-group {
     max-width: 13em;
 }
 
-.newly-found {
+.word.newly-found {
     color: #F44336;
     font-weight: bold;
 }
 
 
-.already-found {
+.word.already-found {
     font-weight: bold;
+}
+
+.word {
+    cursor: pointer;
+}
+
+.word-not-found {
+    /* md-warn */
+    color: #F44336;
+}
+
+.word-content {
+    padding: 0.5ex;
 }
 
 .solution {
@@ -105,14 +141,7 @@ tile-group {
     min-height: 7.4ex;
 }
 
-.word-not-found {
-    /* md-warn */
-    color: #F44336;
-}
 
-.word-content {
-    padding: 0.5ex;
-}
 
 .room {
     padding: 1ex;

@@ -4,6 +4,8 @@
   "underConstruction": "Under construction ...",
 
   "version": "Version",
+  "modifiedOn": "Last modified",
+  "openOnGitHub": "Open source code on GitHub",
 
   "chooseLanguage": "Choose a language",
 
