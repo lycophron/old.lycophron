@@ -36,6 +36,18 @@ md-radio-group.md-default-theme:focus:not(:empty) {
     text-transform: none;
 }
 
+md-sidenav.md-locked-open {
+    width: 12em;
+    min-width: 12em;
+    max-width: 12em;
+}
+
+md-sidenav {
+    width: 12em;
+    min-width: 12em;
+    max-width: 12em;
+}
+
 body {
     font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
     /*font-weight: lighter;*/
@@ -49,7 +61,7 @@ input {
 
 .version {
     color: #777;
-
+    font-size: 0.8em;
 }
 
 .version .md-button {
@@ -59,7 +71,7 @@ input {
 .version-date {
     padding: 0;
     margin: 0;
-    font-size: 0.7em;
+    font-size: 0.9em;
 }
 
 .version-hash {
