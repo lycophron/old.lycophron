@@ -6,6 +6,8 @@
 var gulp = require('gulp'),
     jshint = require('gulp-jshint'),
     shell = require('gulp-shell'),
+    uglify = require('gulp-uglifyjs'),
+    ngAnnotate = require('gulp-ng-annotate'),
     runSequence = require('run-sequence'),
     browserify = require('gulp-browserify'),
     rimraf = require('rimraf'),
@@ -65,10 +67,13 @@ gulp.task('browserify-website', ['templates'], function () {
 
     // angular app
     gulp.src('public/app/app.js')
+        .pipe(ngAnnotate())
         .pipe(browserify({
             insertGlobals: true,
-            debug: true
+            debug: true // FIXME: do not do this in production
         }))
+        // FIXME: do this in production
+        //.pipe(uglify())
         .pipe(gulp.dest('build/app/'));
 
 });

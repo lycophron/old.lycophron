@@ -63,6 +63,16 @@ function start(config, done) {
             res.end();
         });
 
+        logger.debug('Adding Cache-Control rules');
+        app.use(function (req, res, next) {
+            var maxAge = 345600; // 4 days
+            if (req.url.indexOf('/dict.json') > -1) {
+                res.setHeader('Cache-Control', 'public, max-age=' + maxAge);
+                res.setHeader('Expires', new Date(Date.now() + maxAge * 1000).toUTCString());
+            }
+            return next();
+        });
+
         logger.debug('Adding static file rules for build/libs/ no auth is required');
         app.use('/libs/', express.static(__dirname + '/../build/libs/'));
 
