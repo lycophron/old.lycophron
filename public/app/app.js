@@ -8,8 +8,69 @@
 // application library
 var L = require('../../lib/lycophron'),
     isoLanguages = require('../libs/isoLanguages'),
+    debug = require('debug'),
     angularMoment = require('../../node_modules/angular-moment/angular-moment.min'),
     momentLocales = require('../../node_modules/moment/min/locales.min');
+
+
+// Separate namespaces using ',' a leading '-' will disable the namespace.
+// Each part takes a regex.
+//      ex: localStorage.debug = '*,-socket\.io*,-engine\.io*'
+//      will log all but socket.io and engine.io
+function createLogger(name, options) {
+    'use strict';
+
+    var log = debug(name),
+        level,
+        levels = {
+            silly: 0,
+            input: 1,
+            verbose: 2,
+            prompt: 3,
+            debug: 4,
+            info: 5,
+            data: 6,
+            help: 7,
+            warn: 8,
+            error: 9
+        };
+
+    level = options && options.level ? levels[options.level] : levels.debug;
+
+    log.debug = function () {
+        if (log.enabled && level <= levels.debug) {
+            if (console.debug) {
+                log.log = console.debug.bind(console);
+            } else {
+                log.log = console.log.bind(console);
+            }
+            log.apply(this, arguments);
+        }
+    };
+    log.info = function () {
+        if (log.enabled && level <= levels.info) {
+            log.log = console.info.bind(console);
+            log.apply(this, arguments);
+        }
+    };
+    log.warn = function () {
+        if (log.enabled && level <= levels.warn) {
+            log.log = console.warn.bind(console);
+            log.apply(this, arguments);
+        }
+    };
+    log.error = function () {
+        if (log.enabled && level <= levels.error) {
+            log.log = console.error.bind(console);
+            log.apply(this, arguments);
+        } else {
+            console.error.apply(console, arguments);
+        }
+    };
+
+    return log;
+}
+
 
 // html templates
 angular.module('templates', []);
@@ -49,8 +110,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
     .controller('MainController', function ($scope, $route, $routeParams, $location, $mdSidenav, $i18next, $timeout, amMoment) {
         'use strict';
+        var logger = createLogger('lycophron:MainController');
 
-        console.log('MainController');
+        logger.debug('MainController ctor');
+
         $scope.$route = $route;
         $scope.$location = $location;
         $scope.$routeParams = $routeParams;
@@ -84,10 +147,14 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.selected = $scope.menuItems[0];
 
         $scope.toggleSidenav = function (menuId) {
+            logger.debug('toggleSidenav', menuId);
+
             $mdSidenav(menuId).toggle();
         };
 
         $scope.selectMenuItem = function (menuItem) {
+            logger.debug('selectMenuItem', menuItem);
+
             $scope.selected = angular.isNumber(menuItem) ? $scope.menuItems[menuItem] : menuItem;
             $mdSidenav('left').close();
         };
@@ -95,7 +162,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.i18nextReady = false;
 
         $scope.$on('i18nextLanguageChange', function () {
-            //console.log('Language has changed!');
+            logger.debug('Language has changed', i18n.lng());
+
             amMoment.changeLocale(i18n.lng());
 
             if (!$scope.i18nextReady) {
@@ -106,35 +174,49 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         });
 
         $scope.changeLng = function (lng) {
+            logger.debug('Language change requested', $i18next.options.lng, lng);
+
             $i18next.options.lng = lng;
+
             //console.log($i18next.debugMsg[$i18next.debugMsg.length - 1]);
         };
 
         // TODO: get user
         //$scope.username = 'anonymous';
         amMoment.changeLocale(i18n.lng());
+
+        logger.debug('Done', $scope);
     })
 
     .controller('HomeController', function ($scope, $routeParams) {
         'use strict';
+        var logger = createLogger('lycophron:HomeController');
+
+        logger.debug('HomeController ctor');
 
         $scope.name = 'HomeController';
         $scope.params = $routeParams;
 
-        console.log($scope.name);
+        logger.debug('Done', $scope);
     })
 
     .controller('StatsController', function ($scope, $routeParams) {
         'use strict';
+        var logger = createLogger('lycophron:StatsController');
+
+        logger.debug('StatsController ctor');
 
         $scope.name = 'StatsController';
         $scope.params = $routeParams;
 
-        console.log($scope.name);
+        logger.debug('Done', $scope);
     })
 
     .controller('GameSinglePlayerController', function ($scope, $routeParams, $route) {
         'use strict';
+        var logger = createLogger('lycophron:GameSinglePlayerController');
+
+        logger.debug('GameSinglePlayerController ctor');
 
         $scope.name = 'GameSinglePlayerController';
         $scope.params = $routeParams;
@@ -145,24 +227,33 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         //console.log($scope.params);
 
         $scope.onNewGame = function () {
+            logger.debug('onNewGame');
+
             $route.reload();
         };
 
         $scope.onFoundWord = function () {
+            logger.debug('onFoundWord');
 
         };
 
         $scope.onNewLettersReady = function (letters) {
+            logger.debug('onNewLettersReady', letters);
 
         };
 
         $scope.onGameReady = function (solutions) {
-
+            logger.debug('onGameReady', solutions);
         };
+
+        logger.debug('Done', $scope);
     })
 
     .controller('SingleWizardController', function ($scope, $routeParams, $http, $location, $i18next) {
         'use strict';
+        var logger = createLogger('lycophron:SingleWizardController');
+
+        logger.debug('SingleWizardController ctor');
 
         $scope.name = 'SingleWizardController';
         $scope.params = $routeParams;
@@ -185,16 +276,26 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 '&vowels=' + $scope.game.numVowels +
                 '&jokers=' + $scope.game.numJokers +
                 '&autoCheck=' + $scope.game.autoCheck;
+
+            logger.debug('createNew', url, $scope);
+
             // FIXME: how to navigate to a route nicely
             $location.url(url);
         };
+
+        logger.debug('Done', $scope);
     })
 
     .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next, $mdDialog) {
         'use strict';
 
         var socket = io.connect({forceNew: true}),
-            requiresSignIn = true;
+            requiresSignIn = true,
+
+            logger = createLogger('lycophron:MultiplayerController'),
+            loggerSocketIO = createLogger('lycophron:MultiplayerController:socket.io');
+
+        logger.debug('MultiplayerController ctor');
 
         $scope.name = 'MultiplayerController';
         $scope.params = $routeParams;
@@ -211,6 +312,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.connectionStatus = 'multiplayer.connecting';
 
         function forceDigestCycle() {
+            logger.debug('forceDigestCycle');
+
             // Angular is unaware of data updates outside the "angular world,
             // the timeout will force a new digest cycle.
             $timeout(function () {
@@ -218,6 +321,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         }
 
         socket.on('connect', function () {
+            loggerSocketIO.debug('connected');
+
             if (requiresSignIn && $scope.currentUser) {
                 socket.emit('signIn', $scope.currentUser);
                 requiresSignIn = false;
@@ -230,6 +335,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         });
 
         socket.on('disconnect', function () {
+            loggerSocketIO.debug('disconnected');
+
             $scope.connectionStatus = 'multiplayer.disconnected';
             requiresSignIn = true;
 
@@ -245,22 +352,26 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         });
 
         socket.on('userAvailable', function (data) {
-            console.log('userAvailable', data);
+            loggerSocketIO.debug('userAvailable', data);
         });
 
         socket.on('userLeft', function (data) {
-            console.log('userLeft', data);
+            loggerSocketIO.debug('userLeft', data);
+        });
+
+        socket.on('message', function (data) {
+            loggerSocketIO.debug('message', data);
         });
 
         socket.on('availableUsers', function (data) {
-            console.log('availableUsers', data);
+            loggerSocketIO.debug('availableUsers', data);
             $scope.availableUsers = data;
 
             forceDigestCycle();
         });
 
         socket.on('availableRooms', function (data) {
-            console.log('availableRooms', data);
+            loggerSocketIO.debug('availableRooms', data);
             $scope.availableRooms = data;
 
             updateCurrentRoom();
@@ -292,6 +403,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 room.allowedUsers.push(room.owner.id);
             }
 
+            loggerSocketIO.debug('emit createRoom', room);
             socket.emit('createRoom', room);
 
             if (!doNotJoin) {
@@ -320,6 +432,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         $scope.joinRoom = function (roomId) {
             var i;
             if (roomId) {
+                loggerSocketIO.debug('emit joinRoom', roomId);
                 socket.emit('joinRoom', roomId);
 
                 $scope.currentRoomId = roomId;
@@ -332,10 +445,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.leaveRoomWithConfirm = function (roomId, ev) {
-
+            var confirm;
             if ($scope.currentRoom.owner.id === $scope.currentUser.id) {
                 // if we are the owner, then get confirmation
-                var confirm = $mdDialog.confirm()
+                confirm = $mdDialog.confirm()
                     //.parent(angular.element(document.body))
                     .title($i18next('multiplayer.leavingRoom.title'))
                     .content($i18next('multiplayer.leavingRoom.content'))
@@ -358,6 +471,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.leaveRoom = function (roomId) {
+            loggerSocketIO.debug('emit leaveRoom', roomId);
             socket.emit('leaveRoom', roomId);
             $scope.currentRoomId = null;
 
@@ -428,7 +542,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             error(function (data, status, headers, config) {
                 // called asynchronously if an error occurs
                 // or server returns response with an error status.
-                console.error('cannot retrieve /auth/ info');
+                logger.error('cannot retrieve /auth/ info');
             });
 
         socket.on('foundWord', function (data) {
@@ -436,6 +550,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 key,
                 thisUser = $scope.userWords[data.user];
             // another user has found a word
+            loggerSocketIO.debug('foundWord', data);
 
             // user
             // length
@@ -500,6 +615,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         socket.on('startGame', function (options) {
+            loggerSocketIO.debug('startGame', options);
+
             startGame(options);
 
             forceDigestCycle();
@@ -526,7 +643,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         };
 
         $scope.sendSolutionVisibility = function () {
-            socket.emit('roomStateUpdate', {roomId: $scope.currentRoomId, roomUpdate: {visibleSolutions: $scope.gameOptions.visibleSolutions}});
+            var update = {
+                roomId: $scope.currentRoomId,
+                roomUpdate: {visibleSolutions: $scope.gameOptions.visibleSolutions}
+            };
+
+            loggerSocketIO.debug('roomStateUpdate', update);
+            socket.emit('roomStateUpdate', update);
         };
 
         function stopGame() {
@@ -553,33 +676,49 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             };
 
             $scope.onFoundWord = function (length, word) {
-                socket.emit('foundWord', {user: $scope.currentUser.id, length: length, word: word});
+                var data = {
+                    user: $scope.currentUser.id,
+                    length: length,
+                    word: word
+                };
+
+                loggerSocketIO.debug('foundWord', data);
+                socket.emit('foundWord', data);
             };
 
             $scope.onNewLettersReady = function (letters) {
+                var data = {
+                    roomId: $scope.currentRoomId,
+                    roomUpdate: {
+                        state: 'running',
+                        letters: letters,
+                        visibleSolutions: false
+                    }
+                };
                 if (options.letters) {
                     // slave mode
                 } else {
                     // master mode
                     options.letters = letters;
+                    loggerSocketIO.debug('startGame', options);
                     socket.emit('startGame', options);
-                    socket.emit('roomStateUpdate', {
-                        roomId: $scope.currentRoomId,
-                        roomUpdate: {
-                            state: 'running',
-                            letters: letters,
-                            visibleSolutions: false
-                        }
-                    });
+                    loggerSocketIO.debug('roomStateUpdate', data);
+                    socket.emit('roomStateUpdate', data);
                     $scope.toogleSolutions(false, true);
                 }
             };
 
             $scope.onGameReady = function (solutions) {
-                var key;
+                var key,
+                    data = {
+                        user: $scope.currentUser.id,
+                        length: 0,
+                        word: ''
+                    };
                 //console.log(solutions);
                 $scope.solutions = solutions;
-                socket.emit('foundWord', {user: $scope.currentUser.id, length: 0, word: ''});
+                loggerSocketIO.debug('foundWord', data);
+                socket.emit('foundWord', data);
 
                 for (key in $scope.userWords) {
                     if ($scope.userWords.hasOwnProperty(key)) {
