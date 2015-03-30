@@ -19,6 +19,10 @@ function init(server, logger, config) {
 
     io.sockets.on('connection', function (socket) {
 
+        socket.on('error', function (err) {
+            logger.error(err);
+        });
+
         //logger.debug('New client connected: ' + socket.id);
         socket.emit('message', {
             message: 'Welcome to the chat',
@@ -42,10 +46,13 @@ function init(server, logger, config) {
             if (rooms.hasOwnProperty(roomId)) {
 
                 if (rooms[roomId].allowedUsers.length === 0 || rooms[roomId].allowedUsers.indexOf(users[socket.id].id) > -1) {
+                    // accept user
                     socket.join(roomId);
-                    socket.broadcast.emit('message', {message: 'multiplayer.userJoinedToRoom', user: users[socket.id]});
+                    //socket.broadcast.emit('userJoinedToRoom', {roomTitle: rooms[roomId].title, user: users[socket.id]});
+                    socket.emit('acceptUserJoinedRoomRequest', roomId);
 
                     if (io.nsps['/'].adapter.rooms[roomId]) {
+                        socket.broadcast.to(roomId).emit('userJoinedToRoom', {roomTitle: rooms[roomId].title, user: users[socket.id]});
                         updateUserListInRoom(roomId);
                         //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                     }
@@ -53,6 +60,8 @@ function init(server, logger, config) {
                     sendAvailableRooms();
                 } else {
                     logger.error('User is not allowed to join to room', {metadata: {room: rooms[roomId], user: users[socket.id]}});
+                    socket.emit('rejectUserJoinedRoomRequest');
+
                 }
             }
         });
@@ -60,9 +69,10 @@ function init(server, logger, config) {
         socket.on('leaveRoom', function (roomId) {
             if (rooms.hasOwnProperty(roomId)) {
                 socket.leave(roomId);
-                socket.broadcast.emit('message', {message: 'multiplayer.userLeftRoom', user: users[socket.id]});
+                //socket.broadcast.emit('userLeftRoom', {roomTitle: rooms[roomId].title, user: users[socket.id]});
 
                 if (io.nsps['/'].adapter.rooms[roomId]) {
+                    socket.broadcast.to(roomId).emit('userLeftRoom', {roomTitle: rooms[roomId].title, user: users[socket.id]});
                     updateUserListInRoom(roomId);
                     //logger.debug(roomId + ' has nbr of users: ' + Object.keys(io.nsps['/'].adapter.rooms[roomId]).length);
                 } else if (users.hasOwnProperty(socket.id) && users[socket.id].id === rooms[roomId].owner.id) {

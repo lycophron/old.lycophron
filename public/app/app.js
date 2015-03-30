@@ -286,7 +286,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         logger.debug('Done', $scope);
     })
 
-    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next, $mdDialog) {
+    .controller('MultiplayerController', function ($scope, $routeParams, $timeout, $route, $http, $location, $i18next, $mdDialog, $mdToast) {
         'use strict';
 
         var socket = io.connect({forceNew: true}),
@@ -331,6 +331,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.connectionStatus = 'multiplayer.connected';
 
             $scope.connected = true;
+
             forceDigestCycle();
         });
 
@@ -353,10 +354,22 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
         socket.on('userAvailable', function (data) {
             loggerSocketIO.debug('userAvailable', data);
+            $mdToast.show(
+                $mdToast.simple()
+                    .content($i18next('multiplayer.userAvailable') + ' ' + data.newUser.displayName)
+                    .position('right bottom')
+                    .hideDelay(3000)
+            );
         });
 
         socket.on('userLeft', function (data) {
             loggerSocketIO.debug('userLeft', data);
+            $mdToast.show(
+                $mdToast.simple()
+                    .content($i18next('multiplayer.userLeft') + ' ' + data.displayName)
+                    .position('right bottom')
+                    .hideDelay(3000)
+            );
         });
 
         socket.on('message', function (data) {
@@ -430,19 +443,43 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         }
 
         $scope.joinRoom = function (roomId) {
-            var i;
             if (roomId) {
                 loggerSocketIO.debug('emit joinRoom', roomId);
                 socket.emit('joinRoom', roomId);
-
-                $scope.currentRoomId = roomId;
-
-                updateCurrentRoom();
-
-                // FIXME: on success only
-                //$location.path('/game/multiplayer/' + roomId);
             }
         };
+
+        socket.on('acceptUserJoinedRoomRequest', function (roomId) {
+            $scope.currentRoomId = roomId;
+            updateCurrentRoom();
+        });
+
+        socket.on('rejectUserJoinedRoomRequest', function () {
+            $scope.currentRoomId = null;
+            updateCurrentRoom();
+        });
+
+        socket.on('userJoinedToRoom', function (data) {
+            loggerSocketIO.debug('userJoinedToRoom', data);
+            $mdToast.show(
+                $mdToast.simple()
+                    .content($i18next('multiplayer.userJoinedToRoom') + ' ' + data.user.displayName + ' ' + data.roomTitle)
+                    .position('right bottom')
+                    .hideDelay(3000)
+            );
+            forceDigestCycle();
+        });
+
+        socket.on('userLeftRoom', function (data) {
+            loggerSocketIO.debug('userLeftRoom', data);
+            $mdToast.show(
+                $mdToast.simple()
+                    .content($i18next('multiplayer.userLeftRoom') + ' ' + data.user.displayName + ' ' + data.roomTitle)
+                    .position('right bottom')
+                    .hideDelay(3000)
+            );
+            forceDigestCycle();
+        });
 
         $scope.leaveRoomWithConfirm = function (roomId, ev) {
             var confirm;
@@ -1303,14 +1340,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 templateUrl: 'singleWizard.html',
                 controller: 'SingleWizardController'
             })
-            .when('/game/multiplayer/', {
+            .when('/game/multiplayer/:roomId?', {
                 templateUrl: 'multiplayer.html',
                 controller: 'MultiplayerController'
             })
-            //.when('/game/multiplayer/:roomId', {
-            //    templateUrl: 'multiplayer.html',
-            //    controller: 'MultiplayerController'
-            //})
             .when('/home/', {
                 templateUrl: 'home.html',
                 controller: 'HomeController'
