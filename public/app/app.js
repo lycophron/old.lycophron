@@ -10,8 +10,8 @@ var L = require('../../lib/lycophron'),
     isoLanguages = require('../libs/isoLanguages'),
     debug = require('debug'),
     angularMoment = require('../../node_modules/angular-moment/angular-moment.min'),
-    momentLocales = require('../../node_modules/moment/min/locales.min');
-
+    momentLocales = require('../../node_modules/moment/min/locales.min'),
+    TEST_WITH_AUTOPLAY = false;
 
 // Separate namespaces using ',' a leading '-' will disable the namespace.
 // Each part takes a regex.
@@ -618,10 +618,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 thisUser.numFoundWords = 0;
             }
 
-            if (thisUser.numSolution === undefined &&
-                $scope.solutions) {
-                updateUserPercentage(thisUser);
-            }
+            updateUserPercentage(thisUser);
 
             $scope.userWords[data.user] = thisUser;
 
@@ -629,8 +626,13 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
         });
 
         function updateUserPercentage(thisUser) {
-            thisUser.numSolution = thisUser.numSolution || $scope.solutions.solution.length;
-            thisUser.percentage = Math.floor(thisUser.numFoundWords / thisUser.numSolution * 10000) / 100;
+            if ($scope.solutions) {
+                thisUser.numSolution = $scope.solutions.solution.length;
+                thisUser.percentage = Math.floor(thisUser.numFoundWords / thisUser.numSolution * 10000) / 100;
+            } else {
+                thisUser.numSolution = 'N/A';
+                thisUser.percentage = 0;
+            }
         }
 
         $scope.startNewGame = function () {
@@ -702,10 +704,12 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             $scope.userWords = {};
             $scope.solutions = null;
 
+
             $scope.gameOptions = JSON.parse(JSON.stringify(options)); // we need a deep copy
             $scope.gameOptions.multiplayer = true;
             $scope.gameOptions.userWords = $scope.userWords;
             $scope.gameOptions.currentUser = $scope.currentUser;
+
 
             $scope.onNewGame = function () {
                 // FIXME: we should not use the $route.reload for new game, but this is the only option for now
@@ -737,9 +741,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 } else {
                     // master mode
                     options.letters = letters;
-                    loggerSocketIO.debug('startGame', options);
+                    loggerSocketIO.debug('emit startGame', options);
                     socket.emit('startGame', options);
-                    loggerSocketIO.debug('roomStateUpdate', data);
+                    loggerSocketIO.debug('emit roomStateUpdate', data);
                     socket.emit('roomStateUpdate', data);
                     $scope.toogleSolutions(false, true);
                 }
@@ -915,7 +919,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                 onGameReady: '&'
             },
             templateUrl: 'game.html',
-            controller: function ($scope, $timeout, $window) {
+            controller: function ($scope, $timeout, $window, $q, $mdDialog, $i18next) {
 
                 // TODO: validate options!
                 $scope.gameIsReady = false;
@@ -959,7 +963,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                     $scope.options.visibleSolutions = false;
 
-                    if ($scope.options.autoCheck) {
+                    if ($scope.options.autoCheck && TEST_WITH_AUTOPLAY === false) {
                         checkWord();
                     } else {
                         $scope.message = 'game.checkWord';
@@ -1233,6 +1237,69 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.options.visibleSolutions = true;
                 };
 
+                function autoPlay() {
+                    var words = JSON.parse(JSON.stringify($scope.solutions.solution));
+                    if ($scope.solutions) {
+                        nextMove(words);
+                    } else {
+                        $scope.endGame();
+                    }
+                }
+
+                function nextMove(words) {
+                    var idx,
+
+                        word,
+                        promises = [];
+
+                    if (words.length === 0) {
+                        $scope.endGame();
+                    } else {
+                        idx = Math.floor(Math.random() * words.length);
+                        word = words[idx];
+                        words.splice(idx, 1);
+                        $scope.removeAllLetters();
+
+                        addLetter(word, 0).then(function () {
+                            checkWord();
+                            nextMove(words);
+                        });
+                    }
+                }
+
+                function addLetter(word, i) {
+                    var deferred = $q.defer();
+                    if (i < word.length) {
+                        $timeout(function () {
+                            $scope.typedLetters += word[i];
+                            $scope.inputChanged();
+                            addLetter(word, i + 1).then(function () {
+                                deferred.resolve();
+                            });
+                        }, 10);
+                    } else {
+                        deferred.resolve();
+                    }
+                    return deferred.promise;
+                }
+
+                $scope.endGame = function () {
+                    var alert = $mdDialog.alert()
+                        //.parent(angular.element(document.body))
+                        .title($i18next('game.ended.title'))
+                        .content($i18next('game.ended.content'))
+                        .ariaLabel('GameEndedDialog')
+                        .ok($i18next('confirm'));
+
+                    $mdDialog.show(alert).then(function () {
+                        // hit ok
+
+                    }, function () {
+                        // did not hit ok
+
+                    });
+                };
+
                 // FIXME: turn timeouts into promises
                 // FIXME: add failure states
                 // 50ms, let the browser draw our updated state
@@ -1269,6 +1336,9 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                                 } else {
                                     // we need to draw letters
                                     $scope.letters = dict.drawLetters($scope.options.consonants, $scope.options.vowels, $scope.options.jokers);
+                                    // TEST when there are 3,4,5,7 letter words, but there is no 6 letter
+                                    // d, f, m, sz(S), t, á(A), e, ó(O), u, ü(X)
+                                    //$scope.letters = ['d', 'f', 'm', 'sz', 't', 'á', 'e', 'ó', 'u', 'ü'];
                                 }
                                 $scope.state = 'game.solvingProblem';
                                 $scope.longProcess = true;
@@ -1298,6 +1368,18 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                                     $scope.words.reverse();
 
+                                    // fill up missing values
+                                    for (i = 0; i < $scope.words.length; i += 1) {
+                                        if ($scope.words.hasOwnProperty(i) === false) {
+                                            $scope.words[i] = {
+                                                found: [],
+                                                solutions: [],
+                                                allSolutions: 0,
+                                                percentage: 0
+                                            };
+                                        }
+                                    }
+
                                     $scope.state = 'ready';
                                     $scope.longProcess = false;
 
@@ -1318,6 +1400,10 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                                         $scope.onGameReady()($scope.solutions);
                                         //console.log($scope.solutions);
+                                        if (TEST_WITH_AUTOPLAY) {
+                                            $scope.options.autoCheck = false;
+                                            autoPlay();
+                                        }
                                     }, timeoutValue);
                                 }, timeoutValue);
                             }, timeoutValue);

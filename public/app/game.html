@@ -114,7 +114,7 @@
         <!-- WORD LISTS -->
 
         <div layout="row" layout-wrap layout-align="center start">
-            <section class="solution" ng-repeat="key in words" ng-if="words.length - $index - 1">
+            <section class="solution" ng-repeat="key in words" ng-if="words.length - $index - 1 && key.allSolutions">
                 <md-toolbar class="md-theme-light solution-header"
                             ng-class="{'md-primary': key.percentage < 100, 'md-hue-1': key.percentage >= 100}">
                     <h3 class="md-toolbar-tools" layout-align="space-between center">
