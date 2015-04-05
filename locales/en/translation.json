@@ -74,6 +74,7 @@
 
     "typeWordHere": "Type here your word or click on the tiles.",
     "clearTiles": "Clear the word",
+    "removeLastTile": "Remove last tile",
     "showSolutions": "Show solutions",
     "hideSolutions": "Hide solutions",
     "newGame": "New game",

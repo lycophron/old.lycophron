@@ -74,6 +74,7 @@
 
     "typeWordHere": "Kattints a betűkre vagy írd ide a szót majd nyomj entert.",
     "clearTiles": "A leírt szó törlése",
+    "removeLastTile": "Utolsó betű törlése",
     "showSolutions": "Megoldások",
     "hideSolutions": "Megoldások elrejtése",
     "newGame": "Új játék",

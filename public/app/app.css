@@ -142,6 +142,11 @@ tile-group.uppercase .tile .letter {
     cursor: pointer;
 }
 
+.word:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .word-not-found {
     /* md-warn */
     color: #F44336;
