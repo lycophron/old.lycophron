@@ -59,6 +59,19 @@ input {
     font-size: 20pt;
 }
 
+.github {
+    color: #777;
+    font-size: 0.8em;
+}
+
+.github .md-button {
+    text-align: center;
+}
+
+.github .text {
+    padding-bottom: 1ex;
+}
+
 .version {
     color: #777;
     font-size: 0.8em;
