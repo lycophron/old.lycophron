@@ -93,6 +93,11 @@
     "chooseGameType": "Válasz játékot",
     "types": {
       "anagramProblem": "Anagramma feladvány"
+    },
+
+    "ended": {
+      "title": "Játék véget ért",
+      "content": "Gratulálunk! Az összes szót megtaláltad."
     }
   },
 
@@ -107,6 +112,12 @@
 
     "onlineUsers": "Jelenlegi online játékosok száma: __count__",
     "onlineUsers_plural": "Jelenlegi online játékosok száma: __count__",
+
+    "userAvailable": "__user__ belépett",
+    "userLeft": "__user__ kilépett",
+
+    "userJoinedToRoom": "__user__ csatlakozott a(z) __room__ nevű szobához",
+    "userLeftRoom": "__user__ kilépett a(z) __room__ nevű szobából",
 
     "newRoomWizard": "Új szoba létrehozása",
     "cancelWizard": "Mégsem",

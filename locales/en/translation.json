@@ -93,6 +93,11 @@
     "chooseGameType": "Choose a game type",
     "types": {
       "anagramProblem": "Anagram problem"
+    },
+
+    "ended": {
+      "title": "Game has ended",
+      "content": "Congratulations! You have found all words."
     }
   },
 
@@ -107,6 +112,13 @@
 
     "onlineUsers": "You are the only online user.",
     "onlineUsers_plural": "__count__ users are online including you.",
+
+    "userAvailable": "__user__ is online",
+    "userLeft": "__user__ has left",
+
+    "userJoinedToRoom": "__user__ joined to __room__ room",
+    "userLeftRoom": "__user__ has left __room__ room",
+
 
     "newRoomWizard": "Create a new room",
     "cancelWizard": "Cancel",

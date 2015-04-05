@@ -356,7 +356,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             loggerSocketIO.debug('userAvailable', data);
             $mdToast.show(
                 $mdToast.simple()
-                    .content($i18next('multiplayer.userAvailable') + ' ' + data.newUser.displayName)
+                    .content($i18next('multiplayer.userAvailable', {user: data.newUser.displayName}))
                     .position('right bottom')
                     .hideDelay(3000)
             );
@@ -366,7 +366,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             loggerSocketIO.debug('userLeft', data);
             $mdToast.show(
                 $mdToast.simple()
-                    .content($i18next('multiplayer.userLeft') + ' ' + data.displayName)
+                    .content($i18next('multiplayer.userLeft', {user: data.displayName}))
                     .position('right bottom')
                     .hideDelay(3000)
             );
@@ -463,7 +463,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             loggerSocketIO.debug('userJoinedToRoom', data);
             $mdToast.show(
                 $mdToast.simple()
-                    .content($i18next('multiplayer.userJoinedToRoom') + ' ' + data.user.displayName + ' ' + data.roomTitle)
+                    .content($i18next('multiplayer.userJoinedToRoom', {user: data.user.displayName, room: data.roomTitle}))
                     .position('right bottom')
                     .hideDelay(3000)
             );
@@ -474,7 +474,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             loggerSocketIO.debug('userLeftRoom', data);
             $mdToast.show(
                 $mdToast.simple()
-                    .content($i18next('multiplayer.userLeftRoom') + ' ' + data.user.displayName + ' ' + data.roomTitle)
+                    .content($i18next('multiplayer.userLeftRoom', {user: data.user.displayName, room: data.roomTitle}))
                     .position('right bottom')
                     .hideDelay(3000)
             );
