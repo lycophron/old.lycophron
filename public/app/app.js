@@ -955,6 +955,65 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
 
                 checkWord();
 
+                function shuffle(array) {
+                    var currentIndex = array.length,
+                        temporaryValue,
+                        randomIndex;
+
+                    // While there remain elements to shuffle...
+                    while (0 !== currentIndex) {
+
+                        // Pick a remaining element...
+                        randomIndex = Math.floor(Math.random() * currentIndex);
+                        currentIndex -= 1;
+
+                        // And swap it with the current element.
+                        temporaryValue = array[currentIndex];
+                        array[currentIndex] = array[randomIndex];
+                        array[randomIndex] = temporaryValue;
+                    }
+
+                    return array;
+                }
+
+                $scope.shuffleProblemTiles = function () {
+                    $scope.removeAllLetters();
+                    shuffle($scope.problemTiles);
+                };
+
+                $scope.sortProblemTiles = function () {
+                    $scope.removeAllLetters();
+
+                    $scope.problemTiles.sort(function (aObj, bObj) {
+                        var a = aObj.letter,
+                            b = bObj.letter;
+
+                        if (dict.isConsonant(a) && dict.isConsonant(b)) {
+
+                            return a.localeCompare(b);
+
+                        } else if (dict.isVowel(a) && dict.isJoker(a) === false &&
+                            dict.isVowel(b) && dict.isJoker(b) === false) {
+
+                            return a.localeCompare(b);
+                        }
+
+                        if (dict.isConsonant(a)) {
+                            return -1;
+                        } else if (dict.isConsonant(b)) {
+                            return 1;
+                        }
+
+                        if (dict.isVowel(a) && dict.isJoker(a) === false) {
+                            return -1;
+                        } else if (dict.isVowel(b) && dict.isJoker(b) === false) {
+                            return 1;
+                        }
+
+                        return 0;
+                    });
+                };
+
                 $scope.jokerSelected = function (idx, tile) {
 
                     $scope.typedLetters += tile.letter;

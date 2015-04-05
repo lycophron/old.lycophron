@@ -5,7 +5,7 @@
         <md-label ng-show="longProcess" ng-i18next="mayTakeAFewSeconds"></md-label>
     </div>
 
-    <div ng-show="gameIsReady" layout="column" layout-align="space-around center">
+    <div class="main-panel" ng-show="gameIsReady" layout="column" layout-align="space-around center">
         <tile-group tiles="problemTiles" on-selected="letterSelected" ng-class="{'uppercase': capitalLetters}"></tile-group>
 
         <div hide-sm>{{problemText}}</div>
@@ -22,6 +22,16 @@
         </form>
 
         <section layout="row" layout-wrap layout-align="center center">
+            <md-button class="md-primary"
+                       aria-label="game.shuffleProblemTiles"
+                       ng-i18next="game.shuffleProblemTiles"
+                       ng-click="shuffleProblemTiles()"></md-button>
+
+            <md-button class="md-primary"
+                       aria-label="game.sortProblemTiles"
+                       ng-i18next="game.sortProblemTiles"
+                       ng-click="sortProblemTiles()"></md-button>
+
             <md-button class="md-primary"
                        aria-label="game.clearTiles"
                        ng-disabled="typedLetters.length === 0"

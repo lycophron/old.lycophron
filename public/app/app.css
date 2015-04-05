@@ -161,6 +161,10 @@ tile-group.uppercase .tile .letter {
 }
 
 
+game .main-panel {
+    min-width: 37em;
+}
+
 
 .room {
     padding: 1ex;
@@ -210,6 +214,10 @@ and (max-device-width: 568px) {
         font-size: 0.9em;
     }
 
+    tile-group.uppercase .tile .letter {
+        font-size: 1.1em;
+    }
+
     .tile {
         height: 5ex;
         width: 5ex;
@@ -236,6 +244,10 @@ and (orientation : portrait) {
     /* iPhone5 portrait */
     .solution {
         width: 40ex;
+    }
+
+    game .main-panel {
+        min-width: initial;
     }
 }
 
