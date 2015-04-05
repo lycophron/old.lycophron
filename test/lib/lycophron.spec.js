@@ -44,7 +44,8 @@ describe('Lycophron module', function () {
 
             it('loads the defined type', function (done) {
                 var dict = new L.Dictionary('hu-HU/default');
-
+                // initialize may take longer time, because we get a the full dictionary
+                this.timeout(3000);
                 expect(dict.initialize.bind(dict, done)).to.not.throw();
             });
 
