@@ -6,7 +6,7 @@
     </div>
 
     <div ng-show="gameIsReady" layout="column" layout-align="space-around center">
-        <tile-group tiles="problemTiles" on-selected="letterSelected"></tile-group>
+        <tile-group tiles="problemTiles" on-selected="letterSelected" ng-class="{'uppercase': capitalLetters}"></tile-group>
 
         <div hide-sm>{{problemText}}</div>
 
@@ -52,6 +52,11 @@
                        ng-i18next="game.newGame"
                        ng-hide="options.multiplayer"
                        ng-click="newGame()"></md-button>
+
+            <md-checkbox class="md-primary" ng-model="capitalLetters"
+                         aria-label="Checkbox capital letters">
+                <span ng-i18next="game.capitalLetters"></span>
+            </md-checkbox>
         </section>
 
         <section ng-if="message">
@@ -66,9 +71,9 @@
                 ng-i18next="[i18next]({count:score.last})game.score"></span>)</span></div>
 
         <tile-group class="selected-tiles" tiles="selectedTiles"
-                    on-selected="removeAllLetters"></tile-group>
+                    on-selected="removeAllLetters" ng-class="{'uppercase': capitalLetters}"></tile-group>
 
-        <tile-group ng-if="showJoker" tiles="jokerTiles" joker="true" on-selected="jokerSelected"></tile-group>
+        <tile-group ng-if="showJoker" tiles="jokerTiles" joker="true" on-selected="jokerSelected" ng-class="{'uppercase': capitalLetters}"></tile-group>
 
 
         <md-progress-linear class="md-primary" md-mode="determinate" value="{{percentage}}"></md-progress-linear>

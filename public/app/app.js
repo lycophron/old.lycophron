@@ -1001,7 +1001,8 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                         return;
                     }
 
-                    if ($scope.typedLettersPrev.length + 1 !== $scope.typedLetters.length) {
+                    if ($scope.typedLettersPrev.length + 1 !== $scope.typedLetters.length ||
+                        $scope.typedLetters.indexOf($scope.typedLettersPrev.substr(0, $scope.typedLetters.length)) === -1) {
                         // FIXME: we accept exactly one new character
                         $scope.typedLetters = $scope.typedLettersPrev;
                         return;
