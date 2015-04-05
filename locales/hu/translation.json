@@ -59,6 +59,11 @@
   "game": {
     "name": "Játék neve",
     "defaultTitle": "Az én játékom",
+    "autoCheck": "Folyamatos szó ellenőrzés gépelés közben",
+
+    "shuffleProblemTiles": "Kever",
+    "sortProblemTiles": "Rendez",
+    "capitalLetters": "Nagy betűk",
 
     "owner": "Játékmester",
 

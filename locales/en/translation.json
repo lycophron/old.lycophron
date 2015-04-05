@@ -59,6 +59,11 @@
   "game": {
     "name": "Name of the game",
     "defaultTitle": "My game",
+    "autoCheck": "Automatically check words during typing",
+
+    "shuffleProblemTiles": "Shuffle letters",
+    "sortProblemTiles": "Sort letters",
+    "capitalLetters": "Capitalize",
 
     "owner": "Owner",
 
