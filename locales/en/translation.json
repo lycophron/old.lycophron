@@ -116,7 +116,7 @@
     "userAvailable": "__user__ is online",
     "userLeft": "__user__ has left",
 
-    "userJoinedToRoom": "__user__ joined to __room__ room",
+    "userJoinedToRoom": "__user__ has joined to __room__ room",
     "userLeftRoom": "__user__ has left __room__ room",
 
 
