@@ -5,19 +5,19 @@
         <input name="title" ng-model="game.title">
 
         <!--<div ng-messages="roomForm.title.$error">-->
-            <!--<div ng-message="required" ng-i18next="form.required"></div>-->
-            <!--&lt;!&ndash;The name has to be less than 30 characters long.&ndash;&gt;-->
-            <!--<div ng-message="md-maxlength" ng-i18next="form.max30Char"></div>-->
+        <!--<div ng-message="required" ng-i18next="form.required"></div>-->
+        <!--&lt;!&ndash;The name has to be less than 30 characters long.&ndash;&gt;-->
+        <!--<div ng-message="md-maxlength" ng-i18next="form.max30Char"></div>-->
         <!--</div>-->
     </md-input-container>
 
-    <md-select ng-disabled="true" ng-model="game.gameType">
+    <md-select ng-disabled="game.multiplayer" ng-model="game.gameType">
         <md-select-label>
             <span ng-if="game.gameType" ng-i18next="game.types.{{game.gameType}}"></span>
             <span ng-if="!game.gameType" ng-i18next="game.chooseGameType"></span>
         </md-select-label>
-        <md-option ng-value="game.gameType" ng-repeat="gameType in gameTypes">
-            <div md-no-ink class="md-primary" ng-i18next="game.types.{{game.gameType}}"></div>
+        <md-option ng-value="gameType" ng-repeat="gameType in gameTypes">
+            <div md-no-ink class="md-primary" ng-i18next="game.types.{{gameType}}"></div>
             <md-divider ng-if="!$last"></md-divider>
         </md-option>
     </md-select>
@@ -34,63 +34,68 @@
         <div ng-i18next="chooseLanguage"></div>
         <md-radio-button class="md-primary" ng-value="language" ng-repeat="language in languages">
             <div md-no-ink>{{language.fullName}} [{{language.numWords}} <span
-                ng-i18next="words"></span>]
+                    ng-i18next="words"></span>]
             </div>
         </md-radio-button>
     </md-radio-group>
 
-    <md-checkbox class="md-primary" ng-model="game.autoCheck"
-                 aria-label="Checkbox auto check">
-        <span ng-i18next="game.autoCheck"></span>
-    </md-checkbox>
+    <div ng-if="game.gameType === 'anagramProblem'">
+        <md-checkbox class="md-primary" ng-model="game.autoCheck"
+                     aria-label="Checkbox auto check">
+            <span ng-i18next="game.autoCheck"></span>
+        </md-checkbox>
 
-    <div ng-show="game.language" layout-fill layout-align="space-between center">
-        <div layout>
-            <div flex layout layout-align="center center">
-                <span ng-i18next="consonantsText"></span>
+        <div ng-show="game.language" layout-fill layout-align="space-between center">
+            <div layout>
+                <div flex layout layout-align="center center">
+                    <span ng-i18next="consonantsText"></span>
+                </div>
+
+                <div flex layout layout-align="center center">
+                    <span>{{game.numConsonants}}</span>
+                </div>
+
+                <md-slider flex class="md-primary" md-discrete ng-model="game.numConsonants" step="1"
+                           min="3"
+                           max="10"
+                           aria-label="Consonants"></md-slider>
+            </div>
+            <div layout>
+                <div flex layout layout-align="center center">
+                    <span ng-i18next="vowelsText"></span>
+                </div>
+
+                <div flex layout layout-align="center center">
+                    <span>{{game.numVowels}}</span>
+                </div>
+
+                <md-slider flex class="md-primary" md-discrete ng-model="game.numVowels" step="1" min="2"
+                           max="9"
+                           aria-label="Vowels"></md-slider>
+            </div>
+            <div layout>
+                <div flex layout layout-align="center center">
+                    <span ng-i18next="jokersText"></span>
+                </div>
+
+                <div flex layout layout-align="center center">
+                    <span>{{game.numJokers}}</span>
+                </div>
+
+                <md-slider flex class="md-primary" md-discrete ng-model="game.numJokers" step="1" min="0"
+                           max="1"
+                           aria-label="Jokers"></md-slider>
             </div>
 
-            <div flex layout layout-align="center center">
-                <span>{{game.numConsonants}}</span>
-            </div>
 
-            <md-slider flex class="md-primary" md-discrete ng-model="game.numConsonants" step="1"
-                       min="3"
-                       max="10"
-                       aria-label="Consonants"></md-slider>
         </div>
-        <div layout>
-            <div flex layout layout-align="center center">
-                <span ng-i18next="vowelsText"></span>
-            </div>
+    </div>
 
-            <div flex layout layout-align="center center">
-                <span>{{game.numVowels}}</span>
-            </div>
 
-            <md-slider flex class="md-primary" md-discrete ng-model="game.numVowels" step="1" min="2"
-                       max="9"
-                       aria-label="Vowels"></md-slider>
-        </div>
-        <div layout>
-            <div flex layout layout-align="center center">
-                <span ng-i18next="jokersText"></span>
-            </div>
-
-            <div flex layout layout-align="center center">
-                <span>{{game.numJokers}}</span>
-            </div>
-
-            <md-slider flex class="md-primary" md-discrete ng-model="game.numJokers" step="1" min="0"
-                       max="1"
-                       aria-label="Jokers"></md-slider>
-        </div>
-
-        <div layout>
-            <md-button flex layout layout-align="center center" aria-label="createNewGame"
-                       class="md-raised md-primary"
-                       ng-click="onCreateNew()"
-                       ng-i18next="createNewGame"></md-button>
-        </div>
+    <div layout>
+        <md-button flex layout layout-align="center center" aria-label="createNewGame"
+                   class="md-raised md-primary"
+                   ng-click="onCreateNew()"
+                   ng-i18next="createNewGame"></md-button>
     </div>
 </form>

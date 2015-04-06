@@ -266,16 +266,23 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
             numConsonants: 10,
             numVowels: 9,
             numJokers: 0,
-            autoCheck: true
+            autoCheck: true,
+            multiplayer: false
         };
 
         $scope.createNew = function () {
             var url = '/game/' + $scope.game.gameType + '/single/' + $scope.game.language.name + '/' +
-                $scope.game.language.type +
-                '/?consonants=' + $scope.game.numConsonants +
+                $scope.game.language.type + '/';
+
+            if ($scope.game.gameType === 'anagramProblem') {
+                url += '?consonants=' + $scope.game.numConsonants +
                 '&vowels=' + $scope.game.numVowels +
                 '&jokers=' + $scope.game.numJokers +
                 '&autoCheck=' + $scope.game.autoCheck;
+
+            } else if ($scope.game.gameType === 'memoryQuiz') {
+                url += '?isItEaster=yes';
+            }
 
             logger.debug('createNew', url, $scope);
 
@@ -558,6 +565,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                             numJokers: 0,
                             letters: null,
                             autoCheck: true,
+                            multiplayer: true,
                             allowedUsers: []
                         }, true);
                     }, 10);
@@ -573,6 +581,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     numJokers: 0,
                     letters: null,
                     autoCheck: true,
+                    multiplayer: true,
                     allowedUsers: []
                 };
             }).
@@ -801,7 +810,7 @@ angular.module('LycoprhonApp', ['ngRoute', 'ngMaterial', 'jm.i18next', 'template
                     $scope.onCreate()($scope.game);
                 };
 
-                $scope.gameTypes = ['anagramProblem'];
+                $scope.gameTypes = ['anagramProblem', 'memoryQuiz'];
 
                 function forceDigestCycle() {
                     // Angular is unaware of data updates outside the "angular world,
