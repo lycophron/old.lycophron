@@ -61,6 +61,9 @@
     "defaultTitle": "My game",
     "autoCheck": "Automatically check words during typing",
 
+    "check": "Check word",
+    "checkWord": "You have to check the word or hit enter",
+
     "shuffleProblemTiles": "Shuffle letters",
     "sortProblemTiles": "Sort letters",
     "capitalLetters": "Capitalize",

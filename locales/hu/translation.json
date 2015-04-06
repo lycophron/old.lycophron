@@ -61,6 +61,9 @@
     "defaultTitle": "Az én játékom",
     "autoCheck": "Folyamatos szó ellenőrzés gépelés közben",
 
+    "check": "Szó ellenőrzése",
+    "checkWord": "Ellenőrizd a szót vagy nyomj enter-t, ha begepéleted.",
+
     "shuffleProblemTiles": "Kever",
     "sortProblemTiles": "Rendez",
     "capitalLetters": "Nagy betűk",
