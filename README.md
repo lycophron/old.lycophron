@@ -65,4 +65,4 @@ sudo service lycophron restart # if needed, i.e. server/* has changed
 
 ## Licensed under MIT
 
-See [LICENCE](LICENSE) file.
+See [LICENSE](LICENSE) file.
