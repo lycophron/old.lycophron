@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/lycophron/lycophron.svg?branch=master)](https://travis-ci.org/lycophron/lycophron)
+[![Build Status](https://travis-ci.org/lycophron/old.lycophron.svg?branch=master)](https://travis-ci.org/lycophron/old.lycophron)
 # lycophron
 A stupid anagram solver supporting multiple languages with a few sample applications.
 
