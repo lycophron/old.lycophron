@@ -46,8 +46,10 @@ function start(config, done) {
         logger.info('Version', {metadata: version});
 
         config.sessionParameters.secret = salts.sessionSecret;
-        // TODO: add https
-        config.server.publicUrl = 'http://' + config.server.hostname + ':' + config.server.port;
+        
+        if (!config.server.publicUrl) {
+            config.server.publicUrl = 'http://' + config.server.hostname + ':' + config.server.port;
+        }
 
         logger.debug('Configuring application ...');
         app.use(cookieParser());

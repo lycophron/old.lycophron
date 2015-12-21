@@ -12,7 +12,7 @@ public/app/templates.js
 locales/**/dict.json
 locales/info.json
 
-lycophron.conf
+old-lycophron.conf
 
 *.log
 

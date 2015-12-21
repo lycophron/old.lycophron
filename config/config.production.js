@@ -9,7 +9,8 @@ var config = require('./config.default'),
 config.production = true;
 
 config.server.hostname = os.hostname();
-config.server.port = 80;
+config.server.port = 8001;
+config.server.publicUrl = 'https://old.lycophron.org';
 
 config.authentication.allowGuests = false;
 
