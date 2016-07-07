@@ -181,6 +181,7 @@ tile-group.uppercase .tile .letter {
 
 game .main-panel {
     min-width: 37em;
+    position: absolute;
 }
 
 
@@ -289,4 +290,3 @@ and (orientation: landscape) {
         margin-left: -0.6ex;
     }
 }
-
