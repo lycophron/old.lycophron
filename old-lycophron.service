@@ -1,0 +1,17 @@
+# lycophron.service
+[Unit]
+Description=Lycophron service
+After=network.target
+
+[Service]
+Environment= NODE_ENV=production
+Environment= GOOGLE_CLIENT_ID=596183049204-g9udev1lv2a64if208bf5f1p123sb366.apps.googleusercontent.com
+Environment= GOOGLE_CLIENT_SECRET=B5_bBgOKHDXAO3dW-7Fm_u09
+
+WorkingDirectory=/home/ubuntu/old.lycophron
+ExecStart=/usr/bin/node server
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=basic.target
