@@ -182,7 +182,7 @@ RequiresMountsFor=/run/user/1000/containers
 Environment=PODMAN_SYSTEMD_UNIT=%n
 Restart=on-failure
 TimeoutStopSec=70
-ExecStartPre=/usr/bin/podman create --conmon-pidfile=/var/run/user/1000/containers/myPID-old.lycophron-12345.pid -p 8000:8100 --name old.lycophron --rm --healthcheck-interval 1m --healthcheck-timeout 30s --healthcheck-start-period 0s --healthcheck-retries 3 --healthcheck-command "CMD-SHELL curl http://localhost:8100  || exit 1" old.lycophron
+ExecStartPre=/usr/bin/bash /home/management/old.lycophron/unit-exec-start-pre.sh
 ExecStart=/usr/bin/podman start old.lycophron
 ExecStop=/usr/bin/podman stop -t 10 old.lycophron
 ExecStopPost=/usr/bin/podman stop -t 10 old.lycophron
